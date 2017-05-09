@@ -51,7 +51,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        server = getObjectFactories().server().create(getLogger());
+        server = createServer(getLogger());
         server.start();
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getNodes().addObjectListener(new NodeListListener(), true));

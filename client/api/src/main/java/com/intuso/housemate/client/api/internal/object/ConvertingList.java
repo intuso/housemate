@@ -7,12 +7,12 @@ import java.util.Iterator;
 /**
  * Created by tomc on 02/05/17.
  */
-public class ConvertingList<FROM, TO> implements List<TO, ConvertingList<FROM, TO>> {
+public class ConvertingList<FROM extends Object<?>, TO extends Object<?>> implements List<TO, ConvertingList<FROM, TO>> {
 
-    private final List<FROM, ?> list;
+    private final List<? extends FROM, ?> list;
     private final Converter<? super FROM, ? extends TO> converter;
 
-    public ConvertingList(List<FROM, ?> list, Converter<? super FROM, ? extends TO> converter) {
+    public ConvertingList(List<? extends FROM, ?> list, Converter<? super FROM, ? extends TO> converter) {
         this.list = list;
         this.converter = converter;
     }
@@ -55,6 +55,11 @@ public class ConvertingList<FROM, TO> implements List<TO, ConvertingList<FROM, T
     }
 
     @Override
+    public Object<?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public int size() {
         return list.size();
     }
@@ -69,7 +74,7 @@ public class ConvertingList<FROM, TO> implements List<TO, ConvertingList<FROM, T
         return new ConvertingIterator();
     }
 
-    private class ConvertingListener implements Listener<FROM, List<FROM, ?>> {
+    private class ConvertingListener implements Listener<FROM, List<? extends FROM, ?>> {
 
         private final Listener<? super TO, ? super ConvertingList<FROM, TO>> listener;
 
@@ -78,19 +83,19 @@ public class ConvertingList<FROM, TO> implements List<TO, ConvertingList<FROM, T
         }
 
         @Override
-        public void elementAdded(List<FROM, ?> list, FROM element) {
+        public void elementAdded(List<? extends FROM, ?> list, FROM element) {
             listener.elementAdded(ConvertingList.this, converter.apply(element));
         }
 
         @Override
-        public void elementRemoved(List<FROM, ?> list, FROM element) {
+        public void elementRemoved(List<? extends FROM, ?> list, FROM element) {
             listener.elementRemoved(ConvertingList.this, converter.apply(element));
         }
     }
 
     private class ConvertingIterator implements Iterator<TO> {
 
-        private final Iterator<FROM> iter = list.iterator();
+        private final Iterator<? extends FROM> iter = list.iterator();
 
         @Override
         public boolean hasNext() {

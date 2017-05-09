@@ -5,7 +5,7 @@ import com.intuso.housemate.client.v1_0.api.object.Server;
 /**
  * Created by tomc on 02/12/16.
  */
-public class ServerMapper  implements ObjectMapper<Server.Data, com.intuso.housemate.client.api.internal.object.Server.Data>{
+public class ServerMapper implements ObjectMapper<Server.Data, com.intuso.housemate.client.api.internal.object.Server.Data>{
 
     @Override
     public Server.Data map(com.intuso.housemate.client.api.internal.object.Server.Data data) {

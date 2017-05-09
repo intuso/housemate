@@ -48,4 +48,11 @@ public class RealOptionBridge
     public RealListBridge<RealSubTypeBridge> getSubTypes() {
         return subTypes;
     }
+
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        if(SUB_TYPES_ID.equals(id))
+            return subTypes;
+        return null;
+    }
 }

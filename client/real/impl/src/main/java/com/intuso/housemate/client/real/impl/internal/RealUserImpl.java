@@ -126,6 +126,17 @@ public final class RealUserImpl
         return emailProperty;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(EMAIL_ID.equals(id))
+            return emailProperty;
+        return null;
+    }
+
     protected final void remove() {
         removeCallback.remove(this);
     }

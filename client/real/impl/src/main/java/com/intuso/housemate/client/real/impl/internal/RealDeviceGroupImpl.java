@@ -6,14 +6,13 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.object.Device;
-import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
-import com.intuso.housemate.client.real.api.internal.RealDeviceCombi;
+import com.intuso.housemate.client.real.api.internal.RealDeviceGroup;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -22,12 +21,13 @@ import org.slf4j.Logger;
 /**
  * Base class for all device
  */
-public final class RealDeviceCombiImpl
-        extends RealDeviceImpl<Device.Combi.Data, Device.Combi.Listener<? super RealDeviceCombiImpl>, RealDeviceCombiImpl>
-        implements RealDeviceCombi<RealCommandImpl, RealCommandImpl, RealCommandImpl, RealValueImpl<String>,
-        RealListGeneratedImpl<RealCommandImpl>,
-        RealListGeneratedImpl<RealValueImpl<?>>,
-        RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>, RealDeviceCombiImpl> {
+public final class RealDeviceGroupImpl
+        extends RealDeviceImpl<Device.Group.Data, Device.Group.Listener<? super RealDeviceGroupImpl>, RealDeviceGroupImpl>
+        implements RealDeviceGroup<RealCommandImpl, RealCommandImpl, RealCommandImpl, RealValueImpl<String>,
+                RealListGeneratedImpl<RealCommandImpl>,
+                RealListGeneratedImpl<RealValueImpl<?>>,
+                RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>,
+                RealDeviceGroupImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
     private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
@@ -43,29 +43,34 @@ public final class RealDeviceCombiImpl
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> playbackDevices;
+    private final RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> playbackDeviceReferences;
+    private final ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> playbackDevices;
     private final RealCommandImpl addPlaybackDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> powerDevices;
+    private final RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> powerDeviceReferences;
+    private final ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> powerDevices;
     private final RealCommandImpl addPowerDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> runDevices;
+    private final RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> runDeviceReferences;
+    private final ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> runDevices;
     private final RealCommandImpl addRunDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> temperatureSensorDevices;
+    private final RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> temperatureSensorDeviceReferences;
+    private final ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> temperatureSensorDevices;
     private final RealCommandImpl addTemperatureSensorDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> volumeDevices;
+    private final RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> volumeDeviceReferences;
+    private final ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
-    private final RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback;
 
     /**
      * @param logger {@inheritDoc}
      * @param managedCollectionFactory
      */
     @Inject
-    public RealDeviceCombiImpl(@Assisted final Logger logger,
+    public RealDeviceGroupImpl(@Assisted final Logger logger,
                                @Assisted("id") String id,
                                @Assisted("name") String name,
                                @Assisted("description") String description,
-                               @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback,
+                               @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback,
                                ManagedCollectionFactory managedCollectionFactory,
                                Sender.Factory senderFactory,
                                AnnotationParser annotationParser,
@@ -74,9 +79,9 @@ public final class RealDeviceCombiImpl
                                RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                                RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                                RealValueImpl.Factory valueFactory,
-                               RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
+                               RealListPersistedImpl.Factory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
                                final TypeRepository typeRepository) {
-        super(logger, new Device.Combi.Data(id, name, description), managedCollectionFactory, senderFactory,
+        super(logger, new Group.Data(id, name, description), managedCollectionFactory, senderFactory,
                 annotationParser, commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -88,7 +93,7 @@ public final class RealDeviceCombiImpl
                     public void perform(Type.InstanceMap values) {
                         if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
                             String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealDeviceCombiImpl.this.getName().equals(newName))
+                            if (newName != null && !RealDeviceGroupImpl.this.getName().equals(newName))
                                 setName(newName);
                         }
                     }
@@ -119,30 +124,35 @@ public final class RealDeviceCombiImpl
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK),
+        this.playbackDeviceReferences = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK),
                 PLAYBACK,
                 PLAYBACK_NAME,
                 PLAYBACK_DESCRIPTION);
+        playbackDevices = new ConvertingList<>(playbackDeviceReferences, value -> value.getValue().getObject());
         this.addPlaybackDeviceCommand = /* todo */ null;
-        this.powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER),
+        this.powerDeviceReferences = devicesFactory.create(ChildUtil.logger(logger, POWER),
                 POWER,
                 POWER_NAME,
                 POWER_DESCRIPTION);
+        powerDevices = new ConvertingList<>(powerDeviceReferences, value -> value.getValue().getObject());
         this.addPowerDeviceCommand = /* todo */ null;
-        this.runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN),
+        this.runDeviceReferences = devicesFactory.create(ChildUtil.logger(logger, RUN),
                 RUN,
                 RUN_NAME,
                 RUN_DESCRIPTION);
+        runDevices = new ConvertingList<>(runDeviceReferences, value -> value.getValue().getObject());
         this.addRunDeviceCommand = /* todo */ null;
-        this.temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR),
+        this.temperatureSensorDeviceReferences = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR),
                 TEMPERATURE_SENSOR,
                 TEMPERATURE_SENSOR_NAME,
                 TEMPERATURE_SENSOR_DESCRIPTION);
+        temperatureSensorDevices = new ConvertingList<>(temperatureSensorDeviceReferences, value -> value.getValue().getObject());
         this.addTemperatureSensorDeviceCommand = /* todo */ null;
-        this.volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME),
+        this.volumeDeviceReferences = devicesFactory.create(ChildUtil.logger(logger, VOLUME),
                 VOLUME,
                 VOLUME_NAME,
                 VOLUME_DESCRIPTION);
+        volumeDevices = new ConvertingList<>(volumeDeviceReferences, value -> value.getValue().getObject());
         this.addVolumeDeviceCommand = /* todo */ null;
     }
 
@@ -152,15 +162,15 @@ public final class RealDeviceCombiImpl
         renameCommand.init(ChildUtil.name(name, RENAME_ID));
         removeCommand.init(ChildUtil.name(name, REMOVE_ID));
         errorValue.init(ChildUtil.name(name, ERROR_ID));
-        playbackDevices.init(ChildUtil.name(name, PLAYBACK));
+        playbackDeviceReferences.init(ChildUtil.name(name, PLAYBACK));
         addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK));
-        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION));
+        powerDeviceReferences.init(ChildUtil.name(name, POWER_DESCRIPTION));
         addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER));
-        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION));
+        runDeviceReferences.init(ChildUtil.name(name, RUN_DESCRIPTION));
         addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN));
-        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
+        temperatureSensorDeviceReferences.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
         addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
-        volumeDevices.init(ChildUtil.name(name, VOLUME));
+        volumeDeviceReferences.init(ChildUtil.name(name, VOLUME));
         addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME));
     }
 
@@ -170,22 +180,22 @@ public final class RealDeviceCombiImpl
         renameCommand.uninit();
         removeCommand.uninit();
         errorValue.uninit();
-        playbackDevices.uninit();
+        playbackDeviceReferences.uninit();
         addPlaybackDeviceCommand.uninit();
-        powerDevices.uninit();
+        powerDeviceReferences.uninit();
         addPowerDeviceCommand.uninit();
-        runDevices.uninit();
+        runDeviceReferences.uninit();
         addRunDeviceCommand.uninit();
-        temperatureSensorDevices.uninit();
+        temperatureSensorDeviceReferences.uninit();
         addTemperatureSensorDeviceCommand.uninit();
-        volumeDevices.uninit();
+        volumeDeviceReferences.uninit();
         addVolumeDeviceCommand.uninit();
     }
 
     private void setName(String newName) {
-        RealDeviceCombiImpl.this.getData().setName(newName);
-        for(Device.Combi.Listener<? super RealDeviceCombiImpl> listener : listeners)
-            listener.renamed(RealDeviceCombiImpl.this, RealDeviceCombiImpl.this.getName(), newName);
+        RealDeviceGroupImpl.this.getData().setName(newName);
+        for(Group.Listener<? super RealDeviceGroupImpl> listener : listeners)
+            listener.renamed(RealDeviceGroupImpl.this, RealDeviceGroupImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
     }
@@ -209,8 +219,12 @@ public final class RealDeviceCombiImpl
         removeCallback.remove(this);
     }
 
+    public RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPlaybackDeviceReferences() {
+        return playbackDeviceReferences;
+    }
+
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPlaybackDevices() {
+    public ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -219,8 +233,12 @@ public final class RealDeviceCombiImpl
         return addPlaybackDeviceCommand;
     }
 
+    public RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPowerDeviceReferences() {
+        return powerDeviceReferences;
+    }
+
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPowerDevices() {
+    public ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> getPowerDevices() {
         return powerDevices;
     }
 
@@ -229,8 +247,12 @@ public final class RealDeviceCombiImpl
         return addPowerDeviceCommand;
     }
 
+    public RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getRunDeviceReferences() {
+        return runDeviceReferences;
+    }
+
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getRunDevices() {
+    public ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> getRunDevices() {
         return runDevices;
     }
 
@@ -239,8 +261,12 @@ public final class RealDeviceCombiImpl
         return addRunDeviceCommand;
     }
 
+    public RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getTemperatureSensorDeviceReferences() {
+        return temperatureSensorDeviceReferences;
+    }
+
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getTemperatureSensorDevices() {
+    public ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -249,8 +275,12 @@ public final class RealDeviceCombiImpl
         return addTemperatureSensorDeviceCommand;
     }
 
+    public RealListPersistedImpl<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getVolumeDeviceReferences() {
+        return volumeDeviceReferences;
+    }
+
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getVolumeDevices() {
+    public ConvertingList<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>, ProxyDevice<?, ?, ?, ?, ?, ?>> getVolumeDevices() {
         return volumeDevices;
     }
 
@@ -259,17 +289,46 @@ public final class RealDeviceCombiImpl
         return addVolumeDeviceCommand;
     }
 
+    @Override
+    public Object<?> getChild(String id) {
+        if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(PLAYBACK.equals(id))
+            return playbackDevices;
+        else if(ADD_PLAYBACK.equals(id))
+            return addPlaybackDeviceCommand;
+        else if(POWER.equals(id))
+            return powerDevices;
+        else if(ADD_POWER.equals(id))
+            return addPowerDeviceCommand;
+        else if(RUN.equals(id))
+            return runDevices;
+        else if(ADD_RUN.equals(id))
+            return addRunDeviceCommand;
+        else if(TEMPERATURE_SENSOR.equals(id))
+            return temperatureSensorDevices;
+        else if(ADD_TEMPERATURE_SENSOR.equals(id))
+            return addTemperatureSensorDeviceCommand;
+        else if(VOLUME.equals(id))
+            return volumeDevices;
+        else if(ADD_VOLUME.equals(id))
+            return addVolumeDeviceCommand;
+        return super.getChild(id);
+    }
+
     public interface Factory {
-        RealDeviceCombiImpl create(Logger logger,
+        RealDeviceGroupImpl create(Logger logger,
                                    @Assisted("id") String id,
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
-                                   RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback);
+                                   RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback);
     }
 
-    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Device.Combi.Data, RealDeviceCombiImpl> {
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Group.Data, RealDeviceGroupImpl> {
 
-        private final RealDeviceCombiImpl.Factory factory;
+        private final RealDeviceGroupImpl.Factory factory;
 
         @Inject
         public LoadPersisted(Factory factory) {
@@ -277,7 +336,7 @@ public final class RealDeviceCombiImpl
         }
 
         @Override
-        public RealDeviceCombiImpl create(Logger logger, Device.Combi.Data data, RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback) {
+        public RealDeviceGroupImpl create(Logger logger, Group.Data data, RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback) {
             return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
         }
     }

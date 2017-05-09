@@ -23,4 +23,9 @@ public class ProxyTypeBridge
                               Sender.Factory v1_0SenderFactory) {
         super(logger, Type.Data.class, typeMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
     }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        return null;
+    }
 }

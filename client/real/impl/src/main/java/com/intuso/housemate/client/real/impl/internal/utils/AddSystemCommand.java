@@ -26,7 +26,7 @@ public class AddSystemCommand {
     public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "A description of the new system";
 
     public interface Callback {
-        void addSystem(RealDeviceCombiImpl system);
+        void addSystem(RealDeviceGroupImpl system);
     }
 
     public static class Factory {
@@ -52,7 +52,7 @@ public class AddSystemCommand {
                                       String name,
                                       String description,
                                       Callback callback,
-                                      RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback) {
+                                      RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
                     Lists.newArrayList(
                             parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
@@ -76,14 +76,14 @@ public class AddSystemCommand {
 
         private final Logger logger;
         private final Callback callback;
-        private final RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback;
-        private final RealDeviceCombiImpl.Factory systemFactory;
+        private final RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback;
+        private final RealDeviceGroupImpl.Factory systemFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
-                         @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback,
-                         RealDeviceCombiImpl.Factory systemFactory) {
+                         @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback,
+                         RealDeviceGroupImpl.Factory systemFactory) {
             this.logger = logger;
             this.callback = callback;
             this.systemFactory = systemFactory;
@@ -99,14 +99,14 @@ public class AddSystemCommand {
             if(description == null || description.getFirstValue() == null)
                 throw new HousemateException("No description specified");
             String id = UUID.randomUUID().toString();
-            RealDeviceCombiImpl system = systemFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
+            RealDeviceGroupImpl system = systemFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
             callback.addSystem(system);
         }
 
         public interface Factory {
             Performer create(Logger logger,
                              Callback callback,
-                             RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback);
+                             RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback);
         }
     }
 }

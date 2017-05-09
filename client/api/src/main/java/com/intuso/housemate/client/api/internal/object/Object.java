@@ -43,6 +43,8 @@ public interface Object<LISTENER extends Object.Listener> {
      */
     ManagedCollection.Registration addObjectListener(LISTENER listener);
 
+    Object<?> getChild(String id);
+
     /**
      *
      * Base listener interface for objects

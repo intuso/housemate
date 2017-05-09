@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
@@ -73,7 +74,7 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public Object<?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(COMMANDS_ID.equals(id))

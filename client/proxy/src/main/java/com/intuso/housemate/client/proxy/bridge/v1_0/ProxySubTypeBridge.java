@@ -28,4 +28,9 @@ public class ProxySubTypeBridge
     public ProxyTypeBridge getType() {
         return null; // todo get the type from somewhere
     }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        return null;
+    }
 }

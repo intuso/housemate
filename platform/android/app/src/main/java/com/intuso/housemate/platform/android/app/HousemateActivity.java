@@ -4,7 +4,7 @@ import android.app.Activity;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -27,7 +27,6 @@ public abstract class HousemateActivity extends Activity {
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
     private AppServiceClient appServiceClient;
-    private AndroidObjectFactories objectFactories;
 
     @Override
     protected void onStart() {
@@ -48,7 +47,6 @@ public abstract class HousemateActivity extends Activity {
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
         appServiceClient = new AppServiceClient(logger, getApplicationContext());
-        objectFactories = new AndroidObjectFactories(managedCollectionFactory, appServiceClient, appServiceClient);
         appServiceClient.connect();
     }
 
@@ -76,7 +74,7 @@ public abstract class HousemateActivity extends Activity {
         return properties;
     }
 
-    public AndroidObjectFactories getObjectFactories() {
-        return objectFactories;
+    public AndroidProxyServer createServer(Logger logger) {
+        return new AndroidProxyServer(logger, managedCollectionFactory, appServiceClient, appServiceClient);
     }
 }

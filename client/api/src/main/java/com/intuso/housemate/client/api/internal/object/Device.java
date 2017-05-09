@@ -109,17 +109,17 @@ public interface Device<
      * @param <ERROR_VALUE> the type of the error value
      * @param <DEVICE> the type of the device
      */
-    interface Combi<
+    interface Group<
             RENAME_COMMAND extends Command<?, ?, ?, ?>,
             REMOVE_COMMAND extends Command<?, ?, ?, ?>,
             ADD_COMMAND extends Command<?, ?, ?, ?>,
             ERROR_VALUE extends Value<?, ?, ?>,
             COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
             VALUES extends List<? extends Value<?, ?, ?>, ?>,
-            DEVICES extends List<? extends Property<?, ?, ?, ?>, ?>,
-            DEVICE extends Combi<RENAME_COMMAND, REMOVE_COMMAND, ADD_COMMAND, ERROR_VALUE, COMMANDS, VALUES, DEVICES, DEVICE>>
+            DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>,
+            DEVICE extends Group<RENAME_COMMAND, REMOVE_COMMAND, ADD_COMMAND, ERROR_VALUE, COMMANDS, VALUES, DEVICES, DEVICE>>
             extends
-            Device<Combi.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>,
+            Device<Group.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>,
             Failable<ERROR_VALUE>,
             Removeable<REMOVE_COMMAND> {
 
@@ -149,7 +149,7 @@ public interface Device<
          *
          * Listener interface for devices
          */
-        interface Listener<DEVICE extends Combi<?, ?, ?, ?, ?, ?, ?, ?>> extends Device.Listener<DEVICE>,
+        interface Listener<DEVICE extends Group<?, ?, ?, ?, ?, ?, ?, ?>> extends Device.Listener<DEVICE>,
                 Failable.Listener<DEVICE>,
                 Renameable.Listener<DEVICE> {}
 
@@ -163,7 +163,7 @@ public interface Device<
              * Gets the features list
              * @return the features list
              */
-            DEVICES getDeviceCombis();
+            DEVICES getDeviceGroups();
         }
 
         /**
@@ -173,7 +173,7 @@ public interface Device<
 
             private static final long serialVersionUID = -1L;
 
-            public final static String OBJECT_CLASS = "device-combi";
+            public final static String OBJECT_CLASS = "device-group";
 
             public Data() {}
 

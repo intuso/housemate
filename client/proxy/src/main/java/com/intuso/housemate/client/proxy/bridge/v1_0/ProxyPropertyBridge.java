@@ -53,6 +53,13 @@ public class ProxyPropertyBridge
         return setCommand;
     }
 
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(SET_COMMAND_ID.equals(id))
+            return setCommand;
+        return null;
+    }
+
     public interface Factory {
         ProxyPropertyBridge create(Logger logger);
     }

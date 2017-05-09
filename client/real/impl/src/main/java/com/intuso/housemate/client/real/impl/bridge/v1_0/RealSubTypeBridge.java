@@ -28,4 +28,9 @@ public class RealSubTypeBridge
     public RealTypeBridge getType() {
         return null; // todo get the type from somewhere
     }
+
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        return null;
+    }
 }

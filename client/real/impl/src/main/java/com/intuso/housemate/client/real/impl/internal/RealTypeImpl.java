@@ -31,6 +31,11 @@ public abstract class RealTypeImpl<O>
         super(logger, data, managedCollectionFactory, senderFactory);
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        return null;
+    }
+
     public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {
         return serialiseAll(serialiser, Arrays.asList(typedValues));
     }

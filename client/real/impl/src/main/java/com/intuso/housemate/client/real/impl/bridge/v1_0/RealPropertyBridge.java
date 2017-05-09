@@ -54,6 +54,13 @@ public class RealPropertyBridge
         return setCommand;
     }
 
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        if(SET_COMMAND_ID.equals(id))
+            return setCommand;
+        return null;
+    }
+
     public interface Factory {
         RealPropertyBridge create(Logger logger);
     }

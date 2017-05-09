@@ -127,6 +127,11 @@ public final class RealNodeListImpl
     }
 
     @Override
+    public com.intuso.housemate.client.api.internal.object.Object<?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public ServerBaseNode<?, ?, ?, ?> getByName(String name) {
         for (ServerBaseNode<?, ?, ?, ?> element : this)
             if (name.equalsIgnoreCase(element.getName()))

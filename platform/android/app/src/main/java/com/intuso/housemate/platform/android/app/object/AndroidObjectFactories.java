@@ -11,6 +11,8 @@ import org.slf4j.Logger;
  */
 public class AndroidObjectFactories {
 
+    private final AndroidProxyServer server;
+
     private final ManagedCollectionFactory managedCollectionFactory;
     private final Receiver.Factory receiverFactory;
     private final Sender.Factory senderFactory;
@@ -21,8 +23,8 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyCommand>> commands = new Commands();
     private final ProxyObject.Factory<AndroidProxyCondition> condition = new Condition();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyCondition>> conditions = new Conditions();
-    private final ProxyObject.Factory<AndroidProxyDeviceCombi> deviceCombi = new DeviceCombi();
-    private final ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceCombi>> deviceCombis = new DeviceCombis();
+    private final ProxyObject.Factory<AndroidProxyDeviceGroup> deviceGroup = new DeviceGroup();
+    private final ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceGroup>> deviceGroups = new DeviceGroups();
     private final ProxyObject.Factory<AndroidProxyDeviceConnected> deviceConnected = new DeviceConnected();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceConnected>> deviceConnecteds = new DeviceConnecteds();
     private final ProxyObject.Factory<AndroidProxyHardware> hardware = new Hardware();
@@ -35,8 +37,6 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyParameter>> parameters = new Parameters();
     private final ProxyObject.Factory<AndroidProxyProperty> property = new Property();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyProperty>> properties = new Properties();
-    private final ProxyObject.Factory<AndroidProxyServer> server = new Server();
-    private final ProxyObject.Factory<AndroidProxyList<AndroidProxyServer>> servers = new Servers();
     private final ProxyObject.Factory<AndroidProxySubType> subType = new SubType();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxySubType>> subTypes = new SubTypes();
     private final ProxyObject.Factory<AndroidProxyTask> task = new Task();
@@ -48,10 +48,11 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyValue> value = new Value();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyValue>> values = new Values();
 
-    public AndroidObjectFactories(ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, Sender.Factory senderFactory) {
+    public AndroidObjectFactories(ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, Sender.Factory senderFactory, AndroidProxyServer server) {
         this.managedCollectionFactory = managedCollectionFactory;
         this.receiverFactory = receiverFactory;
         this.senderFactory = senderFactory;
+        this.server = server;
     }
 
     public ProxyObject.Factory<AndroidProxyAutomation> automation() {
@@ -78,12 +79,12 @@ public class AndroidObjectFactories {
         return conditions;
     }
 
-    public ProxyObject.Factory<AndroidProxyDeviceCombi> deviceCombi() {
-        return deviceCombi;
+    public ProxyObject.Factory<AndroidProxyDeviceGroup> deviceGroup() {
+        return deviceGroup;
     }
 
-    public ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceCombi>> deviceCombis() {
-        return deviceCombis;
+    public ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceGroup>> deviceGroups() {
+        return deviceGroups;
     }
 
     public ProxyObject.Factory<AndroidProxyDeviceConnected> deviceConnected() {
@@ -132,14 +133,6 @@ public class AndroidObjectFactories {
 
     public ProxyObject.Factory<AndroidProxyList<AndroidProxyProperty>> properties() {
         return properties;
-    }
-
-    public ProxyObject.Factory<AndroidProxyServer> server() {
-        return server;
-    }
-
-    public ProxyObject.Factory<AndroidProxyList<AndroidProxyServer>> servers() {
-        return servers;
     }
 
     public ProxyObject.Factory<AndroidProxySubType> subType() {
@@ -230,19 +223,19 @@ public class AndroidObjectFactories {
         }
     }
 
-    public class DeviceCombi implements ProxyObject.Factory<AndroidProxyDeviceCombi> {
+    public class DeviceGroup implements ProxyObject.Factory<AndroidProxyDeviceGroup> {
 
         @Override
-        public AndroidProxyDeviceCombi create(Logger logger) {
-            return new AndroidProxyDeviceCombi(logger, managedCollectionFactory, receiverFactory, AndroidObjectFactories.this);
+        public AndroidProxyDeviceGroup create(Logger logger) {
+            return new AndroidProxyDeviceGroup(logger, managedCollectionFactory, receiverFactory, server, AndroidObjectFactories.this);
         }
     }
 
-    public class DeviceCombis implements ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceCombi>> {
+    public class DeviceGroups implements ProxyObject.Factory<AndroidProxyList<AndroidProxyDeviceGroup>> {
 
         @Override
-        public AndroidProxyList<AndroidProxyDeviceCombi> create(Logger logger) {
-            return new AndroidProxyList<>(logger, managedCollectionFactory, receiverFactory, deviceCombi);
+        public AndroidProxyList<AndroidProxyDeviceGroup> create(Logger logger) {
+            return new AndroidProxyList<>(logger, managedCollectionFactory, receiverFactory, deviceGroup);
         }
     }
 
@@ -339,22 +332,6 @@ public class AndroidObjectFactories {
         @Override
         public AndroidProxyList<AndroidProxyProperty> create(Logger logger) {
             return new AndroidProxyList<>(logger, managedCollectionFactory, receiverFactory, property);
-        }
-    }
-
-    public class Server implements ProxyObject.Factory<AndroidProxyServer> {
-
-        @Override
-        public AndroidProxyServer create(Logger logger) {
-            return new AndroidProxyServer(logger, managedCollectionFactory, receiverFactory, AndroidObjectFactories.this);
-        }
-    }
-
-    public class Servers implements ProxyObject.Factory<AndroidProxyList<AndroidProxyServer>> {
-
-        @Override
-        public AndroidProxyList<AndroidProxyServer> create(Logger logger) {
-            return new AndroidProxyList<>(logger, managedCollectionFactory, receiverFactory, server);
         }
     }
 

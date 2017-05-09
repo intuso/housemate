@@ -405,6 +405,35 @@ public final class RealHardwareImpl
         return devices;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(RUNNING_ID.equals(id))
+            return runningValue;
+        else if(START_ID.equals(id))
+            return startCommand;
+        else if(STOP_ID.equals(id))
+            return stopCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(DRIVER_ID.equals(id))
+            return driverProperty;
+        else if(DRIVER_LOADED_ID.equals(id))
+            return driverLoadedValue;
+        else if(COMMANDS_ID.equals(id))
+            return commands;
+        else if(PROPERTIES_ID.equals(id))
+            return properties;
+        else if(VALUES_ID.equals(id))
+            return values;
+        else if(DEVICES_ID.equals(id))
+            return devices;
+        return null;
+    }
+
     protected final void startDriver() {
         try {
             if(driver != null) {

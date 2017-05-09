@@ -147,6 +147,15 @@ public class RealCommandBridge
         return parameters;
     }
 
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        if(ENABLED_ID.equals(id))
+            return enabledValue;
+        else if(PARAMETERS_ID.equals(id))
+            return parameters;
+        return null;
+    }
+
     /**
      * Performs the command without any type values. It is not correct to use this method on a command that has parameters
      * @param listener the listener for progress of the command

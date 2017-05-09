@@ -23,4 +23,9 @@ public class RealTypeBridge
                              com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Type.Data.class, typeMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
     }
+
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        return null;
+    }
 }

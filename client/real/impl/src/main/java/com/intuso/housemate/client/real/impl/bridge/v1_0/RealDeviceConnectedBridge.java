@@ -78,4 +78,15 @@ public class RealDeviceConnectedBridge
     public RealListBridge<RealValueBridge> getValues() {
         return values;
     }
+
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(COMMANDS_ID.equals(id))
+            return commands;
+        else if(VALUES_ID.equals(id))
+            return values;
+        return null;
+    }
 }

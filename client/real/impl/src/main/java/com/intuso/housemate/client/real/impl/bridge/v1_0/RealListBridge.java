@@ -83,6 +83,11 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     }
 
     @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

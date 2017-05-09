@@ -41,6 +41,11 @@ public final class RealSubTypeImpl<O>
         return type;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        return null;
+    }
+
     public interface Factory {
         RealSubTypeImpl<?> create(Logger logger,
                                   @Assisted("id") String id,

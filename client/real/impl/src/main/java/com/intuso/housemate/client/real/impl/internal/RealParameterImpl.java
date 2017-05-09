@@ -41,6 +41,11 @@ public final class RealParameterImpl<O>
         return type;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        return null;
+    }
+
     public interface Factory {
         RealParameterImpl<?> create(Logger logger,
                                     @Assisted("id") String id,

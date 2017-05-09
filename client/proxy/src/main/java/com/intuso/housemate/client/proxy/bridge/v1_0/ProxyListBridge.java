@@ -83,6 +83,11 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     }
 
     @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

@@ -43,7 +43,7 @@ public interface List<ELEMENT,
      *
      * Listener interface for lists
      */
-    interface Listener<OBJECT, LIST extends List<OBJECT, ?>>
+    interface Listener<OBJECT, LIST extends List<? extends OBJECT, ?>>
             extends Object.Listener {
 
         /**

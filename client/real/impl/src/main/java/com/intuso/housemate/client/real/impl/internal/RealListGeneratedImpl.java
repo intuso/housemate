@@ -104,6 +104,11 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
+    public RealObject<?, ?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

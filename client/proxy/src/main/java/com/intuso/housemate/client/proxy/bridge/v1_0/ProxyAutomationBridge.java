@@ -9,7 +9,6 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -187,5 +186,34 @@ public class ProxyAutomationBridge
     @Override
     public ProxyListBridge<ProxyTaskBridge> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
+    }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(RUNNING_ID.equals(id))
+            return runningValue;
+        else if(START_ID.equals(id))
+            return startCommand;
+        else if(STOP_ID.equals(id))
+            return stopCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(CONDITIONS_ID.equals(id))
+            return conditions;
+        else if(ADD_CONDITION_ID.equals(id))
+            return addConditionCommand;
+        else if(SATISFIED_TASKS_ID.equals(id))
+            return satisfiedTasks;
+        else if(ADD_SATISFIED_TASK_ID.equals(id))
+            return addSatisfiedTaskCommand;
+        else if(UNSATISFIED_TASKS_ID.equals(id))
+            return unsatisfiedTasks;
+        else if(ADD_UNSATISFIED_TASK_ID.equals(id))
+            return addUnsatisfiedTaskCommand;
+        return null;
     }
 }

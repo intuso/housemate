@@ -94,6 +94,17 @@ public class RealNodeBridge
         return addHardwareCommand;
     }
 
+    @Override
+    public RealObjectBridge<?, ?, ?> getChild(String id) {
+        if(ADD_HARDWARE_ID.equals(id))
+            return addHardwareCommand;
+        else if(HARDWARES_ID.equals(id))
+            return hardwares;
+        else if(TYPES_ID.equals(id))
+            return types;
+        return null;
+    }
+
     public interface Factory {
         RealNodeBridge create(@Assisted("id") String id, Logger logger, @Assisted("versionName") String versionName);
     }

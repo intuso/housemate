@@ -337,6 +337,29 @@ public final class RealConditionImpl
         childConditions.add(condition);
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(DRIVER_ID.equals(id))
+            return driverProperty;
+        else if(DRIVER_LOADED_ID.equals(id))
+            return driverLoadedValue;
+        else if(PROPERTIES_ID.equals(id))
+            return properties;
+        else if(CONDITIONS_ID.equals(id))
+            return childConditions;
+        else if(ADD_CONDITION_ID.equals(id))
+            return addConditionCommand;
+        else if(SATISFIED_ID.equals(id))
+            return satisfiedValue;
+        return null;
+    }
+
     protected final void remove() {
         removeCallback.remove(this);
     }

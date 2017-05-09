@@ -1,9 +1,12 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
+import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
@@ -18,7 +21,7 @@ public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
         RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
-        RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl>,
+        RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl>,
         RealListPersistedImpl<User.Data, RealUserImpl>,
         RealNodeListImpl,
         RealServerImpl>,
@@ -30,7 +33,7 @@ public class RealServerImpl
     private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl> deviceCombis;
+    private final RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> deviceGroups;
     private final RealCommandImpl addSystemCommand;
     private final RealNodeListImpl nodes;
     private final RealListPersistedImpl<User.Data, RealUserImpl> users;
@@ -42,7 +45,7 @@ public class RealServerImpl
                           Sender.Factory senderFactory,
                           RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
-                          RealListPersistedImpl.Factory<Device.Combi.Data, RealDeviceCombiImpl> deviceCombisFactory,
+                          RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl> deviceGroupsFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
@@ -66,17 +69,17 @@ public class RealServerImpl
                 "Add automation",
                 this,
                 automations.getRemoveCallback());
-        this.deviceCombis = deviceCombisFactory.create(ChildUtil.logger(logger, DEVICE_COMBIS_ID),
-                DEVICE_COMBIS_ID,
-                "Device Combis",
-                "Device Combis");
+        this.deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID),
+                DEVICE_GROUPS_ID,
+                "Device Groups",
+                "Device Groups");
         this.addSystemCommand = addSystemCommandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ADD_SYSTEM_ID,
                 "Add system",
                 "Add system",
                 this,
-                deviceCombis.getRemoveCallback());
+                deviceGroups.getRemoveCallback());
         this.users = usersFactory.create(ChildUtil.logger(logger, USERS_ID),
                 USERS_ID,
                 "Users",
@@ -93,7 +96,7 @@ public class RealServerImpl
                 "Nodes",
                 "Nodes");
         this.devices = new CombinationList<>("device", "Devices", "Devices", managedCollectionFactory);
-        this.devices.addList(deviceCombis);
+        this.devices.addList(deviceGroups);
         // todo, listener to nodes, hardwares, devices, and all them all to this
         nodes.add(node);
     }
@@ -104,7 +107,7 @@ public class RealServerImpl
         deviceReferences.init(ChildUtil.name(name, DEVICES_ID));
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
-        deviceCombis.init(ChildUtil.name(name, DEVICE_COMBIS_ID));
+        deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID));
         addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
         users.init(ChildUtil.name(name, USERS_ID));
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
@@ -117,7 +120,7 @@ public class RealServerImpl
         deviceReferences.uninit();
         automations.uninit();
         addAutomationCommand.uninit();
-        deviceCombis.uninit();
+        deviceGroups.uninit();
         addSystemCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
@@ -148,8 +151,8 @@ public class RealServerImpl
         automations.add(automation);
     }
 
-    public RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl> getDeviceCombis() {
-        return deviceCombis;
+    public RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> getDeviceGroups() {
+        return deviceGroups;
     }
 
     @Override
@@ -158,8 +161,8 @@ public class RealServerImpl
     }
 
     @Override
-    public void addSystem(RealDeviceCombiImpl system) {
-        deviceCombis.add(system);
+    public void addSystem(RealDeviceGroupImpl system) {
+        deviceGroups.add(system);
     }
 
     @Override
@@ -189,6 +192,47 @@ public class RealServerImpl
 
     public void stop() {
         uninit();
+    }
+
+    @Override
+    public Object<?> getChild(String id) {
+        if(ADD_AUTOMATION_ID.equals(id))
+            return addAutomationCommand;
+        else if(ADD_SYSTEM_ID.equals(id))
+            return addSystemCommand;
+        else if(ADD_USER_ID.equals(id))
+            return addUserCommand;
+        else if(DEVICES_ID.equals(id))
+            return deviceReferences;
+        else if(AUTOMATIONS_ID.equals(id))
+            return automations;
+        else if(DEVICE_GROUPS_ID.equals(id))
+            return deviceGroups;
+        else if(NODES_ID.equals(id))
+            return nodes;
+        else if(USERS_ID.equals(id))
+            return users;
+        return null;
+    }
+
+    public <T extends Object<?>> T find(String[] path, boolean fail) {
+        Object<?> current = this;
+        for(int i = 0; i < path.length; i++) {
+            current = current.getChild(path[i]);
+            if(current == null) {
+                if(fail) {
+                    if (i == 0)
+                        throw new HousemateException("Could not find " + path[i] + " for server");
+                    else {
+                        String[] subPath = new String[i];
+                        System.arraycopy(path, 0, subPath, 0, i);
+                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on("/").join(subPath));
+                    }
+                } else
+                    return null;
+            }
+        }
+        return (T) current;
     }
 
     public static class Service extends AbstractIdleService {

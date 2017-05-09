@@ -154,6 +154,11 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     }
 
     @Override
+    public RealObject<?, ?> getChild(String id) {
+        return get(id);
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

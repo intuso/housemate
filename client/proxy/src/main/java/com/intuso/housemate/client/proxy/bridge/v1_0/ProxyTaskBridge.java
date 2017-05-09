@@ -125,4 +125,23 @@ public class ProxyTaskBridge
     public ProxyListBridge<ProxyPropertyBridge> getProperties() {
         return properties;
     }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(DRIVER_ID.equals(id))
+            return driverProperty;
+        else if(DRIVER_LOADED_ID.equals(id))
+            return driverLoadedValue;
+        else if(PROPERTIES_ID.equals(id))
+            return properties;
+        else if(EXECUTING_ID.equals(id))
+            return executingValue;
+        return null;
+    }
 }

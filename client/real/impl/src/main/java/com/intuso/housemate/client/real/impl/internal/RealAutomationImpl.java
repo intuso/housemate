@@ -340,6 +340,35 @@ public final class RealAutomationImpl
     }
 
     @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(RUNNING_ID.equals(id))
+            return runningValue;
+        else if(START_ID.equals(id))
+            return startCommand;
+        else if(STOP_ID.equals(id))
+            return stopCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(CONDITIONS_ID.equals(id))
+            return conditions;
+        else if(ADD_CONDITION_ID.equals(id))
+            return addConditionCommand;
+        else if(SATISFIED_TASKS_ID.equals(id))
+            return satisfiedTasks;
+        else if(ADD_SATISFIED_TASK_ID.equals(id))
+            return addSatisfiedTaskCommand;
+        else if(UNSATISFIED_TASKS_ID.equals(id))
+            return unsatisfiedTasks;
+        else if(ADD_UNSATISFIED_TASK_ID.equals(id))
+            return addUnsatisfiedTaskCommand;
+        return null;
+    }
+
+    @Override
     public void renamed(RealConditionImpl condition, String oldName, String newName) {
         // do nothing for now
     }

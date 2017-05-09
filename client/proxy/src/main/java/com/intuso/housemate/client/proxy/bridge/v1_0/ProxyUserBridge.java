@@ -75,4 +75,15 @@ public class ProxyUserBridge
     public ProxyPropertyBridge getEmailProperty() {
         return emailProperty;
     }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(EMAIL_ID.equals(id))
+            return emailProperty;
+        return null;
+    }
 }

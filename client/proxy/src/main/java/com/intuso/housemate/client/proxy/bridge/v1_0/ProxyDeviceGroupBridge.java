@@ -2,8 +2,9 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceCombiMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceGroupMapper;
 import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -12,20 +13,20 @@ import org.slf4j.Logger;
 /**
  * Created by tomc on 28/11/16.
  */
-public class ProxyDeviceCombiBridge
-        extends ProxyDeviceBridge<com.intuso.housemate.client.v1_0.api.object.Device.Combi.Data,
-        Device.Combi.Data,
-        Device.Combi.Listener<? super ProxyDeviceCombiBridge>,
-        ProxyDeviceCombiBridge>
-        implements Device.Combi<
+public class ProxyDeviceGroupBridge
+        extends ProxyDeviceBridge<com.intuso.housemate.client.v1_0.api.object.Device.Group.Data,
+        Device.Group.Data,
+        Device.Group.Listener<? super ProxyDeviceGroupBridge>,
+        ProxyDeviceGroupBridge>
+        implements Device.Group<
         ProxyCommandBridge,
         ProxyCommandBridge,
         ProxyCommandBridge,
         ProxyValueBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
-        ProxyListBridge<ProxyPropertyBridge>,
-        ProxyDeviceCombiBridge> {
+        List<Device<?, ?, ?, ?, ?>, ?>,
+        ProxyDeviceGroupBridge> {
 
     private final ProxyCommandBridge renameCommand;
     private final ProxyCommandBridge removeCommand;
@@ -42,8 +43,8 @@ public class ProxyDeviceCombiBridge
     private final ProxyCommandBridge addVolumeDeviceCommand;
 
     @Inject
-    protected ProxyDeviceCombiBridge(@Assisted Logger logger,
-                                     DeviceCombiMapper deviceCombiMapper,
+    protected ProxyDeviceGroupBridge(@Assisted Logger logger,
+                                     DeviceGroupMapper deviceGroupMapper,
                                      ManagedCollectionFactory managedCollectionFactory,
                                      com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
                                      Sender.Factory v1_0SenderFactory,
@@ -52,7 +53,7 @@ public class ProxyDeviceCombiBridge
                                      Factory<ProxyListBridge<ProxyCommandBridge>> commandsFactory,
                                      Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                      Factory<ProxyListBridge<ProxyPropertyBridge>> devicesFactory) {
-        super(logger, Device.Combi.Data.class, deviceCombiMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, commandsFactory, valuesFactory);
+        super(logger, Group.Data.class, deviceGroupMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, commandsFactory, valuesFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
@@ -84,43 +85,43 @@ public class ProxyDeviceCombiBridge
                 ChildUtil.name(internalName, ERROR_ID)
         );
         playbackDevices.init(
-                ChildUtil.name(versionName, Device.Combi.PLAYBACK),
+                ChildUtil.name(versionName, Group.PLAYBACK),
                 ChildUtil.name(internalName, PLAYBACK)
         );
         addPlaybackDeviceCommand.init(
-                ChildUtil.name(versionName, Device.Combi.ADD_PLAYBACK),
+                ChildUtil.name(versionName, Group.ADD_PLAYBACK),
                 ChildUtil.name(internalName, ADD_PLAYBACK)
         );
         powerDevices.init(
-                ChildUtil.name(versionName, Device.Combi.POWER),
+                ChildUtil.name(versionName, Group.POWER),
                 ChildUtil.name(internalName, POWER)
         );
         addPowerDeviceCommand.init(
-                ChildUtil.name(versionName, Device.Combi.ADD_POWER),
+                ChildUtil.name(versionName, Group.ADD_POWER),
                 ChildUtil.name(internalName, ADD_POWER)
         );
         runDevices.init(
-                ChildUtil.name(versionName, Device.Combi.RUN),
+                ChildUtil.name(versionName, Group.RUN),
                 ChildUtil.name(internalName, RUN)
         );
         addRunDeviceCommand.init(
-                ChildUtil.name(versionName, Device.Combi.ADD_RUN),
+                ChildUtil.name(versionName, Group.ADD_RUN),
                 ChildUtil.name(internalName, ADD_RUN)
         );
         temperatureSensorDevices.init(
-                ChildUtil.name(versionName, Device.Combi.TEMPERATURE_SENSOR),
+                ChildUtil.name(versionName, Group.TEMPERATURE_SENSOR),
                 ChildUtil.name(internalName, TEMPERATURE_SENSOR)
         );
         addTemperatureSensorDeviceCommand.init(
-                ChildUtil.name(versionName, Device.Combi.ADD_TEMPERATURE_SENSOR),
+                ChildUtil.name(versionName, Group.ADD_TEMPERATURE_SENSOR),
                 ChildUtil.name(internalName, ADD_TEMPERATURE_SENSOR)
         );
         volumeDevices.init(
-                ChildUtil.name(versionName, Device.Combi.VOLUME),
+                ChildUtil.name(versionName, Group.VOLUME),
                 ChildUtil.name(internalName, VOLUME)
         );
         addVolumeDeviceCommand.init(
-                ChildUtil.name(versionName, Device.Combi.ADD_VOLUME),
+                ChildUtil.name(versionName, Group.ADD_VOLUME),
                 ChildUtil.name(internalName, ADD_VOLUME)
         );
     }
@@ -159,8 +160,8 @@ public class ProxyDeviceCombiBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyPropertyBridge> getPlaybackDevices() {
-        return playbackDevices;
+    public List<Device<?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
     @Override
@@ -169,8 +170,8 @@ public class ProxyDeviceCombiBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyPropertyBridge> getPowerDevices() {
-        return powerDevices;
+    public List<Device<?, ?, ?, ?, ?>, ?> getPowerDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
     @Override
@@ -179,8 +180,8 @@ public class ProxyDeviceCombiBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyPropertyBridge> getRunDevices() {
-        return runDevices;
+    public List<Device<?, ?, ?, ?, ?>, ?> getRunDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
     @Override
@@ -189,8 +190,8 @@ public class ProxyDeviceCombiBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyPropertyBridge> getTemperatureSensorDevices() {
-        return temperatureSensorDevices;
+    public List<Device<?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
     @Override
@@ -199,12 +200,41 @@ public class ProxyDeviceCombiBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyPropertyBridge> getVolumeDevices() {
-        return volumeDevices;
+    public List<Device<?, ?, ?, ?, ?>, ?> getVolumeDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
     @Override
     public ProxyCommandBridge getAddVolumeDeviceCommand() {
         return addVolumeDeviceCommand;
+    }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(PLAYBACK.equals(id))
+            return playbackDevices;
+        else if(ADD_PLAYBACK.equals(id))
+            return addPlaybackDeviceCommand;
+        else if(POWER.equals(id))
+            return powerDevices;
+        else if(ADD_POWER.equals(id))
+            return addPowerDeviceCommand;
+        else if(RUN.equals(id))
+            return runDevices;
+        else if(ADD_RUN.equals(id))
+            return addRunDeviceCommand;
+        else if(TEMPERATURE_SENSOR.equals(id))
+            return temperatureSensorDevices;
+        else if(ADD_TEMPERATURE_SENSOR.equals(id))
+            return addTemperatureSensorDeviceCommand;
+        else if(VOLUME.equals(id))
+            return volumeDevices;
+        else if(ADD_VOLUME.equals(id))
+            return addVolumeDeviceCommand;
+        return super.getChild(id);
     }
 }

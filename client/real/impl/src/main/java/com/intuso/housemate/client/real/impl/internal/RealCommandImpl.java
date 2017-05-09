@@ -123,6 +123,15 @@ public final class RealCommandImpl
     }
 
     @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(ENABLED_ID.equals(id))
+            return enabledValue;
+        else if(PARAMETERS_ID.equals(id))
+            return parameters;
+        return null;
+    }
+
+    @Override
     public void perform(Type.InstanceMap values, PerformListener<? super RealCommandImpl> listener) {
         try {
             listener.commandStarted(this);

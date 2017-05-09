@@ -130,6 +130,15 @@ public class ProxyCommandBridge
         }
     }
 
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(ENABLED_ID.equals(id))
+            return enabledValue;
+        else if(PARAMETERS_ID.equals(id))
+            return parameters;
+        return null;
+    }
+
     public boolean isEnabled() {
         return enabledValue != null
                 && enabledValue.getValue() != null

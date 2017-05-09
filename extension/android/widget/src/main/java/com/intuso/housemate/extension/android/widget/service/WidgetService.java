@@ -114,7 +114,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = getObjectFactories().server().create(getLogger());
+        server = createServer(getLogger());
         server.start();
         updateStatus();
 
@@ -206,7 +206,7 @@ public class WidgetService extends HousemateService {
             status = Status.NO_NETWORK;
         else if(server == null)
             status = Status.NOT_CONNECTED;
-        else if (getServer().getDeviceCombis() == null)
+        else if (getServer().getDeviceGroups() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;

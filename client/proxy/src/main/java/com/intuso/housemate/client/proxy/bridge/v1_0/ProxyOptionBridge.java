@@ -48,4 +48,11 @@ public class ProxyOptionBridge
     public ProxyListBridge<ProxySubTypeBridge> getSubTypes() {
         return subTypes;
     }
+
+    @Override
+    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+        if(SUB_TYPES_ID.equals(id))
+            return subTypes;
+        return null;
+    }
 }

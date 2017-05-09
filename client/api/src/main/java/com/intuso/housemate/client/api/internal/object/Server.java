@@ -4,20 +4,20 @@ public interface Server<
         COMMAND extends Command<?, ?, ?, ?>,
         DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        COMBI_DEVICES extends List<? extends Device.Combi<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        DEVICE_GROUPS extends List<? extends Device.Group<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
         NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
-        SERVER extends Server<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
+        SERVER extends Server<COMMAND, DEVICES, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER>>
         extends Object<Server.Listener<? super SERVER>>,
         Device.Container<DEVICES>,
-        Device.Combi.Container<COMBI_DEVICES>,
+        Device.Group.Container<DEVICE_GROUPS>,
         Automation.Container<AUTOMATIONS>,
         User.Container<USERS>,
         Node.Container<NODES> {
 
     String DEVICES_ID = "device";
     String AUTOMATIONS_ID = "automation";
-    String DEVICE_COMBIS_ID = "system";
+    String DEVICE_GROUPS_ID = "device-group";
     String USERS_ID = "user";
     String NODES_ID = "node";
     String ADD_AUTOMATION_ID = "add-automation";

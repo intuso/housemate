@@ -3,17 +3,12 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.api.internal.type.ObjectReference;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
-import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -96,6 +91,13 @@ public class RealPropertyImpl<O>
         return setCommand;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(SET_COMMAND_ID.equals(id))
+            return setCommand;
+        return null;
+    }
+
     public interface Factory {
         RealPropertyImpl<?> create(Logger logger,
                                    @Assisted("id") String id,
@@ -105,30 +107,5 @@ public class RealPropertyImpl<O>
                                    @Assisted("min") int minValues,
                                    @Assisted("max") int maxValues,
                                    Iterable values);
-    }
-
-    public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> {
-
-        private final RealPropertyImpl.Factory factory;
-        private final TypeRepository typeRepository;
-
-        @Inject
-        public LoadPersistedDeviceObjectReference(Factory factory, TypeRepository typeRepository) {
-            this.factory = factory;
-            this.typeRepository = typeRepository;
-        }
-
-        @Override
-        public RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>> create(Logger logger, Property.Data data, RealListPersistedImpl.RemoveCallback<RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> removeCallback) {
-            return (RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>)
-                    factory.create(logger,
-                            data.getId(),
-                            data.getName(),
-                            data.getDescription(),
-                            typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.class))),
-                            1,
-                            1,
-                            Lists.newArrayList());
-        }
     }
 }

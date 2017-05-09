@@ -53,6 +53,13 @@ public final class RealOptionImpl
         return subTypes;
     }
 
+    @Override
+    public RealObject<?, ?> getChild(String id) {
+        if(SUB_TYPES_ID.equals(id))
+            return subTypes;
+        return null;
+    }
+
     public interface Factory {
         RealOptionImpl create(Logger logger,
                               @Assisted("id") String id,
