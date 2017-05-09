@@ -10,7 +10,7 @@ public interface Property<
             TYPE extends Type<?>,
             SET_COMMAND extends Command<?, ?, ?, ?>,
             PROPERTY extends Property<?, ?, ?, ?>>
-        extends ValueBase<DATA_TYPE, TYPE, Property.Listener<? super PROPERTY>, PROPERTY> {
+        extends ValueBase<Property.Data, DATA_TYPE, TYPE, Property.Listener<? super PROPERTY>, PROPERTY> {
 
     String SET_COMMAND_ID = "set-command";
     String VALUE_PARAM = "value";

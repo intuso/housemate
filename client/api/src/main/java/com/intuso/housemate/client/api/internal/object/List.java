@@ -7,7 +7,7 @@ import com.intuso.utilities.collection.ManagedCollection;
  */
 public interface List<ELEMENT,
         LIST extends List<ELEMENT, ?>>
-        extends Object<List.Listener<? super ELEMENT, ? super LIST>>,
+        extends Object<List.Data, List.Listener<? super ELEMENT, ? super LIST>>,
         Iterable<ELEMENT> {
 
     /**

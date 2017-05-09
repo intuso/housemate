@@ -11,7 +11,7 @@ public abstract class ProxyObjectBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
         INTERNAL_DATA extends Object.Data,
         LISTENER extends Object.Listener>
-        implements Object<LISTENER> {
+        implements Object<INTERNAL_DATA, LISTENER> {
 
     protected final Logger logger;
     protected VERSION_DATA data;
@@ -72,6 +72,11 @@ public abstract class ProxyObjectBridge<
     }
 
     protected void uninitChildren() {}
+
+    @Override
+    public INTERNAL_DATA getData() {
+        return dataMapper.map(data);
+    }
 
     @Override
     public String getObjectClass() {

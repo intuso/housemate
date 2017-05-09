@@ -13,7 +13,7 @@ public interface Command<
             PARAMETERS extends List<? extends Parameter<?, ?>, ?>,
             COMMAND extends Command<?, ?, ?, ?>>
         extends
-        Object<Command.Listener<? super COMMAND>>,
+        Object<Command.Data, Command.Listener<? super COMMAND>>,
         Parameter.Container<PARAMETERS> {
 
     String ENABLED_ID = "enabled";

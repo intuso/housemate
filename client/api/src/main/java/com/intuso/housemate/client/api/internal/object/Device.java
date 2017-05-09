@@ -10,13 +10,14 @@ import com.intuso.housemate.client.api.internal.Renameable;
  * @param <DEVICE> the type of the feature
  */
 public interface Device<
+        DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
         RENAME_COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
         VALUES extends List<? extends Value<?, ?, ?>, ?>,
-        DEVICE extends Device<LISTENER, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>>
+        DEVICE extends Device<DATA, LISTENER, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>>
         extends
-        Object<LISTENER>,
+        Object<DATA, LISTENER>,
         Renameable<RENAME_COMMAND>,
         Command.Container<COMMANDS>,
         Value.Container<VALUES> {
@@ -28,14 +29,14 @@ public interface Device<
      *
      * Listener interface for features
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?>> extends Object.Listener,
             Renameable.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of features
      */
-    interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?>>> {
+    interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the features list
@@ -67,7 +68,7 @@ public interface Device<
             VALUES extends List<? extends Value<?, ?, ?>, ?>,
             DEVICE extends Connected<RENAME_COMMAND, COMMANDS, VALUES, DEVICE>>
             extends
-            Device<Connected.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>  {
+            Device<Connected.Data, Connected.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>  {
 
         /**
          *
@@ -79,7 +80,7 @@ public interface Device<
          *
          * Interface to show that the implementing object has a list of features
          */
-        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?>>> {
+        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
             /**
              * Gets the features list
@@ -116,10 +117,10 @@ public interface Device<
             ERROR_VALUE extends Value<?, ?, ?>,
             COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
             VALUES extends List<? extends Value<?, ?, ?>, ?>,
-            DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>,
+            DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?>, ?>,
             DEVICE extends Group<RENAME_COMMAND, REMOVE_COMMAND, ADD_COMMAND, ERROR_VALUE, COMMANDS, VALUES, DEVICES, DEVICE>>
             extends
-            Device<Group.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>,
+            Device<Group.Data, Group.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DEVICE>,
             Failable<ERROR_VALUE>,
             Removeable<REMOVE_COMMAND> {
 
@@ -157,7 +158,7 @@ public interface Device<
          *
          * Interface to show that the implementing object has a list of features
          */
-        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?>>> {
+        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
             /**
              * Gets the features list

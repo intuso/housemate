@@ -7,7 +7,7 @@ import com.intuso.utilities.collection.ManagedCollection;
  * Reference for an object containing the object's path, and the object if it exists
  * @param <O>
  */
-public interface ObjectReference<O extends Object<?>> {
+public interface ObjectReference<O extends Object<?, ?>> {
 
     /**
      * Gets the path
@@ -23,7 +23,7 @@ public interface ObjectReference<O extends Object<?>> {
 
     ManagedCollection.Registration addListener(Listener<O> listener);
 
-    interface Listener<O extends Object<?>> {
+    interface Listener<O extends Object<?, ?>> {
         void available(O object);
         void unavailable();
     }

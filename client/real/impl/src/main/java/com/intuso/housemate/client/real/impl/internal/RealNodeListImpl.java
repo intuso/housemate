@@ -127,7 +127,7 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public com.intuso.housemate.client.api.internal.object.Object<?> getChild(String id) {
+    public com.intuso.housemate.client.api.internal.object.Object<?, ?> getChild(String id) {
         return get(id);
     }
 

@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * Created by tomc on 02/05/17.
  */
-public class ConvertingList<FROM extends Object<?>, TO extends Object<?>> implements List<TO, ConvertingList<FROM, TO>> {
+public class ConvertingList<FROM extends Object<?, ?>, TO extends Object<?, ?>> implements List<TO, ConvertingList<FROM, TO>> {
 
     private final List<? extends FROM, ?> list;
     private final Converter<? super FROM, ? extends TO> converter;
@@ -15,6 +15,11 @@ public class ConvertingList<FROM extends Object<?>, TO extends Object<?>> implem
     public ConvertingList(List<? extends FROM, ?> list, Converter<? super FROM, ? extends TO> converter) {
         this.list = list;
         this.converter = converter;
+    }
+
+    @Override
+    public Data getData() {
+        return list.getData();
     }
 
     @Override
@@ -55,7 +60,7 @@ public class ConvertingList<FROM extends Object<?>, TO extends Object<?>> implem
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         return get(id);
     }
 

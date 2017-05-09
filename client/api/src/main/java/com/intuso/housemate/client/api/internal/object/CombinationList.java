@@ -10,18 +10,14 @@ import java.util.NoSuchElementException;
 /**
  * Created by tomc on 02/05/17.
  */
-public class CombinationList<T extends Object<?>> implements List<T, CombinationList<T>>, List.Listener<T, List<T, ?>> {
+public class CombinationList<T extends Object<?, ?>> implements List<T, CombinationList<T>>, List.Listener<T, List<T, ?>> {
 
-    private final String id;
-    private final String name;
-    private final String description;
+    private final List.Data data;
     private final ManagedCollection<List.Listener<? super T, ? super CombinationList<T>>> listeners;
     private final java.util.List<List<? extends T, ?>> lists = new ArrayList<>();
 
-    public CombinationList(String id, String name, String description, ManagedCollectionFactory managedCollectionFactory) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+    public CombinationList(List.Data data, ManagedCollectionFactory managedCollectionFactory) {
+        this.data = data;
         this.listeners = managedCollectionFactory.create();
     }
 
@@ -34,23 +30,28 @@ public class CombinationList<T extends Object<?>> implements List<T, Combination
     }
 
     @Override
+    public Data getData() {
+        return data;
+    }
+
+    @Override
     public String getObjectClass() {
         return Data.OBJECT_CLASS;
     }
 
     @Override
     public String getId() {
-        return id;
+        return data.getId();
     }
 
     @Override
     public String getName() {
-        return name;
+        return data.getName();
     }
 
     @Override
     public String getDescription() {
-        return description;
+        return data.getDescription();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class CombinationList<T extends Object<?>> implements List<T, Combination
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         return get(id);
     }
 

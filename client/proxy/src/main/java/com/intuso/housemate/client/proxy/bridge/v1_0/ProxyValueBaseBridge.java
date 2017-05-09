@@ -2,7 +2,6 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
-import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
@@ -15,12 +14,12 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public abstract class ProxyValueBaseBridge<
-        VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
-        INTERNAL_DATA extends Object.Data,
+        VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.ValueBase.Data,
+        INTERNAL_DATA extends ValueBase.Data,
         LISTENER extends ValueBase.Listener<? super VALUE>,
         VALUE extends ProxyValueBaseBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VALUE>>
         extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER>
-        implements ValueBase<Type.Instances, ProxyTypeBridge, LISTENER, VALUE> {
+        implements ValueBase<INTERNAL_DATA, Type.Instances, ProxyTypeBridge, LISTENER, VALUE> {
 
     private final TypeInstancesMapper typeInstancesMapper;
 

@@ -8,9 +8,11 @@ import java.io.Serializable;
  * Base interface for all other object interfaces
  * @param <LISTENER> the type of the object's listeners
  */
-public interface Object<LISTENER extends Object.Listener> {
+public interface Object<DATA extends Object.Data, LISTENER extends Object.Listener> {
 
     String VERSION = "internal";
+
+    DATA getData();
 
     /**
      * Gets the object's type
@@ -43,7 +45,7 @@ public interface Object<LISTENER extends Object.Listener> {
      */
     ManagedCollection.Registration addObjectListener(LISTENER listener);
 
-    Object<?> getChild(String id);
+    Object<?, ?> getChild(String id);
 
     /**
      *

@@ -5,7 +5,7 @@ package com.intuso.housemate.client.api.internal.object;
  */
 public interface Option<SUB_TYPES extends List<? extends SubType<?, ?>, ?>,
         OPTION extends Option<?, ?>>
-        extends Object<Option.Listener<? super OPTION>>, SubType.Container<SUB_TYPES> {
+        extends Object<Option.Data, Option.Listener<? super OPTION>>, SubType.Container<SUB_TYPES> {
 
     String SUB_TYPES_ID = "sub-type";
 

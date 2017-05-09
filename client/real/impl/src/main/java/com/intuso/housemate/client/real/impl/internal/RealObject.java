@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 
 public abstract class RealObject<DATA extends Object.Data,
         LISTENER extends com.intuso.housemate.client.api.internal.object.Object.Listener>
-        implements Object<LISTENER> {
+        implements Object<DATA, LISTENER> {
 
     public final static String REAL = "real";
 
@@ -75,7 +75,7 @@ public abstract class RealObject<DATA extends Object.Data,
         return listeners.add(listener);
     }
 
-    protected final DATA getData() {
+    public final DATA getData() {
         return data;
     }
 

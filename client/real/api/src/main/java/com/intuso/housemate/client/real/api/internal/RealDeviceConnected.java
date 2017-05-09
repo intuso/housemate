@@ -10,7 +10,7 @@ public interface RealDeviceConnected<
         COMMANDS extends RealList<? extends RealCommand<?, ?, ?>, ?>,
         VALUES extends RealList<? extends RealValue<?, ?, ?>, ?>,
         DEVICE extends RealDeviceConnected<COMMAND, COMMANDS, VALUES, DEVICE>>
-        extends RealDevice<Device.Connected.Listener<? super DEVICE>, COMMAND, COMMANDS, VALUES, DEVICE>,
+        extends RealDevice<Device.Connected.Data, Device.Connected.Listener<? super DEVICE>, COMMAND, COMMANDS, VALUES, DEVICE>,
             Device.Connected<COMMAND, COMMANDS, VALUES, DEVICE> {
 
     interface Container<DEVICE extends RealDeviceConnected<?, ?, ?, ?>, DEVICES extends RealList<? extends DEVICE, ?>> extends Device.Connected.Container<DEVICES> {

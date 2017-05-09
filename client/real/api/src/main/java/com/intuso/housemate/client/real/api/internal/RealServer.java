@@ -11,4 +11,4 @@ public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         USERS extends RealList<? extends RealUser<?, ?, ?>, ?>,
         NODES extends RealList<? extends Node<?, ?, ?, ?>, ?>,
         SERVER extends RealServer<COMMAND, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER>>
-        extends Server<COMMAND, List<? extends Device<?, ?, ?, ?, ?>, ?>, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER> {}
+        extends Server<COMMAND, List<? extends Device<?, ?, ?, ?, ?, ?>, ?>, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER> {}

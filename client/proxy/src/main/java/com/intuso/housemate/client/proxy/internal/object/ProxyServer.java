@@ -41,7 +41,7 @@ public abstract class ProxyServer<
 
     private final ManagedCollectionFactory managedCollectionFactory;
     private final Map<List<?, ?>, Map<String, Map<ObjectReferenceImpl, Integer>>> missingReferences = new HashMap<>();
-    private final Map<Object<?>, java.util.List<ObjectReferenceImpl>> references = Maps.newHashMap();
+    private final Map<Object<?, ?>, java.util.List<ObjectReferenceImpl>> references = Maps.newHashMap();
 
     private final VALUES deviceReferences;
     private final ConvertingList<VALUE, DEVICE> devices;
@@ -52,14 +52,14 @@ public abstract class ProxyServer<
     private final USERS users;
     private final COMMAND addUserCommand;
     private final NODES nodes;
-    private List.Listener<Object<?>, List<? extends Object<?>, ?>> missingReferenceLoader = new List.Listener<Object<?>, List<? extends Object<?>, ?>>() {
+    private List.Listener<Object<?, ?>, List<? extends Object<?, ?>, ?>> missingReferenceLoader = new List.Listener<Object<?, ?>, List<? extends Object<?, ?>, ?>>() {
         @Override
-        public void elementAdded(List<? extends Object<?>, ?> list, Object<?> element) {
+        public void elementAdded(List<? extends Object<?, ?>, ?> list, Object<?, ?> element) {
             updateMissingReferences(list, element.getId());
         }
 
         @Override
-        public void elementRemoved(List<? extends Object<?>, ?> list, Object<?> element) {
+        public void elementRemoved(List<? extends Object<?, ?>, ?> list, Object<?, ?> element) {
             // todo should update references at or below this object to say that the object has been removed!
         }
     };
@@ -206,7 +206,7 @@ public abstract class ProxyServer<
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
         else if(ADD_SYSTEM_ID.equals(id))
@@ -234,8 +234,8 @@ public abstract class ProxyServer<
         return find(path, true);
     }
 
-    public <T extends Object<?>> T find(String[] path, boolean fail) {
-        Object<?> current = this;
+    public <T extends Object<?, ?>> T find(String[] path, boolean fail) {
+        Object<?, ?> current = this;
         for(int i = 0; i < path.length; i++) {
             current = current.getChild(path[i]);
             if(current == null) {
@@ -254,13 +254,13 @@ public abstract class ProxyServer<
         return (T) current;
     }
 
-    public <O extends Object<?>> ObjectReference<O> reference(String[] path) {
+    public <O extends Object<?, ?>> ObjectReference<O> reference(String[] path) {
         ObjectReferenceImpl<O> reference = new ObjectReferenceImpl<>(managedCollectionFactory, path);
         reference(this, reference, 0);
         return reference;
     }
 
-    protected void reference(Object<?> object, ObjectReferenceImpl reference, int pathIndex) {
+    protected void reference(Object<?, ?> object, ObjectReferenceImpl reference, int pathIndex) {
         if(pathIndex == reference.getPath().length) {
             if(!references.containsKey(object))
                 references.put(object, Lists.<ObjectReferenceImpl>newArrayList());
@@ -268,11 +268,11 @@ public abstract class ProxyServer<
             reference.setObject(this);
         } else {
             String id = reference.getPath()[pathIndex];
-            Object<?> child = object.getChild(id);
+            Object<?, ?> child = object.getChild(id);
             if(child != null)
                 reference(child, reference, pathIndex + 1);
             else if(object instanceof List) {
-                List<? extends Object<?>, ?> list = (List<? extends Object<?>, ?>) object;
+                List<? extends Object<?, ?>, ?> list = (List<? extends Object<?, ?>, ?>) object;
                 if(!missingReferences.containsKey(list))
                     missingReferences.put(list, new HashMap<String, Map<ObjectReferenceImpl, Integer>>());
                 if(!missingReferences.get(list).containsKey(id))

@@ -5,15 +5,15 @@ package com.intuso.housemate.webserver.api.server.v1_0.model;
  */
 public class Client {
 
-    private User owner;
+    private String ownerId;
     private String id;
     private String secret;
     private String name;
 
     public Client() {}
 
-    public Client(User owner, String id, String secret, String name) {
-        this.owner = owner;
+    public Client(String ownerId, String id, String secret, String name) {
+        this.ownerId = ownerId;
         this.id = id;
         this.secret = secret;
         this.name = name;
@@ -43,16 +43,16 @@ public class Client {
         this.name = name;
     }
 
-    public User getOwner() {
-        return owner;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
-    public static Client from(com.intuso.housemate.webserver.database.model.Client client) {
-        return client == null ? null : new Client(User.from(client.getOwner()),
+    public static Client from(com.intuso.utilities.webserver.oauth.model.Client client) {
+        return client == null ? null : new Client(client.getOwnerId(),
                 client.getId(),
                 client.getSecret(),
                 client.getName());

@@ -18,7 +18,8 @@ public abstract class ProxyDeviceBridge<VERSION_DATA extends com.intuso.housemat
         LISTENER extends Device.Listener<? super DEVICE>,
         DEVICE extends ProxyDeviceBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, DEVICE>>
         extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER>
-        implements Device<LISTENER,
+        implements Device<INTERNAL_DATA,
+        LISTENER,
         ProxyCommandBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,

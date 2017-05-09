@@ -290,7 +290,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(REMOVE_ID.equals(id))
             return removeCommand;
         else if(ERROR_ID.equals(id))

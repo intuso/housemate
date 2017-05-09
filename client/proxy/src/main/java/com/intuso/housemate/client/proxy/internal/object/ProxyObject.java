@@ -12,7 +12,7 @@ import org.slf4j.Logger;
  */
 public abstract class ProxyObject<
         DATA extends Object.Data,
-        LISTENER extends Object.Listener> implements Object<LISTENER> {
+        LISTENER extends Object.Listener> implements Object<DATA, LISTENER> {
 
     public final static String PROXY = "proxy";
 

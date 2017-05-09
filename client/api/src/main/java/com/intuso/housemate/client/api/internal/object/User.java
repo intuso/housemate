@@ -10,7 +10,7 @@ public interface User<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         PROPERTY extends Property<?, ?, ?, ?>,
         USER extends User<RENAME_COMMAND, REMOVE_COMMAND, PROPERTY, USER>>
-        extends Object<User.Listener<? super USER>>, Renameable<RENAME_COMMAND>, Removeable<REMOVE_COMMAND> {
+        extends Object<User.Data, User.Listener<? super USER>>, Renameable<RENAME_COMMAND>, Removeable<REMOVE_COMMAND> {
 
     String EMAIL_ID = "email";
 

@@ -9,5 +9,5 @@ public interface RealProperty<O,
         TYPE extends RealType<O, ?>,
         COMMAND extends RealCommand<?, ?, ?>,
         PROPERTY extends RealProperty<O, TYPE, COMMAND, PROPERTY>>
-        extends RealValueBase<O, TYPE, Property.Listener<? super PROPERTY>, PROPERTY>,
+        extends RealValueBase<Property.Data, O, TYPE, Property.Listener<? super PROPERTY>, PROPERTY>,
         Property<O, TYPE, COMMAND, PROPERTY> {}

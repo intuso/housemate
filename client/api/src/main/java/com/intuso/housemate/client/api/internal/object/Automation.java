@@ -26,7 +26,7 @@ public interface Automation<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         TASKS extends List<? extends Task<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         AUTOMATION extends Automation<RENAME_COMMAND, REMOVE_COMMAND, RUNNING_VALUE, START_STOP_COMMAND, ERROR_VALUE, ADD_COMMMAND, CONDITIONS, TASKS, AUTOMATION>>
         extends
-        Object<Automation.Listener<? super AUTOMATION>>,
+        Object<Automation.Data, Automation.Listener<? super AUTOMATION>>,
         Renameable<RENAME_COMMAND>,
         com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,

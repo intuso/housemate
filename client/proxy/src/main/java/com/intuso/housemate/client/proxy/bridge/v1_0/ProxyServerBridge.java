@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 public class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>>
         implements Server<ProxyCommandBridge,
-        List<Device<?, ?, ?, ?, ?>, ?>,
+        List<Device<?, ?, ?, ?, ?, ?>, ?>,
         ProxyListBridge<ProxyAutomationBridge>,
         ProxyListBridge<ProxyDeviceGroupBridge>,
         ProxyListBridge<ProxyUserBridge>,
@@ -120,7 +120,7 @@ public class ProxyServerBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -164,7 +164,7 @@ public class ProxyServerBridge
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
         else if(ADD_SYSTEM_ID.equals(id))

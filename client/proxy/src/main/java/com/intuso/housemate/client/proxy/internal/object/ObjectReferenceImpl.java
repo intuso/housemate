@@ -9,7 +9,7 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
  * Reference for an object containing the object's path, and the object if it exists
  * @param <O>
  */
-public class ObjectReferenceImpl<O extends Object<?>> implements ObjectReference<O> {
+public class ObjectReferenceImpl<O extends Object<?, ?>> implements ObjectReference<O> {
 
     private final ManagedCollection<Listener<O>> listeners;
 

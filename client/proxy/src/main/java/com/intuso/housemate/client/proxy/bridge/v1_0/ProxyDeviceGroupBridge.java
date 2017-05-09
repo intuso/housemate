@@ -25,7 +25,7 @@ public class ProxyDeviceGroupBridge
         ProxyValueBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
-        List<Device<?, ?, ?, ?, ?>, ?>,
+        List<Device<?, ?, ?, ?, ?, ?>, ?>,
         ProxyDeviceGroupBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -160,7 +160,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -170,7 +170,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getPowerDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getPowerDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -180,7 +180,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getRunDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getRunDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -190,7 +190,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -200,7 +200,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?>, ?> getVolumeDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?>, ?> getVolumeDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 

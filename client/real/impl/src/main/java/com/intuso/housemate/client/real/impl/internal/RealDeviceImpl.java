@@ -20,7 +20,7 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
         DEVICE extends RealDeviceImpl<DATA, LISTENER, DEVICE>>
         extends RealObject<DATA, LISTENER>
-        implements RealDevice<LISTENER, RealCommandImpl, RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, DEVICE> {
+        implements RealDevice<DATA, LISTENER, RealCommandImpl, RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, DEVICE> {
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
 
@@ -116,7 +116,7 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(COMMANDS_ID.equals(id))

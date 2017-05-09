@@ -5,7 +5,7 @@ public interface Node<
         TYPES extends List<? extends Type<?>, ?>,
         HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         NODE extends Node<COMMAND, TYPES, HARDWARES, NODE>>
-        extends Object<Node.Listener<? super NODE>>,
+        extends Object<Node.Data, Node.Listener<? super NODE>>,
         Type.Container<TYPES>,
         Hardware.Container<HARDWARES> {
 

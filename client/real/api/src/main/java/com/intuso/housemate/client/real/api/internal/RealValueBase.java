@@ -8,11 +8,13 @@ import java.util.List;
  * @param <O> the type of the value's value
  * @param <VALUE> the type of the value
  */
-public interface RealValueBase<O,
+public interface RealValueBase<DATA extends ValueBase.Data,
+        O,
         TYPE extends RealType<O, ?>,
         LISTENER extends ValueBase.Listener<? super VALUE>,
-        VALUE extends RealValueBase<O, TYPE, LISTENER, VALUE>>
-        extends ValueBase<O,
+        VALUE extends RealValueBase<DATA, O, TYPE, LISTENER, VALUE>>
+        extends ValueBase<DATA,
+        O,
         TYPE,
         LISTENER,
         VALUE> {

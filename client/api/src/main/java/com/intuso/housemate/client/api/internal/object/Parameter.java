@@ -5,7 +5,7 @@ package com.intuso.housemate.client.api.internal.object;
  */
 public interface Parameter<TYPE extends Type<?>,
             PARAMETER extends Parameter<TYPE, PARAMETER>>
-        extends Object<Parameter.Listener<? super PARAMETER>> {
+        extends Object<Parameter.Data, Parameter.Listener<? super PARAMETER>> {
 
     /**
      * Gets the type id of the parameter

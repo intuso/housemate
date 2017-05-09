@@ -29,7 +29,7 @@ public class RealServerImpl
         AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
-    private final CombinationList<Device<?, ?, ?, ?, ?>> devices;
+    private final CombinationList<Device<?, ?, ?, ?, ?, ?>> devices;
     private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
@@ -95,7 +95,7 @@ public class RealServerImpl
                 NODES_ID,
                 "Nodes",
                 "Nodes");
-        this.devices = new CombinationList<>("device", "Devices", "Devices", managedCollectionFactory);
+        this.devices = new CombinationList<>(new List.Data("device", "Devices", "Devices"), managedCollectionFactory);
         this.devices.addList(deviceGroups);
         // todo, listener to nodes, hardwares, devices, and all them all to this
         nodes.add(node);
@@ -132,7 +132,7 @@ public class RealServerImpl
     }
 
     @Override
-    public CombinationList<Device<?, ?, ?, ?, ?>> getDevices() {
+    public CombinationList<Device<?, ?, ?, ?, ?, ?>> getDevices() {
         return devices;
     }
 
@@ -195,7 +195,7 @@ public class RealServerImpl
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
         else if(ADD_SYSTEM_ID.equals(id))
@@ -215,8 +215,8 @@ public class RealServerImpl
         return null;
     }
 
-    public <T extends Object<?>> T find(String[] path, boolean fail) {
-        Object<?> current = this;
+    public <T extends Object<?, ?>> T find(String[] path, boolean fail) {
+        Object<?, ?> current = this;
         for(int i = 0; i < path.length; i++) {
             current = current.getChild(path[i]);
             if(current == null) {

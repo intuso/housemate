@@ -19,9 +19,9 @@ import java.util.List;
 public abstract class RealValueBaseImpl<O,
             DATA extends ValueBase.Data,
             LISTENER extends ValueBase.Listener<? super VALUE>,
-            VALUE extends RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE>>
+            VALUE extends RealValueBase<DATA, O, RealTypeImpl<O>, LISTENER, VALUE>>
         extends RealObject<DATA, LISTENER>
-        implements RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE> {
+        implements RealValueBase<DATA, O, RealTypeImpl<O>, LISTENER, VALUE> {
 
     private final Receiver.Factory receiverFactory;
 

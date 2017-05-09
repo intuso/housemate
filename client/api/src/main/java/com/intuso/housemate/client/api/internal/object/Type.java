@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super TYPE>> {
+public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Listener<? super TYPE>> {
 
     /**
      *

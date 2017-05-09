@@ -19,7 +19,7 @@ public abstract class ProxyDevice<
         VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         DEVICE extends ProxyDevice<DATA, LISTENER, COMMAND, COMMANDS, VALUES, DEVICE>>
         extends ProxyObject<DATA, LISTENER>
-        implements Device<LISTENER, COMMAND, COMMANDS, VALUES, DEVICE>,
+        implements Device<DATA, LISTENER, COMMAND, COMMANDS, VALUES, DEVICE>,
         ProxyRenameable<COMMAND> {
 
     private final COMMAND renameCommand;
@@ -74,7 +74,7 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public Object<?> getChild(String id) {
+    public Object<?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(COMMANDS_ID.equals(id))
