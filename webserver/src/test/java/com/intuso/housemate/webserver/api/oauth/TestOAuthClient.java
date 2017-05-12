@@ -30,7 +30,7 @@ public class TestOAuthClient {
     private final String TOKEN = "ad5327e7dd891ec6a99d7396abf8e575";
     private final String DEVICE = "812576b6-c073-4118-8ef0-d04b47ff30cb";
 
-    private final String AUTHZ_URL = "http://localhost:8080/api/oauth/1.0/authz";
+    private final String AUTHORIZE_URL = "http://localhost:8080/api/oauth/1.0/authorize";
     private final String TOKEN_URL = "http://localhost:8080/api/oauth/1.0/token";
     private final String LIST_URL = "http://localhost:8080/api/server/1.0/power?limit=-1";
     private final String ON_URL = "http://localhost:8080/api/server/1.0/power/" + DEVICE + "/on";
@@ -40,7 +40,7 @@ public class TestOAuthClient {
     public void getAuthCode() throws OAuthSystemException {
 
         OAuthClientRequest authRequest = OAuthClientRequest
-                .authorizationLocation(AUTHZ_URL)
+                .authorizationLocation(AUTHORIZE_URL)
                 .setResponseType(ResponseType.CODE.toString())
                 .setClientId(CLIENT_ID)
                 .setRedirectURI(LIST_URL)

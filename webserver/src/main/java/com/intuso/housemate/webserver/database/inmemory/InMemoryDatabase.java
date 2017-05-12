@@ -26,7 +26,7 @@ public  class InMemoryDatabase implements Database {
     private final TreeMap<String, User> users = Maps.newTreeMap();
     private final Map<String, String> userPasswordHashes = Maps.newHashMap();
     private final TreeMap<String, Client> clients = Maps.newTreeMap();
-    private final Map<String, Authorisation> authzGrants = Maps.newHashMap();
+    private final Map<String, Authorisation> authorisations = Maps.newHashMap();
     private final Map<String, Token> tokens = Maps.newHashMap();
 
     @Inject
@@ -104,17 +104,17 @@ public  class InMemoryDatabase implements Database {
 
     @Override
     public void updateAuthorisation(Authorisation authorisation) {
-        authzGrants.put(authorisation.getCode(), authorisation);
+        authorisations.put(authorisation.getCode(), authorisation);
     }
 
     @Override
     public Authorisation getAuthorisation(String code) {
-        return authzGrants.get(code);
+        return authorisations.get(code);
     }
 
     @Override
     public void deleteAuthorisation(String code) {
-        authzGrants.remove(code);
+        authorisations.remove(code);
     }
 
     @Override
