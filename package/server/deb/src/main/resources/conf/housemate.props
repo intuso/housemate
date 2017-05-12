@@ -10,5 +10,6 @@ broker.web-console-webapp=/etc/intuso/housemate/server/activemq/webconsole
 
 #webserver.host=0.0.0.0
 #webserver.port=4601
+web.ui.directory=/var/www/intuso/housemate/server
 
 plugins.dir=/usr/share/intuso/housemate/server/plugins

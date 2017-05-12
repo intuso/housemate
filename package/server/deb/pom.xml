@@ -157,6 +157,19 @@
                                     </mapper>
                                 </data>
 
+                                <!-- Web interface -->
+                                <data>
+                                    <src>../../../../housemate-frontend/build</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/var/www/intuso/housemate/server</prefix>
+                                        <user>hm</user>
+                                        <group>nogroup</group>
+                                        <filemode>755</filemode>
+                                    </mapper>
+                                </data>
+
                                 <!-- Log dir -->
                                 <data>
                                     <type>template</type>
