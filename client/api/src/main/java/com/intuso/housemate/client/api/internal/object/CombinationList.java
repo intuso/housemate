@@ -23,7 +23,7 @@ public class CombinationList<T extends Object<?, ?>> implements List<T, Combinat
 
     public void addList(List<? extends T, ?> list) {
         lists.add(list);
-        ((List<T, ?>)list).addObjectListener(this);
+        ((List<T, ?>)list).addObjectListener(this, true);
         for(Listener<? super T, ? super CombinationList<T>> listener : listeners)
             for(T element : list)
                 listener.elementAdded(this, element);

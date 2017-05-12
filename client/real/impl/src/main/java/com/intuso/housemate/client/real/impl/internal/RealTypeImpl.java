@@ -40,7 +40,7 @@ public abstract class RealTypeImpl<O>
         return serialiseAll(serialiser, Arrays.asList(typedValues));
     }
 
-    public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, List<O> typedValues) {
+    public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, Iterable<O> typedValues) {
         if(typedValues == null)
             return null;
         Instances result = new Instances();

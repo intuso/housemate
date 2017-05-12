@@ -4,13 +4,17 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
+import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
+import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.api.internal.RealServer;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
@@ -29,6 +33,10 @@ public class RealServerImpl
         AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
+    private final ProxyServer.Simple proxyServer;
+    private final RealValueImpl.Factory valueFactory;
+    private final RealTypeImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>> deviceReferenceType;
+
     private final CombinationList<Device<?, ?, ?, ?, ?, ?>> devices;
     private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
@@ -42,8 +50,11 @@ public class RealServerImpl
     @Inject
     public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
+                          ProxyServer.Simple proxyServer,
+                          TypeRepository typeRepository,
                           Sender.Factory senderFactory,
                           RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
+                          RealValueImpl.Factory valueFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl> deviceGroupsFactory,
                           RealNodeListImpl.Factory nodesFactory,
@@ -53,6 +64,9 @@ public class RealServerImpl
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
+        this.proxyServer = proxyServer;
+        this.valueFactory = valueFactory;
+        this.deviceReferenceType = typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.class)));
         this.deviceReferences = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),
                 DEVICES_ID,
                 "Devices",
@@ -97,7 +111,7 @@ public class RealServerImpl
                 "Nodes");
         this.devices = new CombinationList<>(new List.Data("device", "Devices", "Devices"), managedCollectionFactory);
         this.devices.addList(deviceGroups);
-        // todo, listener to nodes, hardwares, devices, and all them all to this
+        nodes.addObjectListener(new NodeListListener(), true);
         nodes.add(node);
     }
 
@@ -233,6 +247,71 @@ public class RealServerImpl
             }
         }
         return (T) current;
+    }
+
+    private class NodeListListener implements List.Listener<Node<?, ?, ?, ?>, RealNodeListImpl> {
+
+        @Override
+        public void elementAdded(RealNodeListImpl list, Node<?, ?, ?, ?> node) {
+            node.getHardwares().addObjectListener(new HardwareListListener(node.getId()), true);
+        }
+
+        @Override
+        public void elementRemoved(RealNodeListImpl list, Node<?, ?, ?, ?> node) {
+            // todo remove the hardwares listener
+            // todo remove all devices from the references list
+        }
+    }
+
+    private class HardwareListListener implements List.Listener<Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+
+        private final String nodeId;
+
+        private HardwareListListener(String nodeId) {
+            this.nodeId = nodeId;
+        }
+
+        @Override
+        public void elementAdded(List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?> list, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
+            RealServerImpl.this.devices.addList(hardware.getDeviceConnecteds());
+            hardware.getDeviceConnecteds().addObjectListener(new DeviceListListener(nodeId, hardware.getId()), true);
+        }
+
+        @Override
+        public void elementRemoved(List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?> list, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
+            // todo remove hardware devices list from the server devices combination list.
+            // todo remove the devices listener
+            // todo remove all devices from the references list
+        }
+    }
+
+    private class DeviceListListener implements List.Listener<Device<?, ?, ?, ?, ?, ?>, List<? extends Device<?, ?, ?, ?, ?, ?>, ?>> {
+
+        private final String nodeId;
+        private final String hardwareId;
+
+        private DeviceListListener(String nodeId, String hardwareId) {
+            this.nodeId = nodeId;
+            this.hardwareId = hardwareId;
+        }
+
+        @Override
+        public void elementAdded(List<? extends Device<?, ?, ?, ?, ?, ?>, ?> list, Device<?, ?, ?, ?, ?, ?> device) {
+            deviceReferences.add((RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>) valueFactory.create(
+                    ChildUtil.logger(logger, DEVICES_ID, device.getId()),
+                    device.getId(),
+                    device.getName(),
+                    device.getDescription(),
+                    deviceReferenceType,
+                    1,
+                    1,
+                    Lists.newArrayList(proxyServer.reference(new String[] {NODES_ID, nodeId, Node.HARDWARES_ID, hardwareId, Hardware.DEVICES_ID, device.getId()}))));
+        }
+
+        @Override
+        public void elementRemoved(List<? extends Device<?, ?, ?, ?, ?, ?>, ?> list, Device<?, ?, ?, ?, ?, ?> device) {
+            deviceReferences.remove(device.getId());
+        }
     }
 
     public static class Service extends AbstractIdleService {

@@ -2,8 +2,6 @@ package com.intuso.housemate.client.real.api.internal;
 
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 
-import java.util.List;
-
 /**
  * @param <O> the type of the value's value
  * @param <VALUE> the type of the value
@@ -31,5 +29,5 @@ public interface RealValueBase<DATA extends ValueBase.Data,
      * Sets the object representation of this value
      * @param values the new values
      */
-    void setValues(List<O> values);
+    void setValues(Iterable<O> values);
 }

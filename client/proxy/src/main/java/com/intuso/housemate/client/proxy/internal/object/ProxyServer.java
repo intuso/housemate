@@ -226,11 +226,11 @@ public abstract class ProxyServer<
         return null;
     }
 
-    public <OBJECT extends ProxyObject<?, ?>> ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> findConverter() {
+    public <OBJECT extends Object<?, ?>> ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> findConverter() {
         return new ReferenceLoaderConverter<>();
     }
 
-    public <T extends ProxyObject<?, ?>> T find(String[] path) {
+    public <T extends Object<?, ?>> T find(String[] path) {
         return find(path, true);
     }
 
@@ -263,7 +263,7 @@ public abstract class ProxyServer<
     protected void reference(Object<?, ?> object, ObjectReferenceImpl reference, int pathIndex) {
         if(pathIndex == reference.getPath().length) {
             if(!references.containsKey(object))
-                references.put(object, Lists.<ObjectReferenceImpl>newArrayList());
+                references.put(object, Lists.newArrayList());
             references.get(object).add(reference);
             reference.setObject(this);
         } else {
@@ -274,9 +274,9 @@ public abstract class ProxyServer<
             else if(object instanceof List) {
                 List<? extends Object<?, ?>, ?> list = (List<? extends Object<?, ?>, ?>) object;
                 if(!missingReferences.containsKey(list))
-                    missingReferences.put(list, new HashMap<String, Map<ObjectReferenceImpl, Integer>>());
+                    missingReferences.put(list, new HashMap<>());
                 if(!missingReferences.get(list).containsKey(id))
-                    missingReferences.get(list).put(id, new HashMap<ObjectReferenceImpl, Integer>());
+                    missingReferences.get(list).put(id, new HashMap<>());
                 missingReferences.get(list).get(id).put(reference, pathIndex);
                 list.addObjectListener(missingReferenceLoader);
             }
@@ -341,7 +341,7 @@ public abstract class ProxyServer<
         }
     }
 
-    private class ReferenceLoaderConverter<OBJECT extends ProxyObject<?, ?>> implements ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> {
+    private class ReferenceLoaderConverter<OBJECT extends Object<?, ?>> implements ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> {
 
         @Override
         public OBJECT apply(ProxyValue<?, ?> element) {
