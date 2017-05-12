@@ -2,3 +2,4 @@
 
 echo "Creating Intuso Housemate user hm"
 adduser --system --no-create-home hm
+usermod -a -G dialout hm
