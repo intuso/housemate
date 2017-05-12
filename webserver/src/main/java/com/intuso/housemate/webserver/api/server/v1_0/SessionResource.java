@@ -58,6 +58,7 @@ public class SessionResource {
                 database.setUserPassword(user.getId(), password);
                 HttpSession session = request.getSession(true);
                 SessionUtils.setUser(session, user);
+                com.intuso.utilities.webserver.oauth.SessionUtils.setUserId(session, user.getId());
                 session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 1 week
                 response.setSuccess(true);
             }
@@ -97,6 +98,7 @@ public class SessionResource {
                 if(response.isCorrectPassword()) {
                     HttpSession session = request.getSession(true);
                     SessionUtils.setUser(session, user);
+                    com.intuso.utilities.webserver.oauth.SessionUtils.setUserId(session, user.getId());
                     session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 1 week
                 }
             }

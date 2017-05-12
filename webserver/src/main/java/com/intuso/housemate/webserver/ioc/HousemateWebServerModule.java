@@ -2,6 +2,7 @@ package com.intuso.housemate.webserver.ioc;
 
 import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
+import com.intuso.housemate.webserver.LoadUserFilter;
 import com.intuso.housemate.webserver.api.ioc.ApiModule;
 import com.intuso.housemate.webserver.database.Database;
 import com.intuso.housemate.webserver.ui.ioc.UIModule;
@@ -53,6 +54,10 @@ public class HousemateWebServerModule extends ServletModule {
                 .build());
 
         bind(String.class).annotatedWith(SessionCookie.class).toInstance(cookieName);
+
+        // pass every request through the load user filter to get the user from the oauth user id
+        bind(LoadUserFilter.class).in(Scopes.SINGLETON);
+        filter("/*").through(LoadUserFilter.class);
 
         // pass every request through the server filter to set the server in the session
         bind(serverFilter).in(Scopes.SINGLETON);
