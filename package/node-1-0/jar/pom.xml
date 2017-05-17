@@ -21,6 +21,13 @@
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 
+        <!-- JMS Messaging -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-1-0-messaging-jms</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+
         <!-- Properties, log etc modules -->
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -1,6 +1,7 @@
 package com.intuso.housemate.pkg.node.v1_0.jar.ioc;
 
 import com.google.inject.AbstractModule;
+import com.intuso.housemate.client.v1_0.messaging.jms.ioc.JMSMessagingModule;
 import com.intuso.housemate.platform.pc.ioc.PCClientModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
@@ -23,6 +24,7 @@ public class NodePackageJarModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new PCClientModule(properties)); // log and properties provider
+        install(new JMSMessagingModule.Javabin());
         install(new NodeModule()); // main server module
     }
 }
