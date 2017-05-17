@@ -111,7 +111,9 @@ public abstract class RealValueBaseImpl<O,
         this.values = values;
         if(valueSender != null) {
             try {
-                valueSender.send(RealTypeImpl.serialiseAll(type, values), true);
+                Type.Instances serialisedValues = RealTypeImpl.serialiseAll(type, values);
+                valueSender.send(serialisedValues, true);
+                logger.trace("Set to {}", serialisedValues);
             } catch (Throwable t) {
                 logger.error("Failed to send value update", t);
             }

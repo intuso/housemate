@@ -39,10 +39,12 @@ public abstract class ProxyValueBase<
         super.initChildren(name);
         valueReceiver = receiverFactory.create(logger, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
         value = valueReceiver.getMessage();
+        logger.trace("Got initial value {}", value);
         valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
                     @Override
                     public void onMessage(Type.Instances instances, boolean wasPersisted) {
                         value = instances;
+                        logger.trace("Got new value {}", value);
                         // todo call object listeners
                     }
                 });

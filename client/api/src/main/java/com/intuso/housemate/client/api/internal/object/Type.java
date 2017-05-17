@@ -229,6 +229,27 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
             this.childValues = childValues;
         }
 
+        public void append(String indent, StringBuilder stringBuilder) {
+            stringBuilder.append("{\n").append(indent).append("\"value\": ");
+            if(value != null)
+                stringBuilder.append("\"").append(value).append("\"");
+            else
+                stringBuilder.append("null");
+            stringBuilder.append("\n").append(indent).append("\"children\": ");
+            if(childValues != null)
+                childValues.append(indent + "\t", stringBuilder);
+            else
+                stringBuilder.append("{}");
+            stringBuilder.append("\n").append(indent).append("}");
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            append("", sb);
+            return sb.toString();
+        }
+
         @Override
         public boolean equals(java.lang.Object o) {
             if(o == null || !(o instanceof Instance))
@@ -243,11 +264,6 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
                 if(!other.childValues.getChildren().containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.getChildren().get(entry.getKey())))
                     return false;
             return true;
-        }
-
-        @Override
-        public String toString() {
-            return value + " and " + childValues.getChildren().size() + " children";
         }
     }
 
@@ -270,6 +286,26 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
 
         public void setChildren(Map<String, Instances> children) {
             this.children = children == null || children instanceof Serializable ? children : new HashMap<>(children);
+        }
+
+        public void append(String indent, StringBuilder stringBuilder) {
+            stringBuilder.append("{");
+            if(children != null && children.size() > 0) {
+                stringBuilder.append("\n").append(indent);
+                for (Map.Entry<String, Instances> entry : children.entrySet()) {
+                    stringBuilder.append("\"").append(entry.getKey()).append("\": ");
+                    entry.getValue().append(indent + "\t", stringBuilder);
+                    stringBuilder.append("\n").append(indent);
+                }
+            }
+            stringBuilder.append("}");
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            append("", sb);
+            return sb.toString();
         }
 
         @Override
@@ -309,6 +345,21 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
 
         public String getFirstValue() {
             return elements.size() > 0 && elements.get(0) != null ? elements.get(0).getValue() : null;
+        }
+
+        public void append(String indent, StringBuilder stringBuilder) {
+            stringBuilder.append("]");
+            if(elements != null && elements.size() > 0)
+                for(Instance element : elements)
+                    element.append(indent, stringBuilder);
+            stringBuilder.append("]");
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            append("", sb);
+            return sb.toString();
         }
 
         @Override
