@@ -44,15 +44,15 @@ public class Main {
 
         Injector injector = Guice.createInjector(new NodePackageJarModule(properties));
 
-        logger.debug("Starting node");
+        logger.info("Starting node");
         final ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                logger.debug("Stopping node");
+                logger.info("Stopping node");
                 serviceManager.stopAsync();
                 serviceManager.awaitStopped();
-                logger.debug("Stopped node");
+                logger.info("Stopped node");
             }
         });
         serviceManager.startAsync();
@@ -61,7 +61,7 @@ public class Main {
         // detect any hardware now that everything is started
         injector.getInstance(PluginHost.class).addV1_0Listener(injector.getInstance(HardwareDetectorPluginListener.class), true);
 
-        logger.debug("Started node");
+        logger.info("Started node");
     }
 
     private void loadSharedJNILibs() {
