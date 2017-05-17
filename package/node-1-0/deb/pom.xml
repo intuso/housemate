@@ -31,7 +31,37 @@
             </resource>
         </resources>
 
-        <plugins>
+        <plugins><!-- Copy dependency configs/resources in -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.0</version>
+
+                <!-- Copy plugins in -->
+                <execution>
+                    <id>copy</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>copy</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.directory}/plugins</outputDirectory>
+                        <artifactItems>
+
+                            <!-- RFXtrx434 -->
+                            <artifactItem>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>housemate-extension-plugin-rfxcom-hardware</artifactId>
+                                <version>${project.version}</version>
+                                <classifier>jar-with-dependencies</classifier>
+                                <overWrite>true</overWrite>
+                            </artifactItem>
+                        </artifactItems>
+                    </configuration>
+                </execution>
+
+            </plugin>
+
             <plugin>
                 <artifactId>jdeb</artifactId>
                 <groupId>org.vafer</groupId>
@@ -47,6 +77,8 @@
                             <deb>${project.build.directory}/housemate-node-${project.version}.deb</deb>
                             <changesOut>${project.build.directory}/housemate-node-${project.version}.changes</changesOut>
                             <dataSet>
+
+                                <!-- Main node jar with all deps in it -->
                                 <data>
                                     <src>${project.basedir}/../jar/target/housemate-package-node-1-0-jar-${project.version}-jar-with-dependencies.jar</src>
                                     <type>file</type>
@@ -58,17 +90,21 @@
                                         <filemode>744</filemode>
                                     </mapper>
                                 </data>
+
+                                <!-- Config files -->
                                 <data>
                                     <src>${project.build.directory}/classes/conf</src>
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/etc/intuso/housemate</prefix>
+                                        <prefix>/etc/intuso/housemate/node</prefix>
                                         <user>hm</user>
                                         <group>nogroup</group>
                                         <filemode>744</filemode>
                                     </mapper>
                                 </data>
+
+                                <!-- Log dir -->
                                 <data>
                                     <type>template</type>
                                     <paths>
@@ -81,6 +117,21 @@
                                         <filemode>755</filemode>
                                     </mapper>
                                 </data>
+
+                                <!-- Plugins -->
+                                <data>
+                                    <src>${project.build.directory}/plugins</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/intuso/housemate/server/plugins</prefix>
+                                        <user>hm</user>
+                                        <group>nogroup</group>
+                                        <filemode>744</filemode>
+                                    </mapper>
+                                </data>
+
+                                <!-- The systemctl service -->
                                 <data>
                                     <src>${project.build.directory}/classes/systemctl/housemate-node.service</src>
                                     <type>file</type>

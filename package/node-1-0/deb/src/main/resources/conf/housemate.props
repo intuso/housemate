@@ -1,0 +1,8 @@
+node.id=my-new-node
+node.name=My New Node
+node.description=My New Node
+
+server.host=some.other.machine
+server.port=4600
+
+plugins.dir=/usr/share/intuso/housemate/node/plugins
