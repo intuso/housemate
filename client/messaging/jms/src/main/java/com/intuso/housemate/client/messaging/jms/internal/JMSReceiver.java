@@ -41,6 +41,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     @Override
     public T getMessage() {
         try {
+            logger.trace("Getting message from {}", destination);
             Message persisted = consumer.receiveNoWait();
             return persisted == null ? null : messageConverter.fromMessage(persisted, tClass);
         } catch (JMSException e) {
@@ -50,12 +51,14 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
 
     @Override
     public Iterator<T> getMessages() {
+        logger.trace("Getting messages from {}", destination);
         return new ConsumerIterator();
     }
 
     @Override
     public void listen(Listener<T> listener) {
         try {
+            logger.trace("Listening for messages on {}", destination);
             MessageListener messageListener = new MessageListenerImpl(listener);
             Message message;
             while ((message = consumer.receiveNoWait()) != null)
@@ -97,6 +100,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
             logger.trace("Received message on {}", destination);
             T object = messageConverter.fromMessage(message, tClass);
             if(object != null) {
+                logger.trace("Deserialised message on {} as {}", destination, object);
                 try {
                     listener.onMessage(object, message.getBooleanProperty(MessageConstants.STORE));
                 } catch (JMSException e) {
@@ -139,6 +143,10 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
             try {
                 Message persisted = consumer.receiveNoWait();
                 next = persisted == null ? null : messageConverter.fromMessage(persisted, tClass);
+                if(next != null)
+                    logger.trace("Got {} from {}", next, destination);
+                else
+                    logger.trace("No more messages on {}", destination);
             } catch(JMSException e) {
                 throw new MessagingException("Failed to get next persisted message", e);
             }
