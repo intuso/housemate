@@ -2,28 +2,38 @@ package com.intuso.housemate.webserver.ui.ioc;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.intuso.housemate.webserver.ui.UIServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
+
+import java.io.File;
 
 /**
  * Created by tomc on 18/05/17.
  */
-public class UIHandlerProvider implements Provider<ServletContextHandler> {
+public class UIHandlerProvider implements Provider<ContextHandler> {public final static String HOUSEMATE_CONFIG_DIR = "conf.dir";
 
-    private final UIServlet uiServlet;
+    public final static String UI_ROOT = "web.ui.directory";
+
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(UI_ROOT, defaultProperties.get(HOUSEMATE_CONFIG_DIR) + File.separator + "ui");
+    }
+
+    private final PropertyRepository properties;
 
     @Inject
-    public UIHandlerProvider(UIServlet uiServlet) {
-        this.uiServlet = uiServlet;
+    public UIHandlerProvider(PropertyRepository properties) {
+        this.properties = properties;
     }
 
     @Override
-    public ServletContextHandler get() {
-        // todo should return a ResourceHandler instead!
-        ServletContextHandler servletContextHandler = new ServletContextHandler();
-        servletContextHandler.setContextPath("/");
-        servletContextHandler.addServlet(new ServletHolder(uiServlet), "/");
-        return servletContextHandler;
+    public ContextHandler get() {
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setBaseResource(Resource.newResource(new File(properties.get(UI_ROOT))));
+        ContextHandler contextHandler = new ContextHandler("/");
+        contextHandler.setHandler(resourceHandler);
+        return contextHandler;
     }
 }
