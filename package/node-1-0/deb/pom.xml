@@ -38,27 +38,29 @@
                 <version>3.0.0</version>
 
                 <!-- Copy plugins in -->
-                <execution>
-                    <id>copy</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>copy</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>${project.build.directory}/plugins</outputDirectory>
-                        <artifactItems>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/plugins</outputDirectory>
+                            <artifactItems>
 
-                            <!-- RFXtrx434 -->
-                            <artifactItem>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>housemate-extension-plugin-rfxcom-hardware</artifactId>
-                                <version>${project.version}</version>
-                                <classifier>jar-with-dependencies</classifier>
-                                <overWrite>true</overWrite>
-                            </artifactItem>
-                        </artifactItems>
-                    </configuration>
-                </execution>
+                                <!-- RFXtrx434 -->
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>housemate-extension-plugin-rfxcom-hardware</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jar-with-dependencies</classifier>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
 
             </plugin>
 
