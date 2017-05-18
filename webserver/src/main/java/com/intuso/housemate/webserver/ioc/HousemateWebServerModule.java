@@ -63,8 +63,10 @@ public class HousemateWebServerModule extends ServletModule {
         bind(serverFilter).in(Scopes.SINGLETON);
         filter("/*").through(serverFilter);
 
-        // add the api and ui endopints
+        // install the apis
         install(new ApiModule());
+
+        // add the ui resources
         install(new UIModule());
 
         // bind the oauth store to the database

@@ -7,6 +7,6 @@ import com.intuso.utilities.webserver.ioc.JerseyResourcesModule;
  */
 public class ServerV1_0Module extends JerseyResourcesModule {
     public ServerV1_0Module() {
-        super("/api/server/1.0/", ServerV1_0ResourceConfig.class);
+        super("/server/1.0/", ServerV1_0ResourceConfig.class);
     }
 }
