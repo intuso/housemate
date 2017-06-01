@@ -1,14 +1,17 @@
 package com.intuso.housemate.webserver.api.server.v1_0;
 
 import com.intuso.housemate.client.v1_0.api.HousemateException;
-import com.intuso.housemate.webserver.database.Database;
 import com.intuso.housemate.webserver.SessionUtils;
 import com.intuso.housemate.webserver.api.server.v1_0.model.LoginResponse;
 import com.intuso.housemate.webserver.api.server.v1_0.model.RegisterResponse;
 import com.intuso.housemate.webserver.api.server.v1_0.model.UpdateUserResponse;
+import com.intuso.housemate.webserver.database.Database;
+import org.eclipse.jetty.server.Request;
 
 import javax.inject.Inject;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -96,10 +99,23 @@ public class SessionResource {
 
                 // if it's all good, then create them a session
                 if(response.isCorrectPassword()) {
-                    HttpSession session = request.getSession(true);
-                    SessionUtils.setUser(session, user);
-                    com.intuso.utilities.webserver.oauth.SessionUtils.setUserId(session, user.getId());
-                    session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 1 week
+                    Request jettyRequest = getJettyRequest(request);
+                    if(jettyRequest != null) {
+                        // remove /api from the context so the cookie is created for the correct path!
+                        String oldContextPath = request.getContextPath();
+                        String applicationContext = oldContextPath.endsWith("/api") ? oldContextPath.substring(0, oldContextPath.length() - 4) : oldContextPath;
+                        jettyRequest.setContextPath(applicationContext);
+                        HttpSession session = request.getSession(true);
+                        SessionUtils.setUser(session, user);
+                        com.intuso.utilities.webserver.oauth.SessionUtils.setUserId(session, user.getId());
+                        session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 1 week
+                        jettyRequest.setContextPath(oldContextPath);
+                    } else {
+                        HttpSession session = request.getSession(true);
+                        SessionUtils.setUser(session, user);
+                        com.intuso.utilities.webserver.oauth.SessionUtils.setUserId(session, user.getId());
+                        session.setMaxInactiveInterval(7 * 24 * 60 * 60); // 1 week
+                    }
                 }
             }
         }
@@ -162,5 +178,14 @@ public class SessionResource {
         }
 
         return response;
+    }
+
+    private Request getJettyRequest(ServletRequest request) {
+        if(request instanceof Request)
+            return (Request) request;
+        else if(request instanceof HttpServletRequestWrapper)
+            return getJettyRequest(((HttpServletRequestWrapper) request).getRequest());
+        else
+            return null;
     }
 }

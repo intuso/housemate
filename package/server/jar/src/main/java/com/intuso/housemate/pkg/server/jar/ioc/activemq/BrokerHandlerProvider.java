@@ -11,6 +11,8 @@ import org.apache.tomcat.SimpleInstanceManager;
 import org.eclipse.jetty.annotations.ServletContainerInitializersStarter;
 import org.eclipse.jetty.apache.jsp.JettyJasperInitializer;
 import org.eclipse.jetty.plus.annotation.ContainerInitializer;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  * Created by tomc on 21/04/16.
  */
-public class BrokerHandlerProvider implements Provider<WebAppContext> {
+public class BrokerHandlerProvider implements Provider<ContextHandler> {
 
     public final static String PATH = "broker.web-console.webapp";
 
@@ -37,14 +39,15 @@ public class BrokerHandlerProvider implements Provider<WebAppContext> {
     }
 
     @Override
-    public WebAppContext get() {
-        WebAppContext context = new WebAppContext();
-        context.setContextPath("/broker");
-        context.setWar(warFile.getAbsolutePath());
-        context.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
-        context.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
-        context.addBean(new ServletContainerInitializersStarter(context), true);
-        return context;
+    public ContextHandler get() {
+        WebAppContext webApp = new WebAppContext(null, null, null, null, null, new ErrorPageErrorHandler(), 0);
+        webApp.setContextPath("/broker");
+        webApp.setDefaultsDescriptor("com/intuso/housemate/pkg/server/jar/activemq/webdefault.xml");
+        webApp.setWar(warFile.getAbsolutePath());
+        webApp.setAttribute("org.eclipse.jetty.containerInitializers", jspInitializers());
+        webApp.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
+        webApp.addBean(new ServletContainerInitializersStarter(webApp), true);
+        return webApp;
     }
 
     /**

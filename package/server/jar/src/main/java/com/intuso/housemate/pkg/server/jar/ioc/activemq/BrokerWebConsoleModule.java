@@ -3,6 +3,8 @@ package com.intuso.housemate.pkg.server.jar.ioc.activemq;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.eclipse.jetty.rewrite.handler.RedirectPatternRule;
+import org.eclipse.jetty.rewrite.handler.Rule;
 import org.eclipse.jetty.server.handler.ContextHandler;
 
 /**
@@ -17,5 +19,6 @@ public class BrokerWebConsoleModule extends AbstractModule {
     @Override
     protected void configure() {
         Multibinder.newSetBinder(binder(), ContextHandler.class).addBinding().toProvider(BrokerHandlerProvider.class);
+        Multibinder.newSetBinder(binder(), Rule.class).addBinding().toInstance(new RedirectPatternRule("/broker", "/broker/index.jsp"));
     }
 }
