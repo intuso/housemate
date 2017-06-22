@@ -10,18 +10,6 @@ public interface Value<DATA_TYPE,
         extends ValueBase<Value.Data, DATA_TYPE, TYPE, Value.Listener<? super VALUE>, VALUE> {
 
     /**
-     * Gets the value's type's id
-     * @return the value's type's id
-     */
-    TYPE getType();
-
-    /**
-     * Gets the value's value
-     * @return the value's value
-     */
-    DATA_TYPE getValue();
-
-    /**
      *
      * Listener interface for values
      */
