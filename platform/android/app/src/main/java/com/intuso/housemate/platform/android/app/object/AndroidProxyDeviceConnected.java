@@ -20,7 +20,7 @@ public class AndroidProxyDeviceConnected extends ProxyDeviceConnected<AndroidPro
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyDeviceConnected(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.commands(), factories.values());
+    protected AndroidProxyDeviceConnected(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.command(), factories.commands(), factories.values());
     }
 }

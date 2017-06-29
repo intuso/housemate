@@ -19,7 +19,7 @@ public class AndroidProxyAutomation extends ProxyAutomation<AndroidProxyCommand,
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyAutomation(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.value(), factories.conditions(), factories.tasks());
+    protected AndroidProxyAutomation(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.command(), factories.value(), factories.conditions(), factories.tasks());
     }
 }

@@ -17,7 +17,7 @@ public class AndroidProxyOption extends ProxyOption<AndroidProxyList<AndroidProx
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyOption(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.subTypes());
+    protected AndroidProxyOption(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.subTypes());
     }
 }

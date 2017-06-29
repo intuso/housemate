@@ -25,8 +25,8 @@ public class AndroidProxyHardware extends ProxyHardware<
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyHardware(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.commands(), factories.value(),
+    protected AndroidProxyHardware(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.command(), factories.commands(), factories.value(),
                 factories.values(), factories.property(), factories.properties(), factories.deviceConnecteds());
     }
 }

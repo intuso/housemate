@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
         AndroidProxyValue,
         AndroidProxyList<AndroidProxyValue>,
-        ProxyDevice<?, ?, ?, ?, ?, ?>,
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
         AndroidProxyList<AndroidProxyAutomation>,
         AndroidProxyList<AndroidProxyDeviceGroup>,
         AndroidProxyList<AndroidProxyUser>,
@@ -34,35 +34,11 @@ public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
     public AndroidProxyServer(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, Sender.Factory senderFactory) {
         super(logger, managedCollectionFactory, receiverFactory);
         factories = new AndroidObjectFactories(managedCollectionFactory, receiverFactory, senderFactory, this);
-    }
-
-    @Override
-    protected AndroidProxyCommand createCommand(Logger logger) {
-        return factories.command().create(logger);
-    }
-
-    @Override
-    protected AndroidProxyList<AndroidProxyValue> createValues(Logger logger) {
-        return factories.values().create(logger);
-    }
-
-    @Override
-    protected AndroidProxyList<AndroidProxyAutomation> createAutomations(Logger logger) {
-        return factories.automations().create(logger);
-    }
-
-    @Override
-    protected AndroidProxyList<AndroidProxyDeviceGroup> createDeviceGroups(Logger logger) {
-        return factories.deviceGroups().create(logger);
-    }
-
-    @Override
-    protected AndroidProxyList<AndroidProxyUser> createUsers(Logger logger) {
-        return factories.users().create(logger);
-    }
-
-    @Override
-    protected AndroidProxyList<AndroidProxyNode> createNodes(Logger logger) {
-        return factories.nodes().create(logger);
+        setCommandFactory(factories.command());
+        setValuesFactory(factories.values());
+        setAutomationsFactory(factories.automations());
+        setDeviceGroupsFactory(factories.deviceGroups());
+        setUsersFactory(factories.users());
+        setNodesFactory(factories.nodes());
     }
 }

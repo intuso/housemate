@@ -13,13 +13,13 @@ import org.slf4j.Logger;
  * Time: 09:39
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyList<ELEMENT extends ProxyObject<?, ?>>
+public class AndroidProxyList<ELEMENT extends ProxyObject<?, ?, ?>>
         extends ProxyList<ELEMENT, AndroidProxyList<ELEMENT>> {
 
     /**
      * @param logger  {@inheritDoc}
      */
-    public AndroidProxyList(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, ProxyObject.Factory<ELEMENT> factory) {
-        super(logger, managedCollectionFactory, receiverFactory, factory);
+    public AndroidProxyList(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, ProxyObject.Factory<ELEMENT> factory) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factory);
     }
 }

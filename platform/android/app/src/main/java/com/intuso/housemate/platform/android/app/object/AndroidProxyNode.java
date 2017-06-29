@@ -21,7 +21,7 @@ public class AndroidProxyNode extends ProxyNode<
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyNode(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.types(), factories.hardwares());
+    protected AndroidProxyNode(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.command(), factories.types(), factories.hardwares());
     }
 }

@@ -18,13 +18,13 @@ public class AndroidProxyDeviceGroup extends ProxyDeviceGroup<
         AndroidProxyList<AndroidProxyCommand>,
         AndroidProxyValue,
         AndroidProxyList<AndroidProxyValue>,
-        ProxyDevice<?, ?, ?, ?, ?, ?>,
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
         AndroidProxyDeviceGroup> {
 
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyDeviceGroup(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidProxyServer server, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, server, factories.command(), factories.commands(), factories.value(), factories.values());
+    protected AndroidProxyDeviceGroup(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidProxyServer server, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, server, factories.command(), factories.commands(), factories.value(), factories.values());
     }
 }

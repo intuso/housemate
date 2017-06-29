@@ -18,7 +18,7 @@ public class AndroidProxyCommand extends ProxyCommand<AndroidProxyValue, Android
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyCommand(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, Sender.Factory senderFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, senderFactory, factories.value(), factories.parameters());
+    protected AndroidProxyCommand(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, Sender.Factory senderFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, senderFactory, factories.value(), factories.parameters());
     }
 }

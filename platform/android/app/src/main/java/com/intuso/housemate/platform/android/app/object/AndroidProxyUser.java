@@ -17,7 +17,7 @@ public class AndroidProxyUser extends ProxyUser<AndroidProxyCommand, AndroidProx
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyUser(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.property());
+    protected AndroidProxyUser(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
+        super(logger, name, managedCollectionFactory, receiverFactory, factories.command(), factories.property());
     }
 }

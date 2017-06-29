@@ -30,7 +30,7 @@ public class AndroidServerFactory {
     public class Server implements ProxyObject.Factory<AndroidProxyServer> {
 
         @Override
-        public AndroidProxyServer create(Logger logger) {
+        public AndroidProxyServer create(Logger logger, String name) {
             return new AndroidProxyServer(logger, managedCollectionFactory, receiverFactory, senderFactory);
         }
     }

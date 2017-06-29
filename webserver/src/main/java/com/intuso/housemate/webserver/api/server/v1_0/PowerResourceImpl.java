@@ -69,7 +69,7 @@ public class PowerResourceImpl implements PowerResource {
     @Override
     public boolean isOn(String id) {
         logger.debug("Is on {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device == null)
             throw new NotFoundException();
         return BooleanSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValue().getElements().get(0));
@@ -78,7 +78,7 @@ public class PowerResourceImpl implements PowerResource {
     @Override
     public void turnOn(String id) {
         logger.debug("Turning on {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device == null)
             throw new NotFoundException();
         device.getCommands().get("on").perform(loggerListener);
@@ -87,7 +87,7 @@ public class PowerResourceImpl implements PowerResource {
     @Override
     public void turnOff(String id) {
         logger.debug("Turning off {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device == null)
             throw new NotFoundException();
         device.getCommands().get("off").perform(loggerListener);

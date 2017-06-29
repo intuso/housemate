@@ -17,7 +17,7 @@ public class AndroidProxyParameter extends ProxyParameter<AndroidProxyType, Andr
     /**
      * @param logger  {@inheritDoc}
      */
-    public AndroidProxyParameter(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
-        super(logger, managedCollectionFactory, receiverFactory);
+    public AndroidProxyParameter(Logger logger, String name, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
+        super(logger, name, managedCollectionFactory, receiverFactory);
     }
 }
