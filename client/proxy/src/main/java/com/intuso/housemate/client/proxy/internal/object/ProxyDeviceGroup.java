@@ -9,6 +9,7 @@ import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyFailable;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
+import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -18,19 +19,20 @@ import org.slf4j.Logger;
  * @param <DEVICE> the type of the device
  */
 public abstract class ProxyDeviceGroup<
-        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        COMMAND extends ProxyCommand<?, ?, ?>,
         COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
-        VALUE extends ProxyValue<?, VALUE>,
-        VALUES extends ProxyList<? extends VALUE, ?>,
-        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?>,
+        VALUE extends ProxyValue<?, ?>,
+        VALUES extends ProxyList<VALUE, ?>,
+        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
         DEVICE_GROUP extends ProxyDeviceGroup<COMMAND, COMMANDS, VALUE, VALUES, DEVICE, DEVICE_GROUP>>
-        extends ProxyDevice<Device.Group.Data, Device.Group.Listener<? super DEVICE_GROUP>, COMMAND, COMMANDS, VALUES, DEVICE_GROUP>
+        extends ProxyDevice<Device.Group.Data, Device.Group.Listener<? super DEVICE_GROUP>, DeviceGroupView, COMMAND, COMMANDS, VALUES, DEVICE_GROUP>
         implements Device.Group<COMMAND, COMMAND, COMMAND, VALUE, COMMANDS, VALUES, ConvertingList<VALUE, DEVICE>, DEVICE_GROUP>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND> {
 
-    private final COMMAND removeCommand;
-    private final VALUE errorValue;
+    private final Factory<COMMAND> commandFactory;
+    private final Factory<VALUE> valueFactory;
+
     private final VALUES playbackDeviceReferences;
     private final ConvertingList<VALUE, DEVICE> playbackDevices;
     private final COMMAND addPlaybackDeviceCommand;
@@ -47,10 +49,14 @@ public abstract class ProxyDeviceGroup<
     private final ConvertingList<VALUE, DEVICE> volumeDevices;
     private final COMMAND addVolumeDeviceCommand;
 
+    private COMMAND removeCommand;
+    private VALUE errorValue;
+
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyDeviceGroup(Logger logger,
+                            String name,
                             ManagedCollectionFactory managedCollectionFactory,
                             Receiver.Factory receiverFactory,
                             ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server,
@@ -58,48 +64,76 @@ public abstract class ProxyDeviceGroup<
                             Factory<COMMANDS> commandsFactory,
                             Factory<VALUE> valueFactory,
                             Factory<VALUES> valuesFactory) {
-        super(logger, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
-        playbackDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, PLAYBACK));
+        super(logger, name, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+        this.commandFactory = commandFactory;
+        this.valueFactory = valueFactory;
+        playbackDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, PLAYBACK), ChildUtil.name(name, PLAYBACK));
         playbackDevices = new ConvertingList<>(playbackDeviceReferences, server.findConverter());
-        addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK));
-        powerDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, POWER));
+        addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK), ChildUtil.name(name, ADD_PLAYBACK));
+        powerDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, POWER), ChildUtil.name(name, POWER));
         powerDevices = new ConvertingList<>(powerDeviceReferences, server.findConverter());
-        addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER));
-        runDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, RUN));
+        addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER), ChildUtil.name(name, ADD_POWER));
+        runDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, RUN), ChildUtil.name(name, RUN));
         runDevices = new ConvertingList<>(runDeviceReferences, server.findConverter());
-        addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN));
-        temperatureSensorDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR));
+        addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN), ChildUtil.name(name, ADD_RUN));
+        temperatureSensorDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR), ChildUtil.name(name, TEMPERATURE_SENSOR));
         temperatureSensorDevices = new ConvertingList<>(temperatureSensorDeviceReferences, server.findConverter());
-        addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR));
-        volumeDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, VOLUME));
+        addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR), ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
+        volumeDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, VOLUME), ChildUtil.name(name, VOLUME));
         volumeDevices = new ConvertingList<>(volumeDeviceReferences, server.findConverter());
-        addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME));
+        addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME), ChildUtil.name(name, ADD_VOLUME));
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
-        errorValue.init(ChildUtil.name(name, ERROR_ID));
-        playbackDeviceReferences.init(ChildUtil.name(name, PLAYBACK));
-        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK));
-        powerDeviceReferences.init(ChildUtil.name(name, POWER));
-        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER));
-        runDeviceReferences.init(ChildUtil.name(name, RUN));
-        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN));
-        temperatureSensorDeviceReferences.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
-        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
-        volumeDeviceReferences.init(ChildUtil.name(name, VOLUME));
-        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME));
+    public DeviceGroupView createView() {
+        return new DeviceGroupView();
+    }
+
+    @Override
+    public void view(DeviceGroupView view) {
+
+        super.view(view);
+
+        // create things according to the view's mode, sub-views, and what's already created
+        switch (view.getMode()) {
+            case ANCESTORS:
+            case CHILDREN:
+                if(removeCommand == null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if (errorValue == null)
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                break;
+            case SELECTION:
+                if(removeCommand == null && view.getRemoveCommandView() != null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if (errorValue == null && view.getErrorValueView() != null)
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                break;
+        }
+
+        // view things according to the view's mode and sub-views
+        switch (view.getMode()) {
+            case ANCESTORS:
+                removeCommand.view(new CommandView(View.Mode.ANCESTORS));
+                errorValue.view(new ValueView(View.Mode.ANCESTORS));
+                break;
+            case CHILDREN:
+            case SELECTION:
+                if (view.getRemoveCommandView() != null)
+                    removeCommand.view(view.getRemoveCommandView());
+                if (view.getErrorValueView() != null)
+                    errorValue.view(view.getErrorValueView());
+                break;
+        }
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        removeCommand.uninit();
-        errorValue.uninit();
+        if(removeCommand != null)
+            removeCommand.uninit();
+        if(errorValue != null)
+            errorValue.uninit();
         playbackDeviceReferences.uninit();
         addPlaybackDeviceCommand.uninit();
         powerDeviceReferences.uninit();
@@ -238,11 +272,12 @@ public abstract class ProxyDeviceGroup<
                 ProxyList.Simple<ProxyCommand.Simple>,
                 ProxyValue.Simple,
                 ProxyList.Simple<ProxyValue.Simple>,
-                ProxyDevice<?, ?, ?, ?, ?, ?>,
+                ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
                 Simple> {
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       ProxyServer.Simple server,
@@ -250,7 +285,7 @@ public abstract class ProxyDeviceGroup<
                       Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, server, commandFactory, commandsFactory, valueFactory, valuesFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory, server, commandFactory, commandsFactory, valueFactory, valuesFactory);
         }
     }
 }

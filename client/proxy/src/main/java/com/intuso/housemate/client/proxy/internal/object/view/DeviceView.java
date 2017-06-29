@@ -1,21 +1,21 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
  */
-public class DeviceConnectedView extends View<DeviceConnectedView> {
+public class DeviceView<VIEW extends DeviceView<?>> extends View<VIEW> {
 
     private CommandView renameCommandView;
     private ListView<CommandView> commandsView;
     private ListView<ValueView> valuesView;
 
-    public DeviceConnectedView() {}
+    public DeviceView() {}
 
-    public DeviceConnectedView(Mode mode) {
+    public DeviceView(Mode mode) {
         super(mode);
     }
 
-    public DeviceConnectedView(CommandView renameCommandView, ListView<CommandView> commandsView, ListView<ValueView> valuesView) {
+    public DeviceView(CommandView renameCommandView, ListView<CommandView> commandsView, ListView<ValueView> valuesView) {
         super(Mode.SELECTION);
         this.renameCommandView = renameCommandView;
         this.commandsView = commandsView;
@@ -26,7 +26,7 @@ public class DeviceConnectedView extends View<DeviceConnectedView> {
         return renameCommandView;
     }
 
-    public DeviceConnectedView setRenameCommandView(CommandView renameCommandView) {
+    public DeviceView setRenameCommandView(CommandView renameCommandView) {
         this.renameCommandView = renameCommandView;
         return this;
     }
@@ -35,7 +35,7 @@ public class DeviceConnectedView extends View<DeviceConnectedView> {
         return commandsView;
     }
 
-    public DeviceConnectedView setCommandsView(ListView<CommandView> commandsView) {
+    public DeviceView setCommandsView(ListView<CommandView> commandsView) {
         this.commandsView = commandsView;
         return this;
     }
@@ -44,7 +44,7 @@ public class DeviceConnectedView extends View<DeviceConnectedView> {
         return valuesView;
     }
 
-    public DeviceConnectedView setValuesView(ListView<ValueView> valuesView) {
+    public DeviceView setValuesView(ListView<ValueView> valuesView) {
         this.valuesView = valuesView;
         return this;
     }

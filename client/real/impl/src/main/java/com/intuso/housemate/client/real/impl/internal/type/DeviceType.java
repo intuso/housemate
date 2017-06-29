@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 /**
  * Created by tomc on 25/01/17.
  */
-public class DeviceType extends RealObjectType<ProxyDevice<?, ?, ?, ?, ?, ?>> {
+public class DeviceType extends RealObjectType<ProxyDevice<?, ?, ?, ?, ?, ?, ?>> {
 
     public final static String TYPE_ID = "device";
     public final static String TYPE_NAME = "device";

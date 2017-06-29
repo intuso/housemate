@@ -39,7 +39,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
     }
 
     @Override
-    public <T> T build(ProxyObject<?, ?> object, Class<T> clazz, String prefix, long commandTimeout) {
+    public <T> T build(ProxyObject<?, ?, ?> object, Class<T> clazz, String prefix, long commandTimeout) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] {clazz}, new InvocationHandlerImpl(object, clazz, prefix, commandTimeout));
     }
 
@@ -63,13 +63,13 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
     private class InvocationHandlerImpl implements InvocationHandler {
 
-        private final ProxyObject<?, ?> object;
+        private final ProxyObject<?, ?, ?> object;
         private final Class<?> clazz;
         private final String prefix;
         private final Map<Method, MethodInvocationHandler> handlers = Maps.newHashMap();
         private final long commandTimeout;
 
-        private InvocationHandlerImpl(ProxyObject<?, ?> object, Class<?> clazz, String prefix, long commandTimeout) {
+        private InvocationHandlerImpl(ProxyObject<?, ?, ?> object, Class<?> clazz, String prefix, long commandTimeout) {
             this.object = object;
             this.clazz = clazz;
             this.prefix = prefix != null ? prefix : "";

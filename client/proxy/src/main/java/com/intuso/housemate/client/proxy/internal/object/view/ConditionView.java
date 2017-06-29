@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
@@ -9,7 +9,7 @@ public class ConditionView extends View<ConditionView> {
     private ValueView errorValueView;
     private CommandView removeCommandView;
     private PropertyView driverPropertyView;
-    private ValueView driverLoadedView;
+    private ValueView driverLoadedValueView;
     private ValueView satisfiedValueView;
     private ListView<PropertyView> propertiesView;
     private ListView<ConditionView> conditionsView;
@@ -25,7 +25,7 @@ public class ConditionView extends View<ConditionView> {
                          ValueView errorValueView,
                          CommandView removeCommandView,
                          PropertyView driverPropertyView,
-                         ValueView driverLoadedView,
+                         ValueView driverLoadedValueView,
                          ValueView satisfiedValueView,
                          ListView<PropertyView> propertiesView,
                          ListView<ConditionView> conditionsView,
@@ -35,7 +35,7 @@ public class ConditionView extends View<ConditionView> {
         this.errorValueView = errorValueView;
         this.removeCommandView = removeCommandView;
         this.driverPropertyView = driverPropertyView;
-        this.driverLoadedView = driverLoadedView;
+        this.driverLoadedValueView = driverLoadedValueView;
         this.satisfiedValueView = satisfiedValueView;
         this.propertiesView = propertiesView;
         this.conditionsView = conditionsView;
@@ -78,12 +78,12 @@ public class ConditionView extends View<ConditionView> {
         return this;
     }
 
-    public ValueView getDriverLoadedView() {
-        return driverLoadedView;
+    public ValueView getDriverLoadedValueView() {
+        return driverLoadedValueView;
     }
 
-    public ConditionView setDriverLoadedView(ValueView driverLoadedView) {
-        this.driverLoadedView = driverLoadedView;
+    public ConditionView setDriverLoadedValueView(ValueView driverLoadedValueView) {
+        this.driverLoadedValueView = driverLoadedValueView;
         return this;
     }
 

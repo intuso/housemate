@@ -1,11 +1,11 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
  */
 public class CommandView extends View<CommandView> {
 
-    private ValueView enabledView;
+    private ValueView enabledValueView;
     private ListView<ParameterView> parametersView;
 
     public CommandView() {}
@@ -14,18 +14,18 @@ public class CommandView extends View<CommandView> {
         super(mode);
     }
 
-    public CommandView(ValueView enabledView, ListView<ParameterView> parametersView) {
+    public CommandView(ValueView enabledValueView, ListView<ParameterView> parametersView) {
         super(Mode.SELECTION);
-        this.enabledView = enabledView;
+        this.enabledValueView = enabledValueView;
         this.parametersView = parametersView;
     }
 
-    public ValueView getEnabledView() {
-        return enabledView;
+    public ValueView getEnabledValueView() {
+        return enabledValueView;
     }
 
-    public CommandView setEnabledView(ValueView enabledView) {
-        this.enabledView = enabledView;
+    public CommandView setEnabledValueView(ValueView enabledValueView) {
+        this.enabledValueView = enabledValueView;
         return this;
     }
 

@@ -13,6 +13,7 @@ import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -30,28 +31,37 @@ public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
         VALUE extends ProxyValue<?, ?>,
         VALUES extends ProxyList<VALUE, ?>,
-        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?>,
+        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
         DEVICE_GROUPS extends ProxyList<? extends ProxyDeviceGroup<?, ?, ?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
         SERVER extends ProxyServer<COMMAND, VALUE, VALUES, DEVICE, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER>>
-        extends ProxyObject<Server.Data, Server.Listener<? super SERVER>>
+        extends ProxyObject<Server.Data, Server.Listener<? super SERVER>, ServerView>
         implements Server<COMMAND, ConvertingList<VALUE, DEVICE>, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER> {
 
     private final ManagedCollectionFactory managedCollectionFactory;
     private final Map<List<?, ?>, Map<String, Map<ObjectReferenceImpl, Integer>>> missingReferences = new HashMap<>();
     private final Map<Object<?, ?>, java.util.List<ObjectReferenceImpl>> references = Maps.newHashMap();
 
+    private ProxyObject.Factory<COMMAND> commandFactory;
+    private ProxyObject.Factory<VALUES> valuesFactory;
+    private ProxyObject.Factory<AUTOMATIONS> automationsFactory;
+    private ProxyObject.Factory<DEVICE_GROUPS> deviceGroupsFactory;
+    private ProxyObject.Factory<USERS> usersFactory;
+    private ProxyObject.Factory<NODES> nodesFactory;
+
     private final VALUES deviceReferences;
     private final ConvertingList<VALUE, DEVICE> devices;
-    private final AUTOMATIONS automations;
-    private final COMMAND addAutomationCommand;
-    private final DEVICE_GROUPS deviceGroups;
-    private final COMMAND addSystemCommand;
-    private final USERS users;
-    private final COMMAND addUserCommand;
-    private final NODES nodes;
+
+    private AUTOMATIONS automations;
+    private COMMAND addAutomationCommand;
+    private DEVICE_GROUPS deviceGroups;
+    private COMMAND addDeviceGroupCommand;
+    private USERS users;
+    private COMMAND addUserCommand;
+    private NODES nodes;
+
     private List.Listener<Object<?, ?>, List<? extends Object<?, ?>, ?>> missingReferenceLoader = new List.Listener<Object<?, ?>, List<? extends Object<?, ?>, ?>>() {
         @Override
         public void elementAdded(List<? extends Object<?, ?>, ?> list, Object<?, ?> element) {
@@ -67,43 +77,12 @@ public abstract class ProxyServer<
     public ProxyServer(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory) {
-        super(logger, Server.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, ChildUtil.name(null, PROXY, VERSION), Server.Data.class, managedCollectionFactory, receiverFactory);
         this.managedCollectionFactory = managedCollectionFactory;
-        deviceReferences = createValues(ChildUtil.logger(logger, DEVICES_ID));
+        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
         devices = new ConvertingList<>(deviceReferences, new ReferenceLoaderConverter<DEVICE>());
-        automations = createAutomations(ChildUtil.logger(logger, AUTOMATIONS_ID));
-        addAutomationCommand = createCommand(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
-        deviceGroups = createDeviceGroups(ChildUtil.logger(logger, DEVICE_GROUPS_ID));
-        addSystemCommand = createCommand(ChildUtil.logger(logger, ADD_SYSTEM_ID));
-        users = createUsers(ChildUtil.logger(logger, USERS_ID));
-        addUserCommand = createCommand(ChildUtil.logger(logger, ADD_USER_ID));
-        nodes = createNodes(ChildUtil.logger(logger, NODES_ID));
+        deviceReferences.view(new ListView(View.Mode.ANCESTORS));
     }
-
-    protected COMMAND createCommand(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
-    protected VALUES createValues(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
-    protected AUTOMATIONS createAutomations(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
-    protected DEVICE_GROUPS createDeviceGroups(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
-    protected USERS createUsers(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
-    protected NODES createNodes(Logger logger) {
-        throw new UnsupportedOperationException("Not implemented in this proxy implementation");
-    }
-
 
     public ProxyServer(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
@@ -111,24 +90,48 @@ public abstract class ProxyServer<
                        Factory<COMMAND> commandFactory,
                        Factory<VALUES> valuesFactory,
                        Factory<AUTOMATIONS> automationsFactory,
-                       Factory<DEVICE_GROUPS> systemsFactory,
+                       Factory<DEVICE_GROUPS> deviceGroupsFactory,
                        Factory<USERS> usersFactory,
                        Factory<NODES> nodesFactory) {
-        super(logger, Server.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, ChildUtil.name(null, PROXY, VERSION), Server.Data.class, managedCollectionFactory, receiverFactory);
         this.managedCollectionFactory = managedCollectionFactory;
-        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID));
+        this.commandFactory = commandFactory;
+        this.valuesFactory = valuesFactory;
+        this.automationsFactory = automationsFactory;
+        this.deviceGroupsFactory = deviceGroupsFactory;
+        this.usersFactory = usersFactory;
+        this.nodesFactory = nodesFactory;
+        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
         devices = new ConvertingList<>(deviceReferences, new ReferenceLoaderConverter<DEVICE>());
-        automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));
-        addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
-        deviceGroups = systemsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID));
-        addSystemCommand = commandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID));
-        users = usersFactory.create(ChildUtil.logger(logger, USERS_ID));
-        addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID));
-        nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID));
+        deviceReferences.view(new ListView(View.Mode.ANCESTORS));
+    }
+
+    public void setCommandFactory(Factory<COMMAND> commandFactory) {
+        this.commandFactory = commandFactory;
+    }
+
+    public void setValuesFactory(Factory<VALUES> valuesFactory) {
+        this.valuesFactory = valuesFactory;
+    }
+
+    public void setAutomationsFactory(Factory<AUTOMATIONS> automationsFactory) {
+        this.automationsFactory = automationsFactory;
+    }
+
+    public void setDeviceGroupsFactory(Factory<DEVICE_GROUPS> deviceGroupsFactory) {
+        this.deviceGroupsFactory = deviceGroupsFactory;
+    }
+
+    public void setUsersFactory(Factory<USERS> usersFactory) {
+        this.usersFactory = usersFactory;
+    }
+
+    public void setNodesFactory(Factory<NODES> nodesFactory) {
+        this.nodesFactory = nodesFactory;
     }
 
     public void start() {
-        init(ChildUtil.name(null, PROXY, VERSION));
+        // nothing to do, wait for user to view something
     }
 
     public void stop() {
@@ -136,29 +139,101 @@ public abstract class ProxyServer<
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        deviceReferences.init(ChildUtil.name(name, DEVICES_ID));
-        automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
-        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
-        deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID));
-        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
-        users.init(ChildUtil.name(name, USERS_ID));
-        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
-        nodes.init(ChildUtil.name(name, NODES_ID));
+    public ServerView createView() {
+        return new ServerView();
+    }
+
+    @Override
+    public void view(ServerView view) {
+
+        super.view(view);
+
+        // create things according to the view's mode, sub-views, and what's already created
+        switch (view.getMode()) {
+            case ANCESTORS:
+            case CHILDREN:
+                if(automations == null)
+                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
+                if(addAutomationCommand == null)
+                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                if(deviceGroups == null)
+                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
+                if(addDeviceGroupCommand == null)
+                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
+                if(users == null)
+                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
+                if(addUserCommand == null)
+                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
+                if(nodes == null)
+                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
+                break;
+            case SELECTION:
+                if(automations == null && view.getAutomationsView() != null)
+                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
+                if(addAutomationCommand == null && view.getAddAutomationCommandView() != null)
+                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                if(deviceGroups == null && view.getDeviceGroupsView() != null)
+                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
+                if(addDeviceGroupCommand == null && view.getAddDeviceGroupCommandView() != null)
+                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
+                if(users == null && view.getUsersView() != null)
+                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
+                if(addUserCommand == null && view.getAddUserCommandView() != null)
+                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
+                if(nodes == null && view.getNodesView() != null)
+                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
+                break;
+        }
+
+        // view things according to the view's mode and sub-views
+        switch (view.getMode()) {
+            case ANCESTORS:
+                automations.view(new ListView(View.Mode.ANCESTORS));
+                addAutomationCommand.view(new CommandView(View.Mode.ANCESTORS));
+                deviceGroups.view(new ListView(View.Mode.ANCESTORS));
+                addDeviceGroupCommand.view(new CommandView(View.Mode.ANCESTORS));
+                users.view(new ListView(View.Mode.ANCESTORS));
+                addUserCommand.view(new CommandView(View.Mode.ANCESTORS));
+                nodes.view(new ListView(View.Mode.ANCESTORS));
+                break;
+            case CHILDREN:
+            case SELECTION:
+                if(view.getAutomationsView() != null)
+                    automations.view(view.getAutomationsView());
+                if(view.getAddAutomationCommandView() != null)
+                    addAutomationCommand.view(view.getAddAutomationCommandView());
+                if(view.getDeviceGroupsView() != null)
+                    deviceGroups.view(view.getDeviceGroupsView());
+                if(view.getAddDeviceGroupCommandView() != null)
+                    addDeviceGroupCommand.view(view.getAddDeviceGroupCommandView());
+                if(view.getUsersView() != null)
+                    users.view(view.getUsersView());
+                if(view.getAddUserCommandView() != null)
+                    addUserCommand.view(view.getAddUserCommandView());
+                if(view.getNodesView() != null)
+                    nodes.view(view.getNodesView());
+                break;
+        }
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         deviceReferences.uninit();
-        automations.uninit();
-        addAutomationCommand.uninit();
-        deviceGroups.uninit();
-        addSystemCommand.uninit();
-        users.uninit();
-        addUserCommand.uninit();
-        nodes.uninit();
+        if(automations != null)
+            automations.uninit();
+        if(addAutomationCommand != null)
+            addAutomationCommand.uninit();
+        if(deviceGroups != null)
+            deviceGroups.uninit();
+        if(addDeviceGroupCommand != null)
+            addDeviceGroupCommand.uninit();
+        if(users != null)
+            users.uninit();
+        if(addUserCommand != null)
+            addUserCommand.uninit();
+        if(nodes != null)
+            nodes.uninit();
     }
 
     public VALUES getDeviceReferences() {
@@ -185,9 +260,8 @@ public abstract class ProxyServer<
         return deviceGroups;
     }
 
-    @Override
-    public COMMAND getAddSystemCommand() {
-        return addSystemCommand;
+    public COMMAND getAddDeviceGroupCommand() {
+        return addDeviceGroupCommand;
     }
 
     @Override
@@ -209,8 +283,8 @@ public abstract class ProxyServer<
     public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
-        else if(ADD_SYSTEM_ID.equals(id))
-            return addSystemCommand;
+        else if(ADD_DEVICE_GROUP_ID.equals(id))
+            return addDeviceGroupCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
         else if(DEVICES_ID.equals(id))
@@ -263,7 +337,7 @@ public abstract class ProxyServer<
     protected void reference(Object<?, ?> object, ObjectReferenceImpl reference, int pathIndex) {
         if(pathIndex == reference.getPath().length) {
             if(!references.containsKey(object))
-                references.put(object, Lists.newArrayList());
+                references.put(object, Lists.<ObjectReferenceImpl>newArrayList());
             references.get(object).add(reference);
             reference.setObject(this);
         } else {
@@ -274,9 +348,9 @@ public abstract class ProxyServer<
             else if(object instanceof List) {
                 List<? extends Object<?, ?>, ?> list = (List<? extends Object<?, ?>, ?>) object;
                 if(!missingReferences.containsKey(list))
-                    missingReferences.put(list, new HashMap<>());
+                    missingReferences.put(list, new HashMap<String, Map<ObjectReferenceImpl, Integer>>());
                 if(!missingReferences.get(list).containsKey(id))
-                    missingReferences.get(list).put(id, new HashMap<>());
+                    missingReferences.get(list).put(id, new HashMap<ObjectReferenceImpl, Integer>());
                 missingReferences.get(list).get(id).put(reference, pathIndex);
                 list.addObjectListener(missingReferenceLoader);
             }
@@ -320,7 +394,7 @@ public abstract class ProxyServer<
             ProxyCommand.Simple,
             ProxyValue.Simple,
             ProxyList.Simple<ProxyValue.Simple>,
-            ProxyDevice<?, ?, ?, ?, ?, ?>,
+            ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
             ProxyList.Simple<ProxyAutomation.Simple>,
             ProxyList.Simple<ProxyDeviceGroup.Simple>,
             ProxyList.Simple<ProxyUser.Simple>,
@@ -334,10 +408,10 @@ public abstract class ProxyServer<
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
                       Factory<ProxyList.Simple<ProxyAutomation.Simple>> automationsFactory,
-                      Factory<ProxyList.Simple<ProxyDeviceGroup.Simple>> systemsFactory,
+                      Factory<ProxyList.Simple<ProxyDeviceGroup.Simple>> deviceGroupsFactory,
                       Factory<ProxyList.Simple<ProxyUser.Simple>> usersFactory,
                       Factory<ProxyList.Simple<ProxyNode.Simple>> nodesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valuesFactory, automationsFactory, systemsFactory, usersFactory, nodesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valuesFactory, automationsFactory, deviceGroupsFactory, usersFactory, nodesFactory);
         }
     }
 

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.proxy.internal.object.view.NoView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -12,16 +13,22 @@ import org.slf4j.Logger;
  */
 public abstract class ProxySubType<TYPE extends ProxyType<?>,
             SUB_TYPE extends ProxySubType<TYPE, SUB_TYPE>>
-        extends ProxyObject<SubType.Data, SubType.Listener<? super SUB_TYPE>>
+        extends ProxyObject<SubType.Data, SubType.Listener<? super SUB_TYPE>, NoView>
         implements SubType<TYPE, SUB_TYPE> {
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxySubType(Logger logger,
+                        String name,
                         ManagedCollectionFactory managedCollectionFactory,
                         Receiver.Factory receiverFactory) {
-        super(logger, SubType.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, name, SubType.Data.class, managedCollectionFactory, receiverFactory);
+    }
+
+    @Override
+    public NoView createView() {
+        return new NoView();
     }
 
     @Override
@@ -30,7 +37,7 @@ public abstract class ProxySubType<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ProxyObject<?, ?, ?> getChild(String id) {
         return null;
     }
 
@@ -45,9 +52,10 @@ public abstract class ProxySubType<TYPE extends ProxyType<?>,
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-            super(logger, managedCollectionFactory, receiverFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory);
         }
     }
 }

@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * Type for an object from the object tree
  */
-public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
+public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?, ?>>
         extends RealTypeImpl<ObjectReference<O>> {
 
     private final static Joiner JOINER = Joiner.on("/");
@@ -60,7 +60,7 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
      * Serialiser for an object reference
      * @param <O> the type of the object to serialise
      */
-    public static class Serialiser<O extends ProxyObject<?, ?>> implements TypeSerialiser<ObjectReference<O>> {
+    public static class Serialiser<O extends ProxyObject<?, ?, ?>> implements TypeSerialiser<ObjectReference<O>> {
 
         private final ManagedCollectionFactory managedCollectionFactory;
         private final ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server;
@@ -95,7 +95,7 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
         }
     }
 
-    private static class RestrictedTypeObjectReference<O extends ProxyObject<?, ?>> implements ObjectReference<O>, ObjectReference.Listener<O> {
+    private static class RestrictedTypeObjectReference<O extends ProxyObject<?, ?, ?>> implements ObjectReference<O>, ObjectReference.Listener<O> {
 
         private final ManagedCollection<Listener<O>> listeners;
         private final ObjectReference<O> original;

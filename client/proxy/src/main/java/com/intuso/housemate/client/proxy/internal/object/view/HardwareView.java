@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
@@ -11,12 +11,13 @@ public class HardwareView extends View<HardwareView> {
     private ValueView runningValueView;
     private ValueView errorValueView;
     private CommandView removeCommandView;
-    private ValueView driverLoadedView;
+    private PropertyView driverPropertyView;
+    private ValueView driverLoadedValueView;
     private ValueView satisfiedValueView;
     private ListView<CommandView> commandsView;
     private ListView<ValueView> valuesView;
     private ListView<PropertyView> propertiesView;
-    private ListView<DeviceConnectedView> deviceConnectedsView;
+    private ListView<DeviceConnectedView> devicesView;
 
     public HardwareView() {}
 
@@ -30,12 +31,13 @@ public class HardwareView extends View<HardwareView> {
                         ValueView runningValueView,
                         ValueView errorValueView,
                         CommandView removeCommandView,
-                        ValueView driverLoadedView,
+                        PropertyView driverPropertyView,
+                        ValueView driverLoadedValueView,
                         ValueView satisfiedValueView, 
                         ListView<CommandView> commandsView,
                         ListView<ValueView> valuesView,
                         ListView<PropertyView> propertiesView,
-                        ListView<DeviceConnectedView> deviceConnectedsView) {
+                        ListView<DeviceConnectedView> devicesView) {
         super(Mode.SELECTION);
         this.renameCommandView = renameCommandView;
         this.startCommandView = startCommandView;
@@ -43,12 +45,13 @@ public class HardwareView extends View<HardwareView> {
         this.runningValueView = runningValueView;
         this.errorValueView = errorValueView;
         this.removeCommandView = removeCommandView;
-        this.driverLoadedView = driverLoadedView;
+        this.driverPropertyView = driverPropertyView;
+        this.driverLoadedValueView = driverLoadedValueView;
         this.satisfiedValueView = satisfiedValueView;
         this.commandsView = commandsView;
         this.valuesView = valuesView;
         this.propertiesView = propertiesView;
-        this.deviceConnectedsView = deviceConnectedsView;
+        this.devicesView = devicesView;
     }
 
     public CommandView getRenameCommandView() {
@@ -105,12 +108,21 @@ public class HardwareView extends View<HardwareView> {
         return this;
     }
 
-    public ValueView getDriverLoadedView() {
-        return driverLoadedView;
+    public PropertyView getDriverPropertyView() {
+        return driverPropertyView;
     }
 
-    public HardwareView setDriverLoadedView(ValueView driverLoadedView) {
-        this.driverLoadedView = driverLoadedView;
+    public HardwareView setDriverPropertyView(PropertyView driverPropertyView) {
+        this.driverPropertyView = driverPropertyView;
+        return this;
+    }
+
+    public ValueView getDriverLoadedValueView() {
+        return driverLoadedValueView;
+    }
+
+    public HardwareView setDriverLoadedValueView(ValueView driverLoadedValueView) {
+        this.driverLoadedValueView = driverLoadedValueView;
         return this;
     }
 
@@ -150,12 +162,12 @@ public class HardwareView extends View<HardwareView> {
         return this;
     }
 
-    public ListView<DeviceConnectedView> getDeviceConnectedsView() {
-        return deviceConnectedsView;
+    public ListView<DeviceConnectedView> getDevicesView() {
+        return devicesView;
     }
 
-    public HardwareView setDeviceConnectedsView(ListView<DeviceConnectedView> deviceConnectedsView) {
-        this.deviceConnectedsView = deviceConnectedsView;
+    public HardwareView setDevicesView(ListView<DeviceConnectedView> devicesView) {
+        this.devicesView = devicesView;
         return this;
     }
 }

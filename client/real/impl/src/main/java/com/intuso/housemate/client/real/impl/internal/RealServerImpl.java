@@ -16,7 +16,7 @@ import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
-import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
+import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceGroupCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -30,19 +30,19 @@ public class RealServerImpl
         RealNodeListImpl,
         RealServerImpl>,
         AddAutomationCommand.Callback,
-        AddSystemCommand.Callback,
+        AddDeviceGroupCommand.Callback,
         AddUserCommand.Callback {
 
     private final ProxyServer.Simple proxyServer;
     private final RealValueImpl.Factory valueFactory;
-    private final RealTypeImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>> deviceReferenceType;
+    private final RealTypeImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>> deviceReferenceType;
 
     private final CombinationList<Device<?, ?, ?, ?, ?, ?>> devices;
-    private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
+    private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
     private final RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> deviceGroups;
-    private final RealCommandImpl addSystemCommand;
+    private final RealCommandImpl addDeviceGroupCommand;
     private final RealNodeListImpl nodes;
     private final RealListPersistedImpl<User.Data, RealUserImpl> users;
     private final RealCommandImpl addUserCommand;
@@ -53,14 +53,14 @@ public class RealServerImpl
                           ProxyServer.Simple proxyServer,
                           TypeRepository typeRepository,
                           Sender.Factory senderFactory,
-                          RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
+                          RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> devicesFactory,
                           RealValueImpl.Factory valueFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl> deviceGroupsFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
-                          AddSystemCommand.Factory addSystemCommandFactory,
+                          AddDeviceGroupCommand.Factory addDeviceGroupCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
@@ -87,11 +87,11 @@ public class RealServerImpl
                 DEVICE_GROUPS_ID,
                 "Device Groups",
                 "Device Groups");
-        this.addSystemCommand = addSystemCommandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID),
-                ChildUtil.logger(logger, ADD_SYSTEM_ID),
-                ADD_SYSTEM_ID,
-                "Add system",
-                "Add system",
+        this.addDeviceGroupCommand = addDeviceGroupCommandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID),
+                ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID),
+                ADD_DEVICE_GROUP_ID,
+                "Add device group",
+                "Add device group",
                 this,
                 deviceGroups.getRemoveCallback());
         this.users = usersFactory.create(ChildUtil.logger(logger, USERS_ID),
@@ -122,7 +122,7 @@ public class RealServerImpl
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
         deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID));
-        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
+        addDeviceGroupCommand.init(ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
         users.init(ChildUtil.name(name, USERS_ID));
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
         nodes.init(ChildUtil.name(name, NODES_ID));
@@ -135,13 +135,13 @@ public class RealServerImpl
         automations.uninit();
         addAutomationCommand.uninit();
         deviceGroups.uninit();
-        addSystemCommand.uninit();
+        addDeviceGroupCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
         nodes.uninit();
     }
 
-    public RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getDeviceReferences() {
+    public RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> getDeviceReferences() {
         return deviceReferences;
     }
 
@@ -169,14 +169,13 @@ public class RealServerImpl
         return deviceGroups;
     }
 
-    @Override
-    public RealCommandImpl getAddSystemCommand() {
-        return addSystemCommand;
+    public RealCommandImpl getAddDeviceGroupCommand() {
+        return addDeviceGroupCommand;
     }
 
     @Override
-    public void addSystem(RealDeviceGroupImpl system) {
-        deviceGroups.add(system);
+    public void addDeviceGroup(RealDeviceGroupImpl deviceGroup) {
+        deviceGroups.add(deviceGroup);
     }
 
     @Override
@@ -212,8 +211,8 @@ public class RealServerImpl
     public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
-        else if(ADD_SYSTEM_ID.equals(id))
-            return addSystemCommand;
+        else if(ADD_DEVICE_GROUP_ID.equals(id))
+            return addDeviceGroupCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
         else if(DEVICES_ID.equals(id))
@@ -297,7 +296,7 @@ public class RealServerImpl
 
         @Override
         public void elementAdded(List<? extends Device<?, ?, ?, ?, ?, ?>, ?> list, Device<?, ?, ?, ?, ?, ?> device) {
-            deviceReferences.add((RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>) valueFactory.create(
+            deviceReferences.add((RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>) valueFactory.create(
                     ChildUtil.logger(logger, DEVICES_ID, device.getId()),
                     device.getId(),
                     device.getName(),

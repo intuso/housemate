@@ -62,7 +62,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealValueImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>>>() {}));
         // persisted
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl>>() {}));
@@ -73,7 +73,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Hardware.Data, RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListPersistedImpl.Factory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>>() {}));
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -95,7 +95,7 @@ public class RealObjectsModule extends AbstractModule {
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Condition.Data, RealConditionImpl>>() {}).to(RealConditionImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Device.Connected.Data, RealDeviceConnectedImpl>>() {}).to(RealDeviceConnectedImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Hardware.Data, RealHardwareImpl>>() {}).to(RealHardwareImpl.LoadPersisted.class);
-        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>>() {}).to(RealValueImpl.LoadPersistedDeviceObjectReference.class);
+        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>>>() {}).to(RealValueImpl.LoadPersistedDeviceObjectReference.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Device.Group.Data, RealDeviceGroupImpl>>() {}).to(RealDeviceGroupImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Task.Data, RealTaskImpl>>() {}).to(RealTaskImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<User.Data, RealUserImpl>>() {}).to(RealUserImpl.LoadPersisted.class);

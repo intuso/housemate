@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -15,7 +16,7 @@ import org.slf4j.Logger;
 public abstract class ProxyOption<
         SUB_TYPES extends ProxyList<? extends ProxySubType<?, ?>, ?>,
         OPTION extends ProxyOption<SUB_TYPES, OPTION>>
-        extends ProxyObject<Option.Data, Option.Listener<? super OPTION>>
+        extends ProxyObject<Option.Data, Option.Listener<? super OPTION>, NoView>
         implements Option<SUB_TYPES, OPTION> {
 
     private final SUB_TYPES subTypes;
@@ -24,17 +25,18 @@ public abstract class ProxyOption<
      * @param logger {@inheritDoc}
      */
     public ProxyOption(Logger logger,
+                       String name,
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        ProxyObject.Factory<SUB_TYPES> subTypesFactory) {
-        super(logger, Option.Data.class, managedCollectionFactory, receiverFactory);
-        subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID));
+        super(logger, name, Option.Data.class, managedCollectionFactory, receiverFactory);
+        subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID), ChildUtil.name(name, SUB_TYPES_ID));
+        subTypes.view(new ListView(View.Mode.ANCESTORS));
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID));
+    public NoView createView() {
+        return new NoView();
     }
 
     @Override
@@ -49,7 +51,7 @@ public abstract class ProxyOption<
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ProxyObject<?, ?, ?> getChild(String id) {
         if(SUB_TYPES_ID.equals(id))
             return subTypes;
         return null;
@@ -66,10 +68,11 @@ public abstract class ProxyOption<
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyList.Simple<ProxySubType.Simple>> subTypesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, subTypesFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory, subTypesFactory);
         }
     }
 }

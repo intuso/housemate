@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.proxy.internal.object.view.ValueView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -15,20 +16,26 @@ import org.slf4j.Logger;
 public abstract class ProxyValue<
             TYPE extends ProxyType<?>,
             VALUE extends ProxyValue<TYPE, VALUE>>
-        extends ProxyValueBase<Value.Data, TYPE, Value.Listener<? super VALUE>, VALUE>
+        extends ProxyValueBase<Value.Data, Value.Listener<? super VALUE>, ValueView, TYPE, VALUE>
         implements Value<Type.Instances, TYPE, VALUE> {
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyValue(Logger logger,
+                      String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-        super(logger, Value.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, name, Value.Data.class, managedCollectionFactory, receiverFactory);
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ValueView createView() {
+        return new ValueView();
+    }
+
+    @Override
+    public ProxyObject<?, ?, ?> getChild(String id) {
         return null;
     }
 
@@ -43,9 +50,10 @@ public abstract class ProxyValue<
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-            super(logger, managedCollectionFactory, receiverFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory);
         }
     }
 }

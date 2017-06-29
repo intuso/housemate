@@ -29,7 +29,7 @@ public class ProxyServerBridge
     private final ProxyListBridge<ProxyValueBridge> devices;
     private final ProxyCommandBridge addAutomationCommand;
     private final ProxyListBridge<ProxyAutomationBridge> automations;
-    private final ProxyCommandBridge addSystemCommand;
+    private final ProxyCommandBridge addDeviceGroupCommand;
     private final ProxyListBridge<ProxyDeviceGroupBridge> deviceGroups;
     private final ProxyListBridge<ProxyNodeBridge> nodes;
     private final ProxyCommandBridge addUserCommand;
@@ -44,15 +44,15 @@ public class ProxyServerBridge
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                 Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
-                                Factory<ProxyListBridge<ProxyDeviceGroupBridge>> systemsFactory,
+                                Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
         super(logger, Server.Data.class, serverMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         devices = valuesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
-        addSystemCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_SYSTEM_ID));
-        deviceGroups = systemsFactory.create(ChildUtil.logger(logger, Server.DEVICE_GROUPS_ID));
+        addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_DEVICE_GROUP_ID));
+        deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, Server.DEVICE_GROUPS_ID));
         nodes = nodesFactory.create(ChildUtil.logger(logger, Server.NODES_ID));
         addUserCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_USER_ID));
         users = usersFactory.create(ChildUtil.logger(logger, Server.USERS_ID));
@@ -84,9 +84,9 @@ public class ProxyServerBridge
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.AUTOMATIONS_ID),
                 ChildUtil.name(internalName, Server.AUTOMATIONS_ID)
         );
-        addSystemCommand.init(
-                com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_SYSTEM_ID),
-                ChildUtil.name(internalName, Server.ADD_SYSTEM_ID)
+        addDeviceGroupCommand.init(
+                com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_DEVICE_GROUP_ID),
+                ChildUtil.name(internalName, Server.ADD_DEVICE_GROUP_ID)
         );
         deviceGroups.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.DEVICE_GROUPS_ID),
@@ -112,7 +112,7 @@ public class ProxyServerBridge
         devices.uninit();
         addAutomationCommand.uninit();
         automations.uninit();
-        addSystemCommand.uninit();
+        addDeviceGroupCommand.uninit();
         deviceGroups.uninit();
         nodes.uninit();
         addUserCommand.uninit();
@@ -138,9 +138,8 @@ public class ProxyServerBridge
         return automations;
     }
 
-    @Override
-    public ProxyCommandBridge getAddSystemCommand() {
-        return addSystemCommand;
+    public ProxyCommandBridge getAddDeviceGroupCommand() {
+        return addDeviceGroupCommand;
     }
 
     @Override
@@ -167,8 +166,8 @@ public class ProxyServerBridge
     public Object<?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
-        else if(ADD_SYSTEM_ID.equals(id))
-            return addSystemCommand;
+        else if(ADD_DEVICE_GROUP_ID.equals(id))
+            return addDeviceGroupCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
         else if(DEVICES_ID.equals(id))

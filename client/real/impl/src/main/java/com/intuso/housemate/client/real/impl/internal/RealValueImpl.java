@@ -57,7 +57,7 @@ public final class RealValueImpl<O>
                                 Iterable values);
     }
 
-    public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> {
+    public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> {
 
         private final RealValueImpl.Factory factory;
         private final TypeRepository typeRepository;
@@ -69,8 +69,8 @@ public final class RealValueImpl<O>
         }
 
         @Override
-        public RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>> create(Logger logger, Value.Data data, RealListPersistedImpl.RemoveCallback<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> removeCallback) {
-            return (RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>)
+        public RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>> create(Logger logger, Value.Data data, RealListPersistedImpl.RemoveCallback<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> removeCallback) {
+            return (RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>)
                     factory.create(logger,
                             data.getId(),
                             data.getName(),

@@ -7,6 +7,9 @@ import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.proxy.internal.object.view.CommandView;
+import com.intuso.housemate.client.proxy.internal.object.view.PropertyView;
+import com.intuso.housemate.client.proxy.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -18,32 +21,62 @@ import org.slf4j.Logger;
 public abstract class ProxyProperty<TYPE extends ProxyType<?>,
         COMMAND extends ProxyCommand<?, ?, COMMAND>,
         PROPERTY extends ProxyProperty<TYPE, COMMAND, PROPERTY>>
-        extends ProxyValueBase<Property.Data, TYPE, Property.Listener<? super PROPERTY>, PROPERTY>
+        extends ProxyValueBase<Property.Data, Property.Listener<? super PROPERTY>, PropertyView, TYPE, PROPERTY>
         implements Property<Type.Instances, TYPE, COMMAND, PROPERTY> {
 
-    private final COMMAND setCommand;
+    private final ProxyObject.Factory<COMMAND> commandFactory;
+
+    private COMMAND setCommand;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyProperty(Logger logger,
+                         String name,
                          ManagedCollectionFactory managedCollectionFactory,
                          Receiver.Factory receiverFactory,
                          ProxyObject.Factory<COMMAND> commandFactory) {
-        super(logger, Property.Data.class, managedCollectionFactory, receiverFactory);
-        setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID));
+        super(logger, name, Property.Data.class, managedCollectionFactory, receiverFactory);
+        this.commandFactory = commandFactory;
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        setCommand.init(ChildUtil.name(name, SET_COMMAND_ID));
+    public PropertyView createView() {
+        return new PropertyView();
+    }
+
+    @Override
+    public void view(PropertyView view) {
+        super.view(view);
+
+        // create things according to the view's mode, sub-views, and what's already created
+        switch (view.getMode()) {
+            case ANCESTORS:
+            case CHILDREN:
+                if (setCommand == null)
+                    setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID), ChildUtil.name(name, SET_COMMAND_ID));
+                break;
+            case SELECTION:
+                if (setCommand == null && view.getSetCommandView() != null)
+                    setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID), ChildUtil.name(name, SET_COMMAND_ID));
+        }
+
+        // view things according to the view's mode and sub-views
+        switch (view.getMode()) {
+            case ANCESTORS:
+                setCommand.view(new CommandView(View.Mode.ANCESTORS));
+            case CHILDREN:
+            case SELECTION:
+                if (view.getSetCommandView() != null)
+                    setCommand.view(view.getSetCommandView());
+        }
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        setCommand.uninit();
+        if(setCommand != null)
+            setCommand.uninit();
     }
 
     @Override
@@ -59,7 +92,7 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ProxyObject<?, ?, ?> getChild(String id) {
         if(SET_COMMAND_ID.equals(id))
             return setCommand;
         return null;
@@ -79,10 +112,11 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory);
         }
     }
 }

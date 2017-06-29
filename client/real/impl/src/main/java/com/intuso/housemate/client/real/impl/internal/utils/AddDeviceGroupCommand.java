@@ -16,17 +16,17 @@ import java.util.UUID;
 /**
 * Created by tomc on 19/03/15.
 */
-public class AddSystemCommand {
+public class AddDeviceGroupCommand {
 
     public final static String NAME_PARAMETER_ID = "name";
     public final static String NAME_PARAMETER_NAME = "Name";
-    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new system";
+    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new device group";
     public final static String DESCRIPTION_PARAMETER_ID = "description";
     public final static String DESCRIPTION_PARAMETER_NAME = "Description";
-    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "A description of the new system";
+    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "A description of the new device group";
 
     public interface Callback {
-        void addSystem(RealDeviceGroupImpl system);
+        void addDeviceGroup(RealDeviceGroupImpl deviceGroup);
     }
 
     public static class Factory {
@@ -77,16 +77,16 @@ public class AddSystemCommand {
         private final Logger logger;
         private final Callback callback;
         private final RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback;
-        private final RealDeviceGroupImpl.Factory systemFactory;
+        private final RealDeviceGroupImpl.Factory deviceGroupFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
                          @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback,
-                         RealDeviceGroupImpl.Factory systemFactory) {
+                         RealDeviceGroupImpl.Factory deviceGroupFactory) {
             this.logger = logger;
             this.callback = callback;
-            this.systemFactory = systemFactory;
+            this.deviceGroupFactory = deviceGroupFactory;
             this.removeCallback = removeCallback;
         }
 
@@ -99,8 +99,8 @@ public class AddSystemCommand {
             if(description == null || description.getFirstValue() == null)
                 throw new HousemateException("No description specified");
             String id = UUID.randomUUID().toString();
-            RealDeviceGroupImpl system = systemFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
-            callback.addSystem(system);
+            RealDeviceGroupImpl deviceGroup = deviceGroupFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
+            callback.addDeviceGroup(deviceGroup);
         }
 
         public interface Factory {

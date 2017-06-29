@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
@@ -9,7 +9,7 @@ public class TaskView extends View<TaskView> {
     private ValueView errorValueView;
     private CommandView removeCommandView;
     private PropertyView driverPropertyView;
-    private ValueView driverLoadedView;
+    private ValueView driverLoadedValueView;
     private ValueView executingValueView;
     private ListView<PropertyView> propertiesView;
 
@@ -23,7 +23,7 @@ public class TaskView extends View<TaskView> {
                     ValueView errorValueView,
                     CommandView removeCommandView,
                     PropertyView driverPropertyView,
-                    ValueView driverLoadedView,
+                    ValueView driverLoadedValueView,
                     ValueView executingValueView,
                     ListView<PropertyView> propertiesView) {
         super(Mode.SELECTION);
@@ -31,7 +31,7 @@ public class TaskView extends View<TaskView> {
         this.errorValueView = errorValueView;
         this.removeCommandView = removeCommandView;
         this.driverPropertyView = driverPropertyView;
-        this.driverLoadedView = driverLoadedView;
+        this.driverLoadedValueView = driverLoadedValueView;
         this.executingValueView = executingValueView;
         this.propertiesView = propertiesView;
     }
@@ -72,12 +72,12 @@ public class TaskView extends View<TaskView> {
         return this;
     }
 
-    public ValueView getDriverLoadedView() {
-        return driverLoadedView;
+    public ValueView getDriverLoadedValueView() {
+        return driverLoadedValueView;
     }
 
-    public TaskView setDriverLoadedView(ValueView driverLoadedView) {
-        this.driverLoadedView = driverLoadedView;
+    public TaskView setDriverLoadedValueView(ValueView driverLoadedValueView) {
+        this.driverLoadedValueView = driverLoadedValueView;
         return this;
     }
 

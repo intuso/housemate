@@ -21,11 +21,11 @@ public interface Server<
     String USERS_ID = "user";
     String NODES_ID = "node";
     String ADD_AUTOMATION_ID = "add-automation";
-    String ADD_SYSTEM_ID = "add-system";
+    String ADD_DEVICE_GROUP_ID = "add-device-group";
     String ADD_USER_ID = "add-user";
 
     COMMAND getAddAutomationCommand();
-    COMMAND getAddSystemCommand();
+    COMMAND getAddDeviceGroupCommand();
     COMMAND getAddUserCommand();
 
     /**

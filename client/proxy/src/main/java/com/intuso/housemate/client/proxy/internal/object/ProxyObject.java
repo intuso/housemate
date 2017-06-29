@@ -2,6 +2,7 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.proxy.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -12,12 +13,14 @@ import org.slf4j.Logger;
  */
 public abstract class ProxyObject<
         DATA extends Object.Data,
-        LISTENER extends Object.Listener> implements Object<DATA, LISTENER> {
+        LISTENER extends Object.Listener,
+        VIEW extends View<?>>
+        implements Object<DATA, LISTENER> {
 
     public final static String PROXY = "proxy";
 
     protected final Logger logger;
-    private final Class<DATA> dataClass;
+    protected final String name;
     protected final Receiver.Factory receiverFactory;
 
     protected final ManagedCollection<LISTENER> listeners;
@@ -29,12 +32,17 @@ public abstract class ProxyObject<
      * @param logger the log
      * @param receiverFactory
      */
-    protected ProxyObject(Logger logger, Class<DATA> dataClass, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
-        logger.debug("Creating");
+    protected ProxyObject(Logger logger, String name, Class<DATA> dataClass, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
+        logger.debug("Creating {}", name);
         this.logger = logger;
-        this.dataClass = dataClass;
+        this.name = name;
         this.receiverFactory = receiverFactory;
         this.listeners = managedCollectionFactory.create();
+        receiver = receiverFactory.create(logger, name, dataClass);
+        receiver.listen((data, wasPersisted) -> {
+            ProxyObject.this.data = data;
+            dataUpdated();
+        });
     }
 
     public DATA getData() {
@@ -66,20 +74,9 @@ public abstract class ProxyObject<
         return listeners.add(listener);
     }
 
-    protected final void init(String name) {
-        logger.debug("Init {}", name);
-        receiver = receiverFactory.create(logger, name, dataClass);
-        receiver.listen(new Receiver.Listener<DATA>() {
-                    @Override
-                    public void onMessage(DATA data, boolean wasPersisted) {
-                        ProxyObject.this.data = data;
-                        dataUpdated();
-                    }
-                });
-        initChildren(name);
-    }
+    public abstract VIEW createView();
 
-    protected void initChildren(String name) {}
+    public void view(VIEW view) {}
 
     protected final void uninit() {
         logger.debug("Uninit");
@@ -98,7 +95,7 @@ public abstract class ProxyObject<
         return data != null;
     }
 
-    public interface Factory<OBJECT extends ProxyObject<?, ?>> {
-        OBJECT create(Logger logger);
+    public interface Factory<OBJECT extends ProxyObject<?, ?, ?>> {
+        OBJECT create(Logger logger, String name);
     }
 }

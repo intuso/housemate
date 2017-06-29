@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
+import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -14,45 +15,93 @@ import org.slf4j.Logger;
  * @param <USER> the type of the user
  */
 public abstract class ProxyUser<
-        COMMAND extends ProxyCommand<?, ?, COMMAND>,
-        PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+        COMMAND extends ProxyCommand<?, ?, ?>,
+        PROPERTY extends ProxyProperty<?, ?, ?>,
         USER extends ProxyUser<COMMAND, PROPERTY, USER>>
-        extends ProxyObject<User.Data, User.Listener<? super USER>>
+        extends ProxyObject<User.Data, User.Listener<? super USER>, UserView>
         implements User<COMMAND, COMMAND, PROPERTY, USER>,
         ProxyRemoveable<COMMAND> {
 
-    private final COMMAND renameCommand;
-    private final COMMAND removeCommand;
-    private final PROPERTY emailProperty;
+    private final ProxyObject.Factory<COMMAND> commandFactory;
+    private final ProxyObject.Factory<PROPERTY> propertyFactory;
+
+    private COMMAND renameCommand;
+    private COMMAND removeCommand;
+    private PROPERTY emailProperty;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyUser(Logger logger,
+                     String name,
                      ManagedCollectionFactory managedCollectionFactory,
                      Receiver.Factory receiverFactory,
                      ProxyObject.Factory<COMMAND> commandFactory,
                      ProxyObject.Factory<PROPERTY> propertyFactory) {
-        super(logger, User.Data.class, managedCollectionFactory, receiverFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
-        emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID));
+        super(logger, name, User.Data.class, managedCollectionFactory, receiverFactory);
+        this.commandFactory = commandFactory;
+        this.propertyFactory = propertyFactory;
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
-        emailProperty.init(ChildUtil.name(name, EMAIL_ID));
+    public UserView createView() {
+        return new UserView();
+    }
+
+    @Override
+    public void view(UserView view) {
+
+        super.view(view);
+
+        // create things according to the view's mode, sub-views, and what's already created
+        switch (view.getMode()) {
+            case ANCESTORS:
+            case CHILDREN:
+                if(renameCommand == null)
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                if(removeCommand == null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if(emailProperty == null)
+                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
+                break;
+            case SELECTION:
+                if(renameCommand == null && view.getRenameCommandView() != null)
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                if(removeCommand == null && view.getRemoveCommandView() != null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if(emailProperty == null && view.getEmailPropertyView() != null)
+                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
+                break;
+        }
+
+        // view things according to the view's mode and sub-views
+        switch (view.getMode()) {
+            case ANCESTORS:
+                renameCommand.view(new CommandView(View.Mode.ANCESTORS));
+                removeCommand.view(new CommandView(View.Mode.ANCESTORS));
+                emailProperty.view(new PropertyView(View.Mode.ANCESTORS));
+                break;
+            case CHILDREN:
+            case SELECTION:
+                if(view.getRenameCommandView() != null)
+                    renameCommand.view(view.getRenameCommandView());
+                if(view.getRemoveCommandView() != null)
+                    removeCommand.view(view.getRemoveCommandView());
+                if(view.getEmailPropertyView() != null)
+                    emailProperty.view(view.getEmailPropertyView());
+                break;
+        }
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        renameCommand.uninit();
-        removeCommand.uninit();
-        emailProperty.uninit();
+        if(renameCommand != null)
+            renameCommand.uninit();
+        if(removeCommand != null)
+            removeCommand.uninit();
+        if(emailProperty != null)
+            emailProperty.uninit();
     }
 
     @Override
@@ -71,7 +120,7 @@ public abstract class ProxyUser<
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ProxyObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))
@@ -95,11 +144,12 @@ public abstract class ProxyUser<
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyProperty.Simple> propertyFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory, propertyFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, propertyFactory);
         }
     }
 }

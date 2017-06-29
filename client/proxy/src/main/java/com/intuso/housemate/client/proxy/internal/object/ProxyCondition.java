@@ -9,6 +9,7 @@ import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyFailable;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
 import com.intuso.housemate.client.proxy.internal.ProxyUsesDriver;
+import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -20,32 +21,39 @@ import org.slf4j.Logger;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-        COMMAND extends ProxyCommand<?, ?, COMMAND>,
-        VALUE extends ProxyValue<?, VALUE>,
-        PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+        COMMAND extends ProxyCommand<?, ?, ?>,
+        VALUE extends ProxyValue<?, ?>,
+        PROPERTY extends ProxyProperty<?, ?, ?>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
         CONDITION extends ProxyCondition<COMMAND, VALUE, PROPERTY, PROPERTIES, CONDITION, CONDITIONS>,
         CONDITIONS extends ProxyList<CONDITION, ?>>
-        extends ProxyObject<Condition.Data, Condition.Listener<? super CONDITION>>
+        extends ProxyObject<Condition.Data, Condition.Listener<? super CONDITION>, ConditionView>
         implements Condition<COMMAND, COMMAND, VALUE, PROPERTY, VALUE, VALUE, PROPERTIES, COMMAND, CONDITIONS, CONDITION>,
         ProxyRemoveable<COMMAND>,
         ProxyFailable<VALUE>,
         ProxyUsesDriver<PROPERTY, VALUE> {
 
-    private final COMMAND renameCommand;
-    private final COMMAND removeCommand;
-    private final VALUE errorValue;
-    private final PROPERTY driverProperty;
-    private final VALUE driverLoadedValue;
-    private final PROPERTIES properties;
-    private final CONDITIONS conditions;
-    private final COMMAND addConditionCommand;
-    private final VALUE satisfiedValue;
+    private final ProxyObject.Factory<COMMAND> commandFactory;
+    private final ProxyObject.Factory<VALUE> valueFactory;
+    private final ProxyObject.Factory<PROPERTY> propertyFactory;
+    private final ProxyObject.Factory<PROPERTIES> propertiesFactory;
+    private final ProxyObject.Factory<CONDITIONS> conditionsFactory;
+
+    private COMMAND renameCommand;
+    private COMMAND removeCommand;
+    private VALUE errorValue;
+    private PROPERTY driverProperty;
+    private VALUE driverLoadedValue;
+    private PROPERTIES properties;
+    private CONDITIONS conditions;
+    private COMMAND addConditionCommand;
+    private VALUE satisfiedValue;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyCondition(Logger logger,
+                          String name,
                           ManagedCollectionFactory managedCollectionFactory,
                           Receiver.Factory receiverFactory,
                           ProxyObject.Factory<COMMAND> commandFactory,
@@ -53,44 +61,127 @@ public abstract class ProxyCondition<
                           ProxyObject.Factory<PROPERTY> propertyFactory,
                           ProxyObject.Factory<PROPERTIES> propertiesFactory,
                           ProxyObject.Factory<CONDITIONS> conditionsFactory) {
-        super(logger, Condition.Data.class, managedCollectionFactory, receiverFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
-        driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID));
-        driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID));
-        properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID));
-        conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID));
-        addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID));
-        satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID));
+        super(logger, name, Condition.Data.class, managedCollectionFactory, receiverFactory);
+        this.commandFactory = commandFactory;
+        this.valueFactory = valueFactory;
+        this.propertyFactory = propertyFactory;
+        this.propertiesFactory = propertiesFactory;
+        this.conditionsFactory = conditionsFactory;
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
-        errorValue.init(ChildUtil.name(name, ERROR_ID));
-        driverProperty.init(ChildUtil.name(name, DRIVER_ID));
-        driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID));
-        properties.init(ChildUtil.name(name, PROPERTIES_ID));
-        conditions.init(ChildUtil.name(name, CONDITIONS_ID));
-        addConditionCommand.init(ChildUtil.name(name, ADD_CONDITION_ID));
-        satisfiedValue.init(ChildUtil.name(name, SATISFIED_ID));
+    public ConditionView createView() {
+        return new ConditionView();
+    }
+
+    @Override
+    public void view(ConditionView view) {
+
+        super.view(view);
+
+        // create things according to the view's mode, sub-views, and what's already created
+        switch (view.getMode()) {
+            case ANCESTORS:
+            case CHILDREN:
+                if(renameCommand == null)
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                if(removeCommand == null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if(errorValue == null)
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                if(driverProperty == null)
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                if(driverLoadedValue == null)
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                if(properties == null)
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                if(conditions == null)
+                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
+                if(addConditionCommand == null)
+                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
+                if(satisfiedValue == null)
+                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
+                break;
+            case SELECTION:
+                if(renameCommand == null && view.getRenameCommandView() != null)
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                if(removeCommand == null && view.getRemoveCommandView() != null)
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                if(errorValue == null && view.getErrorValueView() != null)
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                if(driverProperty == null && view.getDriverPropertyView() != null)
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                if(driverLoadedValue == null && view.getDriverLoadedValueView() != null)
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                if(properties == null && view.getPropertiesView() != null)
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                if(conditions == null && view.getConditionsView() != null)
+                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
+                if(addConditionCommand == null && view.getAddConditionCommandView() != null)
+                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
+                if(satisfiedValue == null && view.getSatisfiedValueView() != null)
+                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
+                break;
+        }
+
+        // view things according to the view's mode and sub-views
+        switch (view.getMode()) {
+            case ANCESTORS:
+                renameCommand.view(new CommandView(View.Mode.ANCESTORS));
+                removeCommand.view(new CommandView(View.Mode.ANCESTORS));
+                errorValue.view(new ValueView(View.Mode.ANCESTORS));
+                driverProperty.view(new PropertyView(View.Mode.ANCESTORS));
+                driverLoadedValue.view(new ValueView(View.Mode.ANCESTORS));
+                properties.view(new ListView(View.Mode.ANCESTORS));
+                conditions.view(new ListView(View.Mode.ANCESTORS));
+                addConditionCommand.view(new CommandView(View.Mode.ANCESTORS));
+                satisfiedValue.view(new ValueView(View.Mode.ANCESTORS));
+                break;
+            case CHILDREN:
+            case SELECTION:
+                if(view.getRenameCommandView() != null)
+                    renameCommand.view(view.getRenameCommandView());
+                if(view.getRemoveCommandView() != null)
+                    removeCommand.view(view.getRemoveCommandView());
+                if(view.getErrorValueView() != null)
+                    errorValue.view(view.getErrorValueView());
+                if(view.getDriverPropertyView() != null)
+                    driverProperty.view(view.getDriverPropertyView());
+                if(view.getDriverLoadedValueView() != null)
+                    driverLoadedValue.view(view.getDriverLoadedValueView());
+                if(view.getPropertiesView() != null)
+                    properties.view(view.getPropertiesView());
+                if(view.getConditionsView() != null)
+                    conditions.view(view.getConditionsView());
+                if(view.getAddConditionCommandView() != null)
+                    addConditionCommand.view(view.getAddConditionCommandView());
+                if(view.getSatisfiedValueView() != null)
+                    satisfiedValue.view(view.getSatisfiedValueView());
+                break;
+        }
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        renameCommand.uninit();
-        removeCommand.uninit();
-        errorValue.uninit();
-        driverProperty.uninit();
-        driverLoadedValue.uninit();
-        properties.uninit();
-        conditions.uninit();
-        addConditionCommand.uninit();
-        satisfiedValue.uninit();
+        if(renameCommand != null)
+            renameCommand.uninit();
+        if(removeCommand != null)
+            removeCommand.uninit();
+        if(errorValue != null)
+            errorValue.uninit();
+        if(driverProperty != null)
+            driverProperty.uninit();
+        if(driverLoadedValue != null)
+            driverLoadedValue.uninit();
+        if(properties != null)
+            properties.uninit();
+        if(conditions != null)
+            conditions.uninit();
+        if(addConditionCommand != null)
+            addConditionCommand.uninit();
+        if(satisfiedValue != null)
+            satisfiedValue.uninit();
     }
 
     @Override
@@ -146,8 +237,9 @@ public abstract class ProxyCondition<
     }
 
     public final boolean isSatisfied() {
-        return satisfiedValue.getValue() != null && satisfiedValue.getValue().getFirstValue() != null
-                ? Boolean.parseBoolean(satisfiedValue.getValue().getFirstValue()) : false;
+        return satisfiedValue.getValue() != null
+                && satisfiedValue.getValue().getFirstValue() != null
+                && Boolean.parseBoolean(satisfiedValue.getValue().getFirstValue());
     }
 
     @Override
@@ -156,7 +248,7 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    public ProxyObject<?, ?> getChild(String id) {
+    public ProxyObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))
@@ -195,6 +287,7 @@ public abstract class ProxyCondition<
 
         @Inject
         public Simple(@Assisted Logger logger,
+                      @Assisted String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Sender.Factory senderFactory,
@@ -203,7 +296,7 @@ public abstract class ProxyCondition<
                       Factory<ProxyProperty.Simple> propertyFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory,
                       Factory<ProxyList.Simple<Simple>> conditionsFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory, conditionsFactory);
+            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory, conditionsFactory);
         }
     }
 }

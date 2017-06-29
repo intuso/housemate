@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.proxy.internal.view;
+package com.intuso.housemate.client.proxy.internal.object.view;
 
 import java.io.Serializable;
 
@@ -10,13 +10,14 @@ public abstract class View<VIEW extends View<?>> implements Serializable {
     public enum Mode {
         ANCESTORS,
         CHILDREN,
-        SELECTION,
-        NOTHING
+        SELECTION
     }
 
     private Mode mode;
 
-    public View() {}
+    public View() {
+        this(Mode.SELECTION);
+    }
 
     public View(Mode mode) {
         this.mode = mode;
