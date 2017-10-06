@@ -19,11 +19,6 @@
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
-			<artifactId>housemate-extension-plugin-homeeasyuk-hardwareapi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-multibindings</artifactId>
 		</dependency>

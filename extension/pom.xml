@@ -14,7 +14,6 @@
     <description>Extensions for the Housemate framework</description>
 
     <modules>
-        <module>android</module>
         <module>plugin</module>
         <module>twitter</module>
     </modules>

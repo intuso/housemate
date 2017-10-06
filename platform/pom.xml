@@ -14,7 +14,6 @@
     <description>Platforms for the Housemate framework</description>
 
     <modules>
-        <module>android</module>
         <module>pc</module>
     </modules>
 
