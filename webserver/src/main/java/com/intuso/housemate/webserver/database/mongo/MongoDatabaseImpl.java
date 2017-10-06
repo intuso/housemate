@@ -219,7 +219,7 @@ public class MongoDatabaseImpl implements Database {
     @Override
     public void setUserPassword(String id, String passwordHash) {
         userCache.invalidate(id);
-        userCollection.updateOne(eq("_id", id), new Document("$set", new Document("psaswordHash", passwordHash)), new UpdateOptions().upsert(true));
+        userCollection.updateOne(eq("_id", id), new Document("$set", new Document("passwordHash", passwordHash)), new UpdateOptions().upsert(true));
     }
 
     @Override
