@@ -281,30 +281,55 @@ public abstract class ProxyAutomation<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        } else if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(RUNNING_ID.equals(id))
+        } else if(RUNNING_ID.equals(id)) {
+            if(runningValue == null)
+                runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
             return runningValue;
-        else if(START_ID.equals(id))
+        } else if(START_ID.equals(id)) {
+            if(startCommand == null)
+                startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
             return startCommand;
-        else if(STOP_ID.equals(id))
+        } else if(STOP_ID.equals(id)) {
+            if(stopCommand == null)
+                stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
             return stopCommand;
-        else if(ERROR_ID.equals(id))
+        } else if(ERROR_ID.equals(id)) {
+            if(errorValue == null)
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
-        else if(CONDITIONS_ID.equals(id))
+        } else if(CONDITIONS_ID.equals(id)) {
+            if(conditions == null)
+                conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
             return conditions;
-        else if(ADD_CONDITION_ID.equals(id))
+        } else if(ADD_CONDITION_ID.equals(id)) {
+            if(addConditionCommand == null)
+                addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
             return addConditionCommand;
-        else if(SATISFIED_TASKS_ID.equals(id))
+        } else if(SATISFIED_TASKS_ID.equals(id)) {
+            if(satisfiedTasks == null)
+                satisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, SATISFIED_TASKS_ID), ChildUtil.name(name, SATISFIED_TASKS_ID));
             return satisfiedTasks;
-        else if(ADD_SATISFIED_TASK_ID.equals(id))
+        } else if(ADD_SATISFIED_TASK_ID.equals(id)) {
+            if(addSatisfiedTaskCommand == null)
+                addSatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, ADD_SATISFIED_TASK_ID), ChildUtil.name(name, ADD_SATISFIED_TASK_ID));
             return addSatisfiedTaskCommand;
-        else if(UNSATISFIED_TASKS_ID.equals(id))
+        } else if(UNSATISFIED_TASKS_ID.equals(id)) {
+            if(unsatisfiedTasks == null)
+                unsatisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, UNSATISFIED_TASKS_ID), ChildUtil.name(name, UNSATISFIED_TASKS_ID));
             return unsatisfiedTasks;
-        else if(ADD_UNSATISFIED_TASK_ID.equals(id))
+        } else if(ADD_UNSATISFIED_TASK_ID.equals(id)) {
+            if(addUnsatisfiedTaskCommand == null)
+                addUnsatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, ADD_UNSATISFIED_TASK_ID), ChildUtil.name(name, ADD_UNSATISFIED_TASK_ID));
             return addUnsatisfiedTaskCommand;
+        }
         return null;
     }
 

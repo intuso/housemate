@@ -121,12 +121,19 @@ public abstract class ProxyUser<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        } else if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(EMAIL_ID.equals(id))
+        } else if(EMAIL_ID.equals(id)) {
+            if(emailProperty == null)
+                emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
             return emailProperty;
+        }
         return null;
     }
 

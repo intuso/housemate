@@ -93,8 +93,11 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(SET_COMMAND_ID.equals(id))
+        if(SET_COMMAND_ID.equals(id)) {
+            if (setCommand == null)
+                setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID), ChildUtil.name(name, SET_COMMAND_ID));
             return setCommand;
+        }
         return null;
     }
 

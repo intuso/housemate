@@ -2,6 +2,7 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.List;
@@ -193,6 +194,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
+        ensureSubscribedTo(Sets.newHashSet(id));
         return get(id);
     }
 

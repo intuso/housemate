@@ -125,12 +125,19 @@ public abstract class ProxyNode<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(ADD_HARDWARE_ID.equals(id))
+        if(ADD_HARDWARE_ID.equals(id)) {
+            if(addHardwareCommand == null)
+                addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
             return addHardwareCommand;
-        else if(HARDWARES_ID.equals(id))
+        } else if(HARDWARES_ID.equals(id)) {
+            if(hardwares == null)
+                hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
             return hardwares;
-        else if(TYPES_ID.equals(id))
+        } else if(TYPES_ID.equals(id)) {
+            if(types == null)
+                types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.name(name, TYPES_ID));
             return types;
+        }
         return null;
     }
 

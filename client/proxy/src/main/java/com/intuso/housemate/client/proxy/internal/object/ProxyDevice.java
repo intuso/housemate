@@ -122,12 +122,19 @@ public abstract class ProxyDevice<
 
     @Override
     public Object<?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(COMMANDS_ID.equals(id))
+        } else if(COMMANDS_ID.equals(id)) {
+            if(commands == null)
+                commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
             return commands;
-        else if(VALUES_ID.equals(id))
+        } else if(VALUES_ID.equals(id)) {
+            if(values == null)
+                values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
             return values;
+        }
         return null;
     }
 }

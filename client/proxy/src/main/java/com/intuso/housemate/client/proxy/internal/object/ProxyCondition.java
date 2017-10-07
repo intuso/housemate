@@ -249,24 +249,43 @@ public abstract class ProxyCondition<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        } else if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(ERROR_ID.equals(id))
+        } else if(ERROR_ID.equals(id)) {
+            if(errorValue == null)
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
-        else if(DRIVER_ID.equals(id))
+        } else if(DRIVER_ID.equals(id)) {
+            if(driverProperty == null)
+                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
             return driverProperty;
-        else if(DRIVER_LOADED_ID.equals(id))
+        } else if(DRIVER_LOADED_ID.equals(id)) {
+            if(driverLoadedValue == null)
+                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
             return driverLoadedValue;
-        else if(PROPERTIES_ID.equals(id))
+        } else if(PROPERTIES_ID.equals(id)) {
+            if(properties == null)
+                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
             return properties;
-        else if(CONDITIONS_ID.equals(id))
+        } else if(CONDITIONS_ID.equals(id)) {
+            if(conditions == null)
+                conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
             return conditions;
-        else if(ADD_CONDITION_ID.equals(id))
+        } else if(ADD_CONDITION_ID.equals(id)) {
+            if(addConditionCommand == null)
+                addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
             return addConditionCommand;
-        else if(SATISFIED_ID.equals(id))
+        } else if(SATISFIED_ID.equals(id)) {
+            if(satisfiedValue == null)
+                satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
             return satisfiedValue;
+        }
         return null;
     }
 

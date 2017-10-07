@@ -297,30 +297,55 @@ public abstract class ProxyHardware<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        } else if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(RUNNING_ID.equals(id))
+        } else if(RUNNING_ID.equals(id)) {
+            if(runningValue == null)
+                runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
             return runningValue;
-        else if(START_ID.equals(id))
+        } else if(START_ID.equals(id)) {
+            if(startCommand == null)
+                startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
             return startCommand;
-        else if(STOP_ID.equals(id))
+        } else if(STOP_ID.equals(id)) {
+            if(stopCommand == null)
+                stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
             return stopCommand;
-        else if(ERROR_ID.equals(id))
+        } else if(ERROR_ID.equals(id)) {
+            if(errorValue == null)
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
-        else if(DRIVER_ID.equals(id))
+        } else if(DRIVER_ID.equals(id)) {
+            if(driverProperty == null)
+                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
             return driverProperty;
-        else if(DRIVER_LOADED_ID.equals(id))
+        } else if(DRIVER_LOADED_ID.equals(id)) {
+            if(driverLoadedValue == null)
+                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
             return driverLoadedValue;
-        else if(COMMANDS_ID.equals(id))
+        } else if(COMMANDS_ID.equals(id)) {
+            if(commands == null)
+                commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
             return commands;
-        else if(PROPERTIES_ID.equals(id))
+        } else if(PROPERTIES_ID.equals(id)) {
+            if(properties == null)
+                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
             return properties;
-        else if(VALUES_ID.equals(id))
+        } else if(VALUES_ID.equals(id)) {
+            if(values == null)
+                values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
             return values;
-        else if(DEVICES_ID.equals(id))
+        } else if(DEVICES_ID.equals(id)) {
+            if (devices == null)
+                devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
             return devices;
+        }
         return null;
     }
 

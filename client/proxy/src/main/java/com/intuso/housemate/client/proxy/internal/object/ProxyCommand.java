@@ -201,10 +201,15 @@ public abstract class ProxyCommand<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(ENABLED_ID.equals(id))
+        if(ENABLED_ID.equals(id)) {
+            if (enabledValue == null)
+                enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
             return enabledValue;
-        else if(PARAMETERS_ID.equals(id))
+        } else if(PARAMETERS_ID.equals(id)) {
+            if (parameters == null)
+                parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
             return parameters;
+        }
         return null;
     }
 

@@ -233,10 +233,16 @@ public abstract class ProxyDeviceGroup<
 
     @Override
     public Object<?, ?> getChild(String id) {
-        if(REMOVE_ID.equals(id))
+        if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(ERROR_ID.equals(id))
+        }
+        else if(ERROR_ID.equals(id)) {
+            if (errorValue == null)
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
+        }
         else if(PLAYBACK.equals(id))
             return playbackDevices;
         else if(ADD_PLAYBACK.equals(id))

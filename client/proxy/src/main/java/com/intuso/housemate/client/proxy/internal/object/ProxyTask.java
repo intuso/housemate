@@ -212,20 +212,35 @@ public abstract class ProxyTask<
 
     @Override
     public ProxyObject<?, ?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
+        if(RENAME_ID.equals(id)) {
+            if(renameCommand == null)
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        } else if(REMOVE_ID.equals(id)) {
+            if(removeCommand == null)
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
-        else if(ERROR_ID.equals(id))
+        } else if(ERROR_ID.equals(id)) {
+            if(errorValue == null)
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
-        else if(DRIVER_ID.equals(id))
+        } else if(DRIVER_ID.equals(id)) {
+            if(driverProperty == null)
+                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
             return driverProperty;
-        else if(DRIVER_LOADED_ID.equals(id))
+        } else if(DRIVER_LOADED_ID.equals(id)) {
+            if(driverLoadedValue == null)
+                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
             return driverLoadedValue;
-        else if(PROPERTIES_ID.equals(id))
+        } else if(PROPERTIES_ID.equals(id)) {
+            if(properties == null)
+                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
             return properties;
-        else if(EXECUTING_ID.equals(id))
+        } else if(EXECUTING_ID.equals(id)) {
+            if(executingValue == null)
+                executingValue = valueFactory.create(ChildUtil.logger(logger, EXECUTING_ID), ChildUtil.name(name, EXECUTING_ID));
             return executingValue;
+        }
         return null;
     }
 

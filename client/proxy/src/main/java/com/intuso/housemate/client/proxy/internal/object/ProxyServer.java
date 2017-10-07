@@ -281,22 +281,37 @@ public abstract class ProxyServer<
 
     @Override
     public Object<?, ?> getChild(String id) {
-        if(ADD_AUTOMATION_ID.equals(id))
+        if(ADD_AUTOMATION_ID.equals(id)) {
+            if(addAutomationCommand == null)
+                addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
             return addAutomationCommand;
-        else if(ADD_DEVICE_GROUP_ID.equals(id))
+        } else if(ADD_DEVICE_GROUP_ID.equals(id)) {
+            if(addDeviceGroupCommand == null)
+                addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
             return addDeviceGroupCommand;
-        else if(ADD_USER_ID.equals(id))
+        } else if(ADD_USER_ID.equals(id)) {
+            if(addUserCommand == null)
+                addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
             return addUserCommand;
-        else if(DEVICES_ID.equals(id))
-            return devices;
-        else if(AUTOMATIONS_ID.equals(id))
+        } else if(DEVICES_ID.equals(id))
+            return devices; // NB not an object that is loaded
+        else if(AUTOMATIONS_ID.equals(id)) {
+            if(automations == null)
+                automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
             return automations;
-        else if(DEVICE_GROUPS_ID.equals(id))
+        } else if(DEVICE_GROUPS_ID.equals(id)) {
+            if(deviceGroups == null)
+                deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
             return deviceGroups;
-        else if(NODES_ID.equals(id))
+        } else if(NODES_ID.equals(id)) {
+            if(nodes == null)
+                nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
             return nodes;
-        else if(USERS_ID.equals(id))
+        } else if(USERS_ID.equals(id)) {
+            if(users == null)
+                users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
             return users;
+        }
         return null;
     }
 
