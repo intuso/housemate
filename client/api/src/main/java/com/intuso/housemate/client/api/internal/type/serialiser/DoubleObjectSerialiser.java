@@ -5,9 +5,9 @@ import com.intuso.housemate.client.api.internal.object.Type;
 /**
  * Created by tomc on 11/01/17.
  */
-public class DoubleSerialiser implements TypeSerialiser<Double> {
+public class DoubleObjectSerialiser implements TypeSerialiser<Double> {
 
-    public final static DoubleSerialiser INSTANCE = new DoubleSerialiser();
+    public final static DoubleObjectSerialiser INSTANCE = new DoubleObjectSerialiser();
 
     @Override
     public Type.Instance serialise(Double d) {

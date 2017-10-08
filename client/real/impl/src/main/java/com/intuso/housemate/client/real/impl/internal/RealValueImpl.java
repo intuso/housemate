@@ -15,6 +15,8 @@ import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
+
 /**
  * @param <O> the type of this value's value
  */
@@ -34,7 +36,7 @@ public final class RealValueImpl<O>
                          @Assisted RealTypeImpl type,
                          @Assisted("min") int minValues,
                          @Assisted("max") int maxValues,
-                         @Assisted Iterable values,
+                         @Assisted @Nullable Iterable values,
                          ManagedCollectionFactory managedCollectionFactory,
                          Receiver.Factory receiverFactory,
                          Sender.Factory senderFactory) {
@@ -54,7 +56,7 @@ public final class RealValueImpl<O>
                                 RealTypeImpl type,
                                 @Assisted("min") int minValues,
                                 @Assisted("max") int maxValues,
-                                Iterable values);
+                                @Nullable Iterable values);
     }
 
     public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> {

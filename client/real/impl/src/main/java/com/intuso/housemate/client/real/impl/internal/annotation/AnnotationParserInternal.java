@@ -160,7 +160,7 @@ public class AnnotationParserInternal implements AnnotationParser {
             Id id = propertyMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
-            Object value = getInitialValue(logger, object, clazz, propertyMethod.getKey().getName());
+            Iterable<Object> initialValues = getInitialValues(logger, object, clazz, propertyMethod.getKey().getName());
             RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
                     ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
@@ -169,20 +169,21 @@ public class AnnotationParserInternal implements AnnotationParser {
                     types.getType(new TypeSpec(propertyMethod.getKey().getGenericParameterTypes()[0], propertyMethod.getValue().restriction())),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
-                    Lists.newArrayList(value));
+                    initialValues);
             property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, idPrefix + id.value()), propertyMethod.getKey(), object));
             properties.add(property);
         }
         return properties;
     }
 
-    private Object getInitialValue(Logger logger, Object object, Class<?> clazz, String methodName) {
+    private Iterable<Object> getInitialValues(Logger logger, Object object, Class<?> clazz, String methodName) {
         if(methodName.startsWith("set")) {
             String fieldName = methodName.substring(3);
             String getterName = "get" + fieldName;
             try {
                 Method getter = clazz.getMethod(getterName);
-                return getter.invoke(object);
+                Object result = getter.invoke(object);
+                return result instanceof Iterable ? (Iterable<Object>) result : Lists.newArrayList(result);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
                 logger.error("Problem getting property initial value using getter {} of {}", getterName, clazz.getName());
@@ -190,7 +191,8 @@ public class AnnotationParserInternal implements AnnotationParser {
             String isGetterName = "is" + fieldName;
             try {
                 Method isGetter = clazz.getMethod(isGetterName);
-                return isGetter.invoke(object);
+                Object result = isGetter.invoke(object);
+                return result instanceof Iterable ? (Iterable<Object>) result : Lists.newArrayList(result);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
                 logger.error("Problem getting property initial value using isGetter {} of {}", isGetterName, clazz.getName());

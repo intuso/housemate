@@ -31,7 +31,7 @@ public class MethodPropertySetter<O> implements Property.Listener<RealPropertyIm
     public void valueChanged(RealPropertyImpl<O> property) {
         try {
             method.invoke(instance, property.getValue());
-        } catch(IllegalAccessException|InvocationTargetException e) {
+        } catch(IllegalArgumentException|IllegalAccessException|InvocationTargetException e) {
             logger.error("Failed to update property method {}", method.getName(), e);
         }
     }

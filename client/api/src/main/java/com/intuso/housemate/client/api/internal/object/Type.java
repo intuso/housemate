@@ -349,9 +349,14 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
 
         public void append(String indent, StringBuilder stringBuilder) {
             stringBuilder.append("]");
-            if(elements != null && elements.size() > 0)
-                for(Instance element : elements)
-                    element.append(indent, stringBuilder);
+            if(elements != null && elements.size() > 0) {
+                for (Instance element : elements) {
+                    if (element == null)
+                        stringBuilder.append("null");
+                    else
+                        element.append(indent, stringBuilder);
+                }
+            }
             stringBuilder.append("]");
         }
 

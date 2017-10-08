@@ -12,6 +12,7 @@ import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class RealPropertyImpl<O>
                             @Assisted RealTypeImpl type,
                             @Assisted("min") int minValues,
                             @Assisted("max") int maxValues,
-                            @Assisted Iterable values,
+                            @Assisted @Nullable Iterable values,
                             ManagedCollectionFactory managedCollectionFactory,
                             Receiver.Factory receiverFactory,
                             Sender.Factory senderFactory,
@@ -106,6 +107,6 @@ public class RealPropertyImpl<O>
                                    RealTypeImpl type,
                                    @Assisted("min") int minValues,
                                    @Assisted("max") int maxValues,
-                                   Iterable values);
+                                   @Nullable Iterable values);
     }
 }

@@ -5,9 +5,9 @@ import com.intuso.housemate.client.api.internal.object.Type;
 /**
  * Created by tomc on 11/01/17.
  */
-public class ByteSerialiser implements TypeSerialiser<Byte> {
+public class ByteObjectSerialiser implements TypeSerialiser<Byte> {
 
-    public final static ByteSerialiser INSTANCE = new ByteSerialiser();
+    public final static ByteObjectSerialiser INSTANCE = new ByteObjectSerialiser();
 
     @Override
     public Type.Instance serialise(Byte b) {

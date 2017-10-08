@@ -15,19 +15,19 @@ public final class SystemTypeSerialisersRepository implements TypeSerialiser.Rep
 
     @Inject
     public SystemTypeSerialisersRepository(// primitive types
-                                           BooleanSerialiser booleanSerialiser,
-                                           ByteSerialiser byteSerialiser,
-                                           DoubleSerialiser doubleSerialiser,
-                                           IntegerSerialiser integerSerialiser,
+                                           BooleanObjectSerialiser booleanObjectSerialiser,
+                                           ByteObjectSerialiser byteObjectSerialiser,
+                                           DoubleObjectSerialiser doubleObjectSerialiser,
+                                           IntegerObjectSerialiser integerObjectSerialiser,
                                            StringSerialiser stringSerialiser) {
-        serialisers.put(new TypeSpec(Boolean.class), booleanSerialiser);
-        serialisers.put(new TypeSpec(boolean.class), booleanSerialiser);
-        serialisers.put(new TypeSpec(Byte.class), byteSerialiser);
-        serialisers.put(new TypeSpec(byte.class), byteSerialiser);
-        serialisers.put(new TypeSpec(Double.class), doubleSerialiser);
-        serialisers.put(new TypeSpec(double.class), doubleSerialiser);
-        serialisers.put(new TypeSpec(Integer.class), integerSerialiser);
-        serialisers.put(new TypeSpec(int.class), integerSerialiser);
+        serialisers.put(new TypeSpec(Boolean.class), booleanObjectSerialiser);
+        serialisers.put(new TypeSpec(boolean.class), booleanObjectSerialiser);
+        serialisers.put(new TypeSpec(Byte.class), byteObjectSerialiser);
+        serialisers.put(new TypeSpec(byte.class), byteObjectSerialiser);
+        serialisers.put(new TypeSpec(Double.class), doubleObjectSerialiser);
+        serialisers.put(new TypeSpec(double.class), doubleObjectSerialiser);
+        serialisers.put(new TypeSpec(Integer.class), integerObjectSerialiser);
+        serialisers.put(new TypeSpec(int.class), integerObjectSerialiser);
         serialisers.put(new TypeSpec(String.class), stringSerialiser);
         serialisers.put(new TypeSpec(String.class, "email"), stringSerialiser);
     }

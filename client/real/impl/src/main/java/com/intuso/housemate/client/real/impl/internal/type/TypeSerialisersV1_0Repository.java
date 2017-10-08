@@ -5,11 +5,15 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.v1_0.real.impl.type.BooleanType;
-import com.intuso.housemate.client.v1_0.real.impl.type.ByteType;
-import com.intuso.housemate.client.v1_0.real.impl.type.DoubleType;
+import com.intuso.housemate.client.v1_0.real.impl.type.BooleanObjectType;
+import com.intuso.housemate.client.v1_0.real.impl.type.BooleanPrimitiveType;
+import com.intuso.housemate.client.v1_0.real.impl.type.ByteObjectType;
+import com.intuso.housemate.client.v1_0.real.impl.type.BytePrimitiveType;
+import com.intuso.housemate.client.v1_0.real.impl.type.DoubleObjectType;
+import com.intuso.housemate.client.v1_0.real.impl.type.DoublePrimitiveType;
 import com.intuso.housemate.client.v1_0.real.impl.type.EmailType;
-import com.intuso.housemate.client.v1_0.real.impl.type.IntegerType;
+import com.intuso.housemate.client.v1_0.real.impl.type.IntegerObjectType;
+import com.intuso.housemate.client.v1_0.real.impl.type.IntegerPrimitiveType;
 import com.intuso.housemate.client.v1_0.real.impl.type.StringType;
 
 import java.util.Map;
@@ -23,21 +27,25 @@ public final class TypeSerialisersV1_0Repository implements TypeSerialiser.Repos
 
     @Inject
     public TypeSerialisersV1_0Repository(// primitive types
-                                         BooleanType booleanType,
-                                         ByteType byteType,
-                                         DoubleType doubleType,
-                                         IntegerType integerType,
+                                         BooleanObjectType booleanObjectType,
+                                         BooleanPrimitiveType booleanPrimitiveType,
+                                         ByteObjectType byteObjectType,
+                                         BytePrimitiveType bytePrimitiveType,
+                                         DoubleObjectType doubleObjectType,
+                                         DoublePrimitiveType doublePrimitiveType,
+                                         IntegerObjectType integerObjectType,
+                                         IntegerPrimitiveType integerPrimitiveType,
                                          StringType stringType,
                                          // regex types
                                          EmailType emailType) {
-        serialiserAvailable(new TypeSpec(Boolean.class), booleanType);
-        serialiserAvailable(new TypeSpec(boolean.class), booleanType);
-        serialiserAvailable(new TypeSpec(Byte.class), byteType);
-        serialiserAvailable(new TypeSpec(byte.class), byteType);
-        serialiserAvailable(new TypeSpec(Double.class), doubleType);
-        serialiserAvailable(new TypeSpec(double.class), doubleType);
-        serialiserAvailable(new TypeSpec(Integer.class), integerType);
-        serialiserAvailable(new TypeSpec(int.class), integerType);
+        serialiserAvailable(new TypeSpec(Boolean.class), booleanObjectType);
+        serialiserAvailable(new TypeSpec(boolean.class), booleanPrimitiveType);
+        serialiserAvailable(new TypeSpec(Byte.class), byteObjectType);
+        serialiserAvailable(new TypeSpec(byte.class), bytePrimitiveType);
+        serialiserAvailable(new TypeSpec(Double.class), doubleObjectType);
+        serialiserAvailable(new TypeSpec(double.class), doublePrimitiveType);
+        serialiserAvailable(new TypeSpec(Integer.class), integerObjectType);
+        serialiserAvailable(new TypeSpec(int.class), integerPrimitiveType);
         serialiserAvailable(new TypeSpec(String.class), stringType);
         serialiserAvailable(new TypeSpec(String.class, "email"), emailType);
     }

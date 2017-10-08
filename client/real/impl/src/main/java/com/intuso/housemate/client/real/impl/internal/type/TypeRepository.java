@@ -30,10 +30,14 @@ public final class TypeRepository implements TypeSerialiser.Repository {
 
     @Inject
     public TypeRepository(// primitive types
-                          BooleanType booleanType,
-                          ByteType byteType,
-                          DoubleType doubleType,
-                          IntegerType integerType,
+                          BooleanObjectType booleanObjectType,
+                          BooleanPrimitiveType booleanPrimitiveType,
+                          ByteObjectType byteObjectType,
+                          BytePrimitiveType bytePrimitiveType,
+                          DoubleObjectType doubleObjectType,
+                          DoublePrimitiveType doublePrimitiveType,
+                          IntegerObjectType integerObjectType,
+                          IntegerPrimitiveType integerPrimitiveType,
                           StringType stringType,
                           // regex types
                           EmailType emailType,
@@ -46,14 +50,14 @@ public final class TypeRepository implements TypeSerialiser.Repository {
                           ConditionDriverType conditionDriverType,
                           HardwareDriverType hardwareDriverType,
                           TaskDriverType taskDriverType) {
-        typeAvailable(new TypeSpec(Boolean.class), booleanType);
-        typeAvailable(new TypeSpec(boolean.class), booleanType);
-        typeAvailable(new TypeSpec(Byte.class), byteType);
-        typeAvailable(new TypeSpec(byte.class), byteType);
-        typeAvailable(new TypeSpec(Double.class), doubleType);
-        typeAvailable(new TypeSpec(double.class), doubleType);
-        typeAvailable(new TypeSpec(Integer.class), integerType);
-        typeAvailable(new TypeSpec(int.class), integerType);
+        typeAvailable(new TypeSpec(Boolean.class), booleanObjectType);
+        typeAvailable(new TypeSpec(boolean.class), booleanPrimitiveType);
+        typeAvailable(new TypeSpec(Byte.class), byteObjectType);
+        typeAvailable(new TypeSpec(byte.class), bytePrimitiveType);
+        typeAvailable(new TypeSpec(Double.class), doubleObjectType);
+        typeAvailable(new TypeSpec(double.class), doublePrimitiveType);
+        typeAvailable(new TypeSpec(Integer.class), integerObjectType);
+        typeAvailable(new TypeSpec(int.class), integerPrimitiveType);
         typeAvailable(new TypeSpec(String.class), stringType);
         typeAvailable(new TypeSpec(String.class, "email"), emailType);
         typeAvailable(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.class)), deviceType);
