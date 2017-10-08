@@ -289,8 +289,8 @@ public final class RealHardwareImpl
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
         removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
         runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID));
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID));
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID));
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID));
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
         commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID));
         values.init(ChildUtil.name(name, Hardware.VALUES_ID));

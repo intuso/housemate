@@ -73,13 +73,13 @@ public class ProxyAutomationBridge
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.RUNNING_ID),
                 ChildUtil.name(internalName, Runnable.RUNNING_ID)
         );
-        startCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.START_ID),
-                ChildUtil.name(internalName, Runnable.START_ID)
-        );
         stopCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.STOP_ID),
                 ChildUtil.name(internalName, Runnable.STOP_ID)
+        );
+        startCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.START_ID),
+                ChildUtil.name(internalName, Runnable.START_ID)
         );
         errorValue.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
