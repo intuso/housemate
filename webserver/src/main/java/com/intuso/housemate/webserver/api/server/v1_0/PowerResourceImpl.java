@@ -4,8 +4,15 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Device;
 import com.intuso.housemate.client.v1_0.api.object.Object;
-import com.intuso.housemate.client.v1_0.api.type.serialiser.BooleanSerialiser;
-import com.intuso.housemate.client.v1_0.proxy.object.*;
+import com.intuso.housemate.client.v1_0.api.type.serialiser.BooleanPrimitiveSerialiser;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyDevice;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceConnected;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceGroup;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyServer;
+import com.intuso.housemate.client.v1_0.proxy.object.view.CommandView;
+import com.intuso.housemate.client.v1_0.proxy.object.view.DeviceConnectedView;
+import com.intuso.housemate.client.v1_0.proxy.object.view.DeviceGroupView;
+import com.intuso.housemate.client.v1_0.proxy.object.view.ListView;
 import com.intuso.housemate.client.v1_0.rest.PowerResource;
 import com.intuso.housemate.client.v1_0.rest.model.Page;
 import com.intuso.housemate.webserver.SessionUtils;
@@ -72,24 +79,37 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device == null)
             throw new NotFoundException();
-        return BooleanSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValue().getElements().get(0));
+        return BooleanPrimitiveSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValue().getElements().get(0));
     }
 
     @Override
     public void turnOn(String id) {
         logger.debug("Turning on {}", id);
         ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
-        if(device == null)
+        if(device instanceof ProxyDeviceConnected) {
+            ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
+            deviceConnected.view(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"on")));
+            deviceConnected.getCommands().get("on").perform(loggerListener);
+        } else if(device instanceof ProxyDeviceGroup) {
+            ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
+            deviceConnected.view(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"on")));
+            deviceConnected.getCommands().get("on").perform(loggerListener);
+        } else
             throw new NotFoundException();
-        device.getCommands().get("on").perform(loggerListener);
     }
 
     @Override
     public void turnOff(String id) {
         logger.debug("Turning off {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
-        if(device == null)
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);if(device instanceof ProxyDeviceConnected) {
+            ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
+            deviceConnected.view(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"off")));
+            deviceConnected.getCommands().get("off").perform(loggerListener);
+        } else if(device instanceof ProxyDeviceGroup) {
+            ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
+            deviceConnected.view(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"off")));
+            deviceConnected.getCommands().get("off").perform(loggerListener);
+        } else
             throw new NotFoundException();
-        device.getCommands().get("off").perform(loggerListener);
     }
 }

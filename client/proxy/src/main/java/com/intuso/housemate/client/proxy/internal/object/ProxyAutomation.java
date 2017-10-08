@@ -179,6 +179,34 @@ public abstract class ProxyAutomation<
     }
 
     @Override
+    public void viewRemoveCommand(CommandView commandView) {
+        if(removeCommand == null)
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+        removeCommand.view(commandView);
+    }
+
+    @Override
+    public void viewRenameCommand(CommandView commandView) {
+        if(renameCommand == null)
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+        renameCommand.view(commandView);
+    }
+
+    @Override
+    public void viewStartCommand(CommandView commandView) {
+        if(startCommand == null)
+            startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
+        startCommand.view(commandView);
+    }
+
+    @Override
+    public void viewStopCommand(CommandView commandView) {
+        if(stopCommand == null)
+            stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
+        stopCommand.view(commandView);
+    }
+
+    @Override
     protected void uninitChildren() {
         super.uninitChildren();
         if(renameCommand != null)

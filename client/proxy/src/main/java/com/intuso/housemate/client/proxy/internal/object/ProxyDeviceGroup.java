@@ -128,6 +128,13 @@ public abstract class ProxyDeviceGroup<
     }
 
     @Override
+    public void viewRemoveCommand(CommandView commandView) {
+        if(removeCommand == null)
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+        removeCommand.view(commandView);
+    }
+
+    @Override
     protected void uninitChildren() {
         super.uninitChildren();
         if(removeCommand != null)

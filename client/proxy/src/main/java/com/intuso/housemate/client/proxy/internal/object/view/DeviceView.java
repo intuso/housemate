@@ -35,17 +35,17 @@ public class DeviceView<VIEW extends DeviceView<?>> extends View<VIEW> {
         return commandsView;
     }
 
-    public DeviceView setCommandsView(ListView<CommandView> commandsView) {
+    public VIEW setCommandsView(ListView<CommandView> commandsView) {
         this.commandsView = commandsView;
-        return this;
+        return (VIEW) this;
     }
 
     public ListView<ValueView> getValuesView() {
         return valuesView;
     }
 
-    public DeviceView setValuesView(ListView<ValueView> valuesView) {
+    public VIEW setValuesView(ListView<ValueView> valuesView) {
         this.valuesView = valuesView;
-        return this;
+        return (VIEW) this;
     }
 }

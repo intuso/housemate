@@ -95,6 +95,13 @@ public abstract class ProxyDevice<
     }
 
     @Override
+    public void viewRenameCommand(CommandView commandView) {
+        if(renameCommand == null)
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+        renameCommand.view(commandView);
+    }
+
+    @Override
     protected void uninitChildren() {
         super.uninitChildren();
         if(renameCommand != null)

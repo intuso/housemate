@@ -6,6 +6,8 @@ import com.intuso.housemate.client.v1_0.proxy.ProxyRemoveable;
 import com.intuso.housemate.client.v1_0.proxy.ProxyRenameable;
 import com.intuso.housemate.client.v1_0.proxy.ProxyRunnable;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyCommand;
+import com.intuso.housemate.client.v1_0.proxy.object.view.CommandView;
+import com.intuso.housemate.client.v1_0.proxy.object.view.View;
 import com.intuso.housemate.client.v1_0.rest.ObjectResource;
 import com.intuso.housemate.webserver.SessionUtils;
 import org.slf4j.Logger;
@@ -42,7 +44,9 @@ public class ObjectResourceImpl implements ObjectResource {
             throw new NotFoundException();
         else if(object instanceof ProxyRemoveable) {
             try {
-                ((ProxyRemoveable<ProxyCommand<?, ?, ?>>) object).getRemoveCommand().performSync(10000L);
+                ProxyRemoveable<ProxyCommand<?, ?, ?>> removeable = (ProxyRemoveable<ProxyCommand<?, ?, ?>>) object;
+                removeable.viewRemoveCommand(new CommandView(View.Mode.ANCESTORS));
+                removeable.getRemoveCommand().performSync(10000L);
             } catch (InterruptedException e) {
                 throw new BadRequestException("Failed to wait for remove command to complete", e);
             }
@@ -57,9 +61,11 @@ public class ObjectResourceImpl implements ObjectResource {
             throw new NotFoundException();
         else if(object instanceof ProxyRenameable) {
             try {
+                ProxyRenameable<ProxyCommand<?, ?, ?>> renameable = (ProxyRenameable<ProxyCommand<?, ?, ?>>) object;
+                renameable.viewRenameCommand(new CommandView(View.Mode.ANCESTORS));
                 Type.InstanceMap values = new Type.InstanceMap();
                 values.getChildren().put("name", new Type.Instances(new Type.Instance(newName)));
-                ((ProxyRenameable<ProxyCommand<?, ?, ?>>) object).getRenameCommand().performSync(values, 10000L);
+                renameable.getRenameCommand().performSync(values, 10000L);
             } catch (InterruptedException e) {
                 throw new BadRequestException("Failed to wait for rename command to complete", e);
             }
@@ -74,7 +80,9 @@ public class ObjectResourceImpl implements ObjectResource {
             throw new NotFoundException();
         else if(object instanceof ProxyRunnable) {
             try {
-                ((ProxyRunnable<ProxyCommand<?, ?, ?>, ?>) object).getStartCommand().performSync(10000L);
+                ProxyRunnable<ProxyCommand<?, ?, ?>, ?> runnable = (ProxyRunnable<ProxyCommand<?, ?, ?>, ?>) object;
+                runnable.viewStartCommand(new CommandView(View.Mode.ANCESTORS));
+                runnable.getStartCommand().performSync(10000L);
             } catch (InterruptedException e) {
                 throw new BadRequestException("Failed to wait for start command to complete", e);
             }
@@ -89,7 +97,9 @@ public class ObjectResourceImpl implements ObjectResource {
             throw new NotFoundException();
         else if(object instanceof ProxyRunnable) {
             try {
-                ((ProxyRunnable<ProxyCommand<?, ?, ?>, ?>) object).getStopCommand().performSync(10000L);
+                ProxyRunnable<ProxyCommand<?, ?, ?>, ?> runnable = (ProxyRunnable<ProxyCommand<?, ?, ?>, ?>) object;
+                runnable.viewStopCommand(new CommandView(View.Mode.ANCESTORS));
+                runnable.getStopCommand().performSync(10000L);
             } catch (InterruptedException e) {
                 throw new BadRequestException("Failed to wait for start command to complete", e);
             }

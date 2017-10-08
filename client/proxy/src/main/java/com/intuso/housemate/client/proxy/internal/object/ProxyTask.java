@@ -4,10 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.ProxyFailable;
-import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
-import com.intuso.housemate.client.proxy.internal.ProxyUsesDriver;
+import com.intuso.housemate.client.proxy.internal.*;
 import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -27,6 +24,7 @@ public abstract class ProxyTask<
         implements Task<COMMAND, COMMAND, VALUE, PROPERTY, VALUE, VALUE, PROPERTIES, TASK>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
+        ProxyRenameable<COMMAND>,
         ProxyUsesDriver<PROPERTY, VALUE> {
 
     private final ProxyObject.Factory<COMMAND> commandFactory;
@@ -136,6 +134,20 @@ public abstract class ProxyTask<
                     executingValue.view(view.getExecutingValueView());
                 break;
         }
+    }
+
+    @Override
+    public void viewRemoveCommand(CommandView commandView) {
+        if(removeCommand == null)
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+        removeCommand.view(commandView);
+    }
+
+    @Override
+    public void viewRenameCommand(CommandView commandView) {
+        if(renameCommand == null)
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+        renameCommand.view(commandView);
     }
 
     @Override
