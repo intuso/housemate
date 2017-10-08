@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 @Id(value = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
 public class RFXtrx433Hardware implements HardwareDriver {
 
+    private final static String DEFAULT_PATTERNS = ".*ttyUSB.*,COM.*,.*tty\\.usbserial-.*";
+
     private static List<RFXtrx433Hardware> CREATED_INSTANCES = Lists.newCopyOnWriteArrayList();
     private static RFXtrx433Hardware RUNNING_INSTANCE = null;
 
@@ -33,7 +35,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private final Set<Handler> handlers;
     private final Lighting2Handler.AC lighting2ACHandler;
 
-    private String pattern = "(/dev/ttyUSB[0-9]|COM[0-9])";
+    private String patterns = DEFAULT_PATTERNS;
 
     @Inject
     public RFXtrx433Hardware(Injector injector) {
@@ -51,14 +53,13 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
     @Property
     @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
-        if(RFXTRX != null)
-            RFXTRX.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
+    public void setPatterns(String patterns) {
+        this.patterns = patterns;
+        RFXTRX.setPatterns(asPatterns(patterns));
     }
 
-    public String getPattern() {
-        return pattern;
+    public String getPatterns() {
+        return patterns;
     }
 
     @Property
@@ -76,6 +77,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
             RUNNING_INSTANCE = this;
         }
         // setup the connection to the USB device
+        RFXTRX.setPatterns(asPatterns(patterns));
         RFXTRX.openPortSafe();
         for (Handler handler : handlers)
             handler.init(callback);
@@ -115,6 +117,13 @@ public class RFXtrx433Hardware implements HardwareDriver {
         lighting2ACHandler.removeDevice(houseId, unitCode);
     }
 
+    private static List<Pattern> asPatterns(String patterns) {
+        List<Pattern> result = Lists.newArrayList();
+        for(String pattern : patterns.split(","))
+            result.add(Pattern.compile(pattern));
+        return result;
+    }
+
     public static class Detector implements HardwareDriver.Detector {
 
         @Override
@@ -126,6 +135,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
             // if not, try and open the port. Should succeed if one is attached
             try {
+                RFXTRX.setPatterns(asPatterns(DEFAULT_PATTERNS));
                 RFXTRX.openPort();
                 RFXTRX.closePort();
 
