@@ -3,8 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Parameter;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ParameterView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.proxy.internal.object.view.ParameterView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -27,8 +29,13 @@ public abstract class ProxyParameter<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public ParameterView createView() {
-        return new ParameterView();
+    public ParameterView createView(View.Mode mode) {
+        return new ParameterView(mode);
+    }
+
+    @Override
+    public Tree getTree(ParameterView view) {
+        return new Tree(getData());
     }
 
     @Override
@@ -42,12 +49,12 @@ public abstract class ProxyParameter<TYPE extends ProxyType<?>,
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:17
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:17
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyParameter<ProxyType.Simple, Simple> {
 
         @Inject

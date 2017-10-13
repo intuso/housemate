@@ -6,6 +6,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
@@ -18,8 +21,8 @@ import java.util.Map;
 
 /**
  */
-public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?>>
-        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>>>
+public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?, ?>>
+        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>>, ListView<?>>
         implements RealList<ELEMENT, RealListPersistedImpl<CHILD_DATA, ELEMENT>> {
 
     private final Receiver.Factory receiverFactory;
@@ -58,6 +61,46 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
         };
     }
 
+    @Override
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
+    }
+
+    @Override
+    public Tree getTree(ListView<?> view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getElementView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getElements() != null)
+                        for (String elementId : view.getElements())
+                            if (elements.containsKey(elementId))
+                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getElementView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
     public RemoveCallback<ELEMENT> getRemoveCallback() {
         return removeCallback;
     }
@@ -92,18 +135,19 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
                     add(element);
             }
         }
+
         // receive future messages
         // NB this will receive all the ones we received above, but in a different thread and probably not before we want to init them.
         existingObjectReceiver.listen(new Receiver.Listener<CHILD_DATA>() {
-                    @Override
-                    public void onMessage(CHILD_DATA data, boolean wasPersisted) {
-                        if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = existingObjectHandler.create(ChildUtil.logger(logger, data.getId()), data, removeCallback);
-                            if(element != null)
-                                add(element);
-                        }
-                    }
-                });
+            @Override
+            public void onMessage(CHILD_DATA data, boolean persistent) {
+                if(!elements.containsKey(data.getId())) {
+                    ELEMENT element = existingObjectHandler.create(ChildUtil.logger(logger, data.getId()), data, removeCallback);
+                    if(element != null)
+                        add(element);
+                }
+            }
+        });
     }
 
     @Override
@@ -154,7 +198,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         return get(id);
     }
 
@@ -168,14 +212,14 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
         return elements.values().iterator();
     }
 
-    public interface Factory<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?>> {
+    public interface Factory<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?, ?>> {
         RealListPersistedImpl<CHILD_DATA, ELEMENT> create(Logger logger,
                                                           @Assisted("id") String id,
                                                           @Assisted("name") String name,
                                                           @Assisted("description") String description);
     }
 
-    public interface ElementFactory<DATA extends Object.Data, OBJECT extends RealObject<DATA, ?>> {
+    public interface ElementFactory<DATA extends Object.Data, OBJECT extends RealObject<DATA, ?, ?>> {
         OBJECT create(Logger logger, DATA data, RemoveCallback<OBJECT> removeCallback);
     }
 

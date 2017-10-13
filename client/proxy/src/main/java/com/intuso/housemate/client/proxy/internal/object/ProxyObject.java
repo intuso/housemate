@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.proxy.internal.object.view.View;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 public abstract class ProxyObject<
         DATA extends Object.Data,
         LISTENER extends Object.Listener,
-        VIEW extends View<?>>
-        implements Object<DATA, LISTENER> {
+        VIEW extends View>
+        implements Object<DATA, LISTENER, VIEW> {
 
     public final static String PROXY = "proxy";
 
@@ -39,9 +39,12 @@ public abstract class ProxyObject<
         this.receiverFactory = receiverFactory;
         this.listeners = managedCollectionFactory.create();
         receiver = receiverFactory.create(logger, name, dataClass);
-        receiver.listen((data, wasPersisted) -> {
-            ProxyObject.this.data = data;
-            dataUpdated();
+        receiver.listen(new Receiver.Listener<DATA>() {
+            @Override
+            public void onMessage(DATA data, boolean wasPersisted) {
+                ProxyObject.this.data = data;
+                ProxyObject.this.dataUpdated();
+            }
         });
     }
 
@@ -74,9 +77,7 @@ public abstract class ProxyObject<
         return listeners.add(listener);
     }
 
-    public abstract VIEW createView();
-
-    public void view(VIEW view) {}
+    public void load(VIEW view) {}
 
     protected final void uninit() {
         logger.debug("Uninit");

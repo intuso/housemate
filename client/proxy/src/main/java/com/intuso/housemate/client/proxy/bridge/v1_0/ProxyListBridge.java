@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -18,8 +19,8 @@ import java.util.Map;
 /**
  * Created by tomc on 28/11/16.
  */
-public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.List.Data, List.Data, List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>>>
+public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?, ?>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.List.Data, List.Data, List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>>, ListView<?>>
         implements List<ELEMENT, ProxyListBridge<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements = Maps.newHashMap();
@@ -83,7 +84,7 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         return get(id);
     }
 

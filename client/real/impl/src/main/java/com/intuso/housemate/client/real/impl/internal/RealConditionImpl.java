@@ -14,7 +14,9 @@ import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
@@ -31,7 +33,7 @@ import java.util.Map;
  * Base class for all condition
  */
 public final class RealConditionImpl
-        extends RealObject<Condition.Data, Condition.Listener<? super RealConditionImpl>>
+        extends RealObject<Condition.Data, Condition.Listener<? super RealConditionImpl>, ConditionView>
         implements RealCondition<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealConditionImpl, RealListPersistedImpl<Condition.Data, RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
@@ -47,7 +49,7 @@ public final class RealConditionImpl
     private final RealValueImpl<Boolean> driverLoadedValue;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> satisfiedValue;
-    private final RealListPersistedImpl<Condition.Data, RealConditionImpl> childConditions;
+    private final RealListPersistedImpl<Condition.Data, RealConditionImpl> conditions;
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
@@ -154,10 +156,10 @@ public final class RealConditionImpl
         final RealListPersistedImpl.RemoveCallback<RealConditionImpl> childRemoveCallback = new RealListPersistedImpl.RemoveCallback<RealConditionImpl>() {
             @Override
             public void remove(RealConditionImpl condition) {
-                childConditions.remove(condition.getId());
+                conditions.remove(condition.getId());
             }
         };
-        this.childConditions = conditionsFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
+        this.conditions = conditionsFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
                 Condition.CONDITIONS_ID,
                 Condition.CONDITIONS_ID,
                 "Child conditions");
@@ -184,6 +186,74 @@ public final class RealConditionImpl
                 }
             }
         });
+    }
+
+    @Override
+    public ConditionView createView(View.Mode mode) {
+        return new ConditionView(mode);
+    }
+
+    @Override
+    public Tree getTree(ConditionView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValueView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getErrorValueView() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getDriverPropertyView() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    if(view.getDriverLoadedValueView() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    if(view.getPropertiesView() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    if(view.getConditionsView() != null)
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
+                    if(view.getAddConditionCommandView() != null)
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
+                    if(view.getSatisfiedValueView() != null)
+                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValueView()));
+                    break;
+            }
+
+        }
+
+        return result;
     }
 
     private void initDriverListener() {
@@ -245,7 +315,7 @@ public final class RealConditionImpl
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
         properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
         satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID));
-        childConditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
+        conditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
         addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
     }
 
@@ -260,7 +330,7 @@ public final class RealConditionImpl
         driverLoadedValue.uninit();
         properties.uninit();
         satisfiedValue.uninit();
-        childConditions.uninit();
+        conditions.uninit();
         addConditionCommand.uninit();
     }
 
@@ -324,7 +394,7 @@ public final class RealConditionImpl
 
     @Override
     public RealListPersistedImpl<Condition.Data, RealConditionImpl> getConditions() {
-        return childConditions;
+        return conditions;
     }
 
     @Override
@@ -334,11 +404,11 @@ public final class RealConditionImpl
 
     @Override
     public final void addCondition(RealConditionImpl condition) {
-        childConditions.add(condition);
+        conditions.add(condition);
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))
@@ -352,7 +422,7 @@ public final class RealConditionImpl
         else if(PROPERTIES_ID.equals(id))
             return properties;
         else if(CONDITIONS_ID.equals(id))
-            return childConditions;
+            return conditions;
         else if(ADD_CONDITION_ID.equals(id))
             return addConditionCommand;
         else if(SATISFIED_ID.equals(id))
@@ -400,7 +470,7 @@ public final class RealConditionImpl
 
     @Override
     public final void start() {
-        for(RealConditionImpl childCondition : childConditions) {
+        for(RealConditionImpl childCondition : conditions) {
             childCondition.start();
             childListenerRegistrations.put(childCondition.getId(), childCondition.addObjectListener(this));
             childSatisfied.put(childCondition.getId(), childCondition.isSatisfied());
@@ -413,7 +483,7 @@ public final class RealConditionImpl
     public final void stop() {
         for(String id : childSatisfied.keySet())
             childListenerRegistrations.get(id).remove();
-        for(RealCondition childCondition : childConditions)
+        for(RealCondition childCondition : conditions)
             childCondition.stop();
         if(isDriverLoaded())
             driver.uninit();

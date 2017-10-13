@@ -4,7 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -16,12 +21,13 @@ import org.slf4j.Logger;
 /**
  */
 public final class RealCommandImpl
-        extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>>
+        extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>, CommandView>
         implements RealCommand<RealValueImpl<Boolean>, RealListGeneratedImpl<RealParameterImpl<?>>, RealCommandImpl> {
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
     private final Receiver.Factory receiverFactory;
+
     private final Performer performer;
     private final RealValueImpl<Boolean> enabledValue;
     private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
@@ -66,6 +72,46 @@ public final class RealCommandImpl
     }
 
     @Override
+    public CommandView createView(View.Mode mode) {
+        return new CommandView(mode);
+    }
+
+    @Override
+    public Tree getTree(CommandView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getEnabledValueView() != null)
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
+                    if(view.getParametersView() != null)
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
     protected final void initChildren(String name) {
         super.initChildren(name);
         enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID));
@@ -73,28 +119,28 @@ public final class RealCommandImpl
         performStatusSender = senderFactory.create(logger, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
         performReceiver = receiverFactory.create(logger, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class);
         performReceiver.listen(new Receiver.Listener<PerformData>() {
+            @Override
+            public void onMessage(final PerformData performData, boolean persistent) {
+                logger.info("Performing");
+                perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
+
                     @Override
-                    public void onMessage(final PerformData performData, boolean wasPersisted) {
-                        logger.info("Performing");
-                        perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
+                    public void commandStarted(RealCommandImpl command) {
+                        performStatus(performData.getOpId(), false, null);
+                    }
 
-                            @Override
-                            public void commandStarted(RealCommandImpl command) {
-                                performStatus(performData.getOpId(), false, null);
-                            }
+                    @Override
+                    public void commandFinished(RealCommandImpl command) {
+                        performStatus(performData.getOpId(), true, null);
+                    }
 
-                            @Override
-                            public void commandFinished(RealCommandImpl command) {
-                                performStatus(performData.getOpId(), true, null);
-                            }
-
-                            @Override
-                            public void commandFailed(RealCommandImpl command, String error) {
-                                performStatus(performData.getOpId(), true, error);
-                            }
-                        });
+                    @Override
+                    public void commandFailed(RealCommandImpl command, String error) {
+                        performStatus(performData.getOpId(), true, error);
                     }
                 });
+            }
+        });
     }
 
     @Override
@@ -123,7 +169,7 @@ public final class RealCommandImpl
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(ENABLED_ID.equals(id))
             return enabledValue;
         else if(PARAMETERS_ID.equals(id))

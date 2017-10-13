@@ -1,9 +1,9 @@
-package com.intuso.housemate.client.proxy.internal.object.view;
+package com.intuso.housemate.client.api.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
  */
-public class TaskView extends View<TaskView> {
+public class TaskView extends View {
 
     private CommandView renameCommandView;
     private ValueView errorValueView;

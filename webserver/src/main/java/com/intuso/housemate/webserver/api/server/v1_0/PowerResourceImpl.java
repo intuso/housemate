@@ -9,10 +9,10 @@ import com.intuso.housemate.client.v1_0.proxy.object.ProxyDevice;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceConnected;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceGroup;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyServer;
-import com.intuso.housemate.client.v1_0.proxy.object.view.CommandView;
-import com.intuso.housemate.client.v1_0.proxy.object.view.DeviceConnectedView;
-import com.intuso.housemate.client.v1_0.proxy.object.view.DeviceGroupView;
-import com.intuso.housemate.client.v1_0.proxy.object.view.ListView;
+import com.intuso.housemate.client.v1_0.api.object.view.CommandView;
+import com.intuso.housemate.client.v1_0.api.object.view.DeviceConnectedView;
+import com.intuso.housemate.client.v1_0.api.object.view.DeviceGroupView;
+import com.intuso.housemate.client.v1_0.api.object.view.ListView;
 import com.intuso.housemate.client.v1_0.rest.PowerResource;
 import com.intuso.housemate.client.v1_0.rest.model.Page;
 import com.intuso.housemate.webserver.SessionUtils;
@@ -88,11 +88,11 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device instanceof ProxyDeviceConnected) {
             ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
-            deviceConnected.view(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"on")));
+            deviceConnected.load(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"on")));
             deviceConnected.getCommands().get("on").perform(loggerListener);
         } else if(device instanceof ProxyDeviceGroup) {
             ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
-            deviceConnected.view(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"on")));
+            deviceConnected.load(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"on")));
             deviceConnected.getCommands().get("on").perform(loggerListener);
         } else
             throw new NotFoundException();
@@ -103,11 +103,11 @@ public class PowerResourceImpl implements PowerResource {
         logger.debug("Turning off {}", id);
         ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);if(device instanceof ProxyDeviceConnected) {
             ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
-            deviceConnected.view(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"off")));
+            deviceConnected.load(new DeviceConnectedView().setCommandsView(new ListView<>(new CommandView(),"off")));
             deviceConnected.getCommands().get("off").perform(loggerListener);
         } else if(device instanceof ProxyDeviceGroup) {
             ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
-            deviceConnected.view(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"off")));
+            deviceConnected.load(new DeviceGroupView().setCommandsView(new ListView<>(new CommandView(),"off")));
             deviceConnected.getCommands().get("off").perform(loggerListener);
         } else
             throw new NotFoundException();

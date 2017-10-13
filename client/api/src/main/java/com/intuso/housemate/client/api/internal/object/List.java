@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.utilities.collection.ManagedCollection;
 
 /**
@@ -7,7 +8,7 @@ import com.intuso.utilities.collection.ManagedCollection;
  */
 public interface List<ELEMENT,
         LIST extends List<ELEMENT, ?>>
-        extends Object<List.Data, List.Listener<? super ELEMENT, ? super LIST>>,
+        extends Object<List.Data, List.Listener<? super ELEMENT, ? super LIST>, ListView<?>>,
         Iterable<ELEMENT> {
 
     /**

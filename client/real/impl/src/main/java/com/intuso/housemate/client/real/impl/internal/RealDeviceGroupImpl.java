@@ -8,6 +8,10 @@ import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -22,7 +26,7 @@ import org.slf4j.Logger;
  * Base class for all device
  */
 public final class RealDeviceGroupImpl
-        extends RealDeviceImpl<Device.Group.Data, Device.Group.Listener<? super RealDeviceGroupImpl>, RealDeviceGroupImpl>
+        extends RealDeviceImpl<Device.Group.Data, Device.Group.Listener<? super RealDeviceGroupImpl>, DeviceGroupView, RealDeviceGroupImpl>
         implements RealDeviceGroup<RealCommandImpl, RealCommandImpl, RealCommandImpl, RealValueImpl<String>,
                 RealListGeneratedImpl<RealCommandImpl>,
                 RealListGeneratedImpl<RealValueImpl<?>>,
@@ -154,6 +158,45 @@ public final class RealDeviceGroupImpl
                 VOLUME_DESCRIPTION);
         volumeDevices = new ConvertingList<>(volumeDeviceReferences, value -> value.getValue().getObject());
         this.addVolumeDeviceCommand = /* todo */ null;
+    }
+
+    @Override
+    public DeviceGroupView createView(View.Mode mode) {
+        return new DeviceGroupView(mode);
+    }
+
+    @Override
+    public Tree getTree(DeviceGroupView view) {
+
+        // create a result even for a null view
+        Tree result = super.getTree(view);
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getErrorValueView() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    break;
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -290,7 +333,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public Object<?, ?> getChild(String id) {
+    public Object<?, ?, ?> getChild(String id) {
         if(REMOVE_ID.equals(id))
             return removeCommand;
         else if(ERROR_ID.equals(id))

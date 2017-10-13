@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Value;
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
@@ -21,12 +24,13 @@ import javax.annotation.Nullable;
  * @param <O> the type of this value's value
  */
 public final class RealValueImpl<O>
-        extends RealValueBaseImpl<O, Value.Data, Value.Listener<? super RealValueImpl<O>>, RealValueImpl<O>>
+        extends RealValueBaseImpl<O, Value.Data, Value.Listener<? super RealValueImpl<O>>, ValueView, RealValueImpl<O>>
         implements RealValue<O, RealTypeImpl<O>, RealValueImpl<O>> {
 
     /**
      * @param logger {@inheritDoc}
      * @param managedCollectionFactory
+     * @param type the type of the value's value
      */
     @Inject
     public RealValueImpl(@Assisted Logger logger,
@@ -44,7 +48,17 @@ public final class RealValueImpl<O>
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public ValueView createView(View.Mode mode) {
+        return new ValueView(mode);
+    }
+
+    @Override
+    public Tree getTree(ValueView view) {
+        return new Tree(getData());
+    }
+
+    @Override
+    public RealObject<?, ?, ?> getChild(String id) {
         return null;
     }
 

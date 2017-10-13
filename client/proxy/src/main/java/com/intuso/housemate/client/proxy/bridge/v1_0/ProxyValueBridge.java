@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ValueMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyValueBridge
-        extends ProxyValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Value.Data, Value.Data, Value.Listener<? super ProxyValueBridge>, ProxyValueBridge>
+        extends ProxyValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Value.Data, Value.Data, Value.Listener<? super ProxyValueBridge>, ValueView, ProxyValueBridge>
         implements Value<Type.Instances, ProxyTypeBridge, ProxyValueBridge> {
 
     @Inject
@@ -28,7 +29,7 @@ public class ProxyValueBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         return null;
     }
 }

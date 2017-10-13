@@ -1,9 +1,9 @@
-package com.intuso.housemate.client.proxy.internal.object.view;
+package com.intuso.housemate.client.api.internal.object.view;
 
 /**
  * Created by tomc on 22/06/17.
  */
-public class NoView extends View<NoView> {
+public class NoView extends View {
 
     public NoView() {}
 

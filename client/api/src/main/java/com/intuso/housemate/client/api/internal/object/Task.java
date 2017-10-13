@@ -4,6 +4,7 @@ import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.UsesDriver;
+import com.intuso.housemate.client.api.internal.object.view.TaskView;
 
 /**
  * @param <EXECUTING_VALUE> the type of the executing value
@@ -19,7 +20,7 @@ public interface Task<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         EXECUTING_VALUE extends Value<?, ?, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
         TASK extends Task<REMOVE_COMMAND, RENAME_COMMAND, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, EXECUTING_VALUE, PROPERTIES, TASK>>
-        extends Object<Task.Data, Task.Listener<? super TASK>>,
+        extends Object<Task.Data, Task.Listener<? super TASK>, TaskView>,
         Property.Container<PROPERTIES>,
         Renameable<RENAME_COMMAND>,
         Removeable<REMOVE_COMMAND>,

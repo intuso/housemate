@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceGroupMapper;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -17,6 +18,7 @@ public class ProxyDeviceGroupBridge
         extends ProxyDeviceBridge<com.intuso.housemate.client.v1_0.api.object.Device.Group.Data,
         Device.Group.Data,
         Device.Group.Listener<? super ProxyDeviceGroupBridge>,
+        DeviceGroupView,
         ProxyDeviceGroupBridge>
         implements Device.Group<
         ProxyCommandBridge,
@@ -25,7 +27,7 @@ public class ProxyDeviceGroupBridge
         ProxyValueBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
-        List<Device<?, ?, ?, ?, ?, ?>, ?>,
+        List<Device<?, ?, ?, ?, ?, ?, ?>, ?>,
         ProxyDeviceGroupBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -160,7 +162,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -170,7 +172,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getPowerDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getPowerDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -180,7 +182,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getRunDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getRunDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -190,7 +192,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -200,7 +202,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getVolumeDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getVolumeDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -210,7 +212,7 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(REMOVE_ID.equals(id))
             return removeCommand;
         else if(ERROR_ID.equals(id))

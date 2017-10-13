@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.HardwareMapper;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
+import com.intuso.housemate.client.api.internal.object.view.HardwareView;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -15,7 +16,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class RealHardwareBridge
-        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, Hardware.Data, Hardware.Listener<? super RealHardwareBridge>>
+        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, Hardware.Data, Hardware.Listener<? super RealHardwareBridge>, HardwareView>
         implements Hardware<RealCommandBridge,
         RealCommandBridge,
         RealCommandBridge,
@@ -201,7 +202,7 @@ public class RealHardwareBridge
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

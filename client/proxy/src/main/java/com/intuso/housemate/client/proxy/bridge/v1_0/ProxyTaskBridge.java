@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TaskMapper;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Task;
+import com.intuso.housemate.client.api.internal.object.view.TaskView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -15,7 +16,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyTaskBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Task.Data, Task.Data, Task.Listener<? super ProxyTaskBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Task.Data, Task.Data, Task.Listener<? super ProxyTaskBridge>, TaskView>
         implements Task<ProxyCommandBridge, ProxyCommandBridge, ProxyValueBridge, ProxyPropertyBridge, ProxyValueBridge, ProxyValueBridge, ProxyListBridge<ProxyPropertyBridge>, ProxyTaskBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -127,7 +128,7 @@ public class ProxyTaskBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

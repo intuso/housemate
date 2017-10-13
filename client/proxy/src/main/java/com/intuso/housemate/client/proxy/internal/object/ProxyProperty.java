@@ -4,12 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.view.CommandView;
-import com.intuso.housemate.client.proxy.internal.object.view.PropertyView;
-import com.intuso.housemate.client.proxy.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -41,13 +42,51 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public PropertyView createView() {
-        return new PropertyView();
+    public PropertyView createView(View.Mode mode) {
+        return new PropertyView(mode);
     }
 
     @Override
-    public void view(PropertyView view) {
-        super.view(view);
+    public Tree getTree(PropertyView view) {
+
+        // make sure what they want is loaded
+        load(view);
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getSetCommandView() != null)
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
+    public void load(PropertyView view) {
+
+        super.load(view);
+
+        if(view == null || view.getMode() == null)
+            return;
 
         // create things according to the view's mode, sub-views, and what's already created
         switch (view.getMode()) {
@@ -64,11 +103,11 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
         // view things according to the view's mode and sub-views
         switch (view.getMode()) {
             case ANCESTORS:
-                setCommand.view(new CommandView(View.Mode.ANCESTORS));
+                setCommand.load(new CommandView(View.Mode.ANCESTORS));
             case CHILDREN:
             case SELECTION:
                 if (view.getSetCommandView() != null)
-                    setCommand.view(view.getSetCommandView());
+                    setCommand.load(view.getSetCommandView());
         }
     }
 
@@ -102,12 +141,12 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:17
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:17
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyProperty<
             ProxyType.Simple,
             ProxyCommand.Simple,

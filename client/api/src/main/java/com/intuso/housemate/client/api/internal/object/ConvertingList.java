@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 
 import java.util.Iterator;
@@ -7,7 +9,10 @@ import java.util.Iterator;
 /**
  * Created by tomc on 02/05/17.
  */
-public class ConvertingList<FROM extends Object<?, ?>, TO extends Object<?, ?>> implements List<TO, ConvertingList<FROM, TO>> {
+public class ConvertingList<
+        FROM extends Object<?, ?, ?>,
+        TO extends Object<?, ?, ?>>
+        implements List<TO, ConvertingList<FROM, TO>> {
 
     private final List<? extends FROM, ?> list;
     private final Converter<? super FROM, ? extends TO> converter;
@@ -60,8 +65,42 @@ public class ConvertingList<FROM extends Object<?, ?>, TO extends Object<?, ?>> 
     }
 
     @Override
-    public Object<?, ?> getChild(String id) {
+    public Object<?, ?, ?> getChild(String id) {
         return get(id);
+    }
+
+    @Override
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
+    }
+
+    @Override
+    public Tree getTree(ListView<?> view) {
+
+        Tree result = new Tree(getData());
+
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+                case ANCESTORS:
+                    for (TO to : this)
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.ANCESTORS)));
+                    break;
+                case CHILDREN:
+                    for (TO to : this)
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.SELECTION)));
+                    break;
+                case SELECTION:
+                    if (view.getElements() != null) {
+                        for (String id : view.getElements()) {
+                            TO to = get(id);
+                            if (to != null)
+                                result.getChildren().put(id, ((Object) to).getTree(view.getElementView()));
+                        }
+                    }
+                    break;
+            }
+        }
+        return result;
     }
 
     @Override

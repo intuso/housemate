@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -16,7 +17,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyPropertyBridge
-        extends ProxyValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Property.Data, Property.Data, Property.Listener<? super ProxyPropertyBridge>, ProxyPropertyBridge>
+        extends ProxyValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Property.Data, Property.Data, Property.Listener<? super ProxyPropertyBridge>, PropertyView, ProxyPropertyBridge>
         implements Property<Type.Instances, ProxyTypeBridge, ProxyCommandBridge, ProxyPropertyBridge> {
 
     private final ProxyCommandBridge setCommand;
@@ -54,7 +55,7 @@ public class ProxyPropertyBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(SET_COMMAND_ID.equals(id))
             return setCommand;
         return null;

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.SubTypeMapper;
 import com.intuso.housemate.client.api.internal.object.SubType;
+import com.intuso.housemate.client.api.internal.object.view.NoView;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class RealSubTypeBridge
-        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.SubType.Data, SubType.Data, SubType.Listener<? super RealSubTypeBridge>>
+        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.SubType.Data, SubType.Data, SubType.Listener<? super RealSubTypeBridge>, NoView>
         implements SubType<RealTypeBridge, RealSubTypeBridge> {
 
     @Inject
@@ -30,7 +31,7 @@ public class RealSubTypeBridge
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         return null;
     }
 }

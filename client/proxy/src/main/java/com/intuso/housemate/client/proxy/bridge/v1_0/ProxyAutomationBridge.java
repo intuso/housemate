@@ -8,6 +8,7 @@ import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
+import com.intuso.housemate.client.api.internal.object.view.AutomationView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -17,7 +18,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyAutomationBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Automation.Data, Automation.Data, Automation.Listener<? super ProxyAutomationBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Automation.Data, Automation.Data, Automation.Listener<? super ProxyAutomationBridge>, AutomationView>
         implements Automation<ProxyCommandBridge, ProxyCommandBridge, ProxyValueBridge, ProxyCommandBridge, ProxyValueBridge, ProxyCommandBridge, ProxyListBridge<ProxyConditionBridge>, ProxyListBridge<ProxyTaskBridge>, ProxyAutomationBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -189,7 +190,7 @@ public class ProxyAutomationBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

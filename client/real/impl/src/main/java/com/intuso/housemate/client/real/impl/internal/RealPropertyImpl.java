@@ -5,7 +5,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
@@ -19,7 +23,7 @@ import java.util.List;
  * @param <O> the type of the property's value
  */
 public class RealPropertyImpl<O>
-        extends RealValueBaseImpl<O, Property.Data, Property.Listener<? super RealPropertyImpl<O>>, RealPropertyImpl<O>>
+        extends RealValueBaseImpl<O, Property.Data, Property.Listener<? super RealPropertyImpl<O>>, PropertyView, RealPropertyImpl<O>>
         implements RealProperty<O, RealTypeImpl<O>, RealCommandImpl, RealPropertyImpl<O>> {
 
     private RealCommandImpl setCommand;
@@ -67,6 +71,42 @@ public class RealPropertyImpl<O>
     }
 
     @Override
+    public PropertyView createView(View.Mode mode) {
+        return new PropertyView(mode);
+    }
+
+    @Override
+    public Tree getTree(PropertyView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getSetCommandView() != null)
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
     protected void initChildren(String name) {
         super.initChildren(name);
         setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID));
@@ -93,7 +133,7 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(SET_COMMAND_ID.equals(id))
             return setCommand;
         return null;

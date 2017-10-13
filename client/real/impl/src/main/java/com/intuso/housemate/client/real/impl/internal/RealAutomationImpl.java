@@ -5,10 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
-import com.intuso.housemate.client.api.internal.object.Automation;
-import com.intuso.housemate.client.api.internal.object.Condition;
-import com.intuso.housemate.client.api.internal.object.Task;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
@@ -24,7 +22,7 @@ import org.slf4j.Logger;
  * Base class for all automation
  */
 public final class RealAutomationImpl
-        extends RealObject<Automation.Data, Automation.Listener<? super RealAutomationImpl>>
+        extends RealObject<Automation.Data, Automation.Listener<? super RealAutomationImpl>, AutomationView>
         implements RealAutomation<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealListPersistedImpl<Condition.Data, RealConditionImpl>, RealListPersistedImpl<Task.Data, RealTaskImpl>, RealAutomationImpl>,
         Condition.Listener<RealConditionImpl> {
@@ -230,6 +228,86 @@ public final class RealAutomationImpl
     }
 
     @Override
+    public AutomationView createView(View.Mode mode) {
+        return new AutomationView(mode);
+    }
+
+    @Override
+    public Tree getTree(AutomationView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValueView()));
+                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommandView()));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommandView()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
+                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasksView()));
+                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommandView()));
+                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasksView()));
+                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommandView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getRunningValueView() != null)
+                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValueView()));
+                    if(view.getStartCommandView() != null)
+                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommandView()));
+                    if(view.getStopCommandView() != null)
+                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommandView()));
+                    if(view.getErrorValueView() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getConditionsView() != null)
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
+                    if(view.getAddConditionCommandView() != null)
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
+                    if(view.getSatisfiedTasksView() != null)
+                        result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasksView()));
+                    if(view.getAddSatisfiedTaskCommandView() != null)
+                        result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommandView()));
+                    if(view.getUnsatisfiedTasksView() != null)
+                        result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasksView()));
+                    if(view.getAddUnsatisfiedTaskCommandView() != null)
+                        result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommandView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
     protected void initChildren(String name) {
         super.initChildren(name);
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
@@ -340,7 +418,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

@@ -5,6 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.NodeView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.impl.bridge.v1_0.RealNodeBridge;
@@ -22,7 +26,7 @@ import java.util.Map;
 /**
  */
 public final class RealNodeListImpl
-        extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>>
+        extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>, ListView<?>>
         implements RealList<ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl> {
 
     private final com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0ReceiverFactory;
@@ -50,6 +54,46 @@ public final class RealNodeListImpl
         super(logger, new List.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.v1_0ReceiverFactory = v1_0ReceiverFactory;
         this.nodeV1_0Factory = nodeV1_0Factory;
+    }
+
+    @Override
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
+    }
+
+    @Override
+    public Tree getTree(ListView<?> view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), element.getValue().getTree(new NodeView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getElementView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getElements() != null)
+                        for (String elementId : view.getElements())
+                            if (elements.containsKey(elementId))
+                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getElementView()));
+                    break;
+            }
+
+        }
+
+        return result;
     }
 
     @Override
@@ -127,7 +171,7 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public com.intuso.housemate.client.api.internal.object.Object<?, ?> getChild(String id) {
+    public com.intuso.housemate.client.api.internal.object.Object<?, ?, ?> getChild(String id) {
         return get(id);
     }
 

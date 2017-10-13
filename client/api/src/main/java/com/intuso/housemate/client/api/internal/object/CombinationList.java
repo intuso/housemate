@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 
@@ -10,7 +12,8 @@ import java.util.NoSuchElementException;
 /**
  * Created by tomc on 02/05/17.
  */
-public class CombinationList<T extends Object<?, ?>> implements List<T, CombinationList<T>>, List.Listener<T, List<T, ?>> {
+public class CombinationList<T extends Object<?, ?, ?>>
+        implements List<T, CombinationList<T>>, List.Listener<T, List<T, ?>> {
 
     private final List.Data data;
     private final ManagedCollection<List.Listener<? super T, ? super CombinationList<T>>> listeners;
@@ -90,8 +93,38 @@ public class CombinationList<T extends Object<?, ?>> implements List<T, Combinat
     }
 
     @Override
-    public Object<?, ?> getChild(String id) {
+    public Object<?, ?, ?> getChild(String id) {
         return get(id);
+    }
+
+    @Override
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
+    }
+
+    @Override
+    public Tree getTree(ListView<?> view) {
+        Tree result = new Tree(getData());
+        switch (view.getMode()) {
+            case ANCESTORS:
+                for(T t : this)
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.ANCESTORS)));
+                break;
+            case CHILDREN:
+                for(T t : this)
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.SELECTION)));
+                break;
+            case SELECTION:
+                if (view.getElements() != null) {
+                    for (String id : view.getElements()) {
+                        T t = get(id);
+                        if (t != null)
+                            result.getChildren().put(id, ((Object) t).getTree(view.getElementView()));
+                    }
+                }
+                break;
+        }
+        return result;
     }
 
     @Override

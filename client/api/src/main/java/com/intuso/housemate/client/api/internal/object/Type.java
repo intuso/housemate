@@ -1,12 +1,14 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.TypeView;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Listener<? super TYPE>> {
+public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Listener<? super TYPE>, TypeView> {
 
     /**
      *

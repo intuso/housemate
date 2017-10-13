@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.real.impl.ChildUtil;
@@ -18,8 +19,8 @@ import java.util.Map;
 /**
  * Created by tomc on 28/11/16.
  */
-public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
-        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.List.Data, List.Data, List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>>>
+public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?, ?>>
+        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.List.Data, List.Data, List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>>, ListView<?>>
         implements List<ELEMENT, RealListBridge<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements = Maps.newHashMap();
@@ -83,7 +84,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         return get(id);
     }
 

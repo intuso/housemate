@@ -2,10 +2,14 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
-import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -21,7 +25,7 @@ public abstract class ProxyDevice<
         VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         DEVICE extends ProxyDevice<DATA, LISTENER, VIEW, COMMAND, COMMANDS, VALUES, DEVICE>>
         extends ProxyObject<DATA, LISTENER, VIEW>
-        implements Device<DATA, LISTENER, COMMAND, COMMANDS, VALUES, DEVICE>,
+        implements Device<DATA, LISTENER, COMMAND, COMMANDS, VALUES, VIEW, DEVICE>,
         ProxyRenameable<COMMAND> {
 
     private final ProxyObject.Factory<COMMAND> commandFactory;
@@ -50,9 +54,53 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public void view(VIEW view) {
+    public Tree getTree(VIEW view) {
 
-        super.view(view);
+        // make sure what they want is loaded
+        load(view);
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
+                    result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getCommandsView() != null)
+                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
+                    if(view.getValuesView() != null)
+                        result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void load(VIEW view) {
+
+        super.load(view);
+
+        if(view == null || view.getMode() == null)
+            return;
 
         // create things according to the view's mode, sub-views, and what's already created
         switch (view.getMode()) {
@@ -78,27 +126,27 @@ public abstract class ProxyDevice<
         // view things according to the view's mode and sub-views
         switch (view.getMode()) {
             case ANCESTORS:
-                renameCommand.view(new CommandView(View.Mode.ANCESTORS));
-                commands.view(new ListView(View.Mode.ANCESTORS));
-                values.view(new ListView(View.Mode.ANCESTORS));
+                renameCommand.load(new CommandView(View.Mode.ANCESTORS));
+                commands.load(new ListView(View.Mode.ANCESTORS));
+                values.load(new ListView(View.Mode.ANCESTORS));
                 break;
             case CHILDREN:
             case SELECTION:
                 if(view.getRenameCommandView() != null)
-                    renameCommand.view(view.getRenameCommandView());
+                    renameCommand.load(view.getRenameCommandView());
                 if(view.getCommandsView() != null)
-                    commands.view(view.getCommandsView());
+                    commands.load(view.getCommandsView());
                 if(view.getValuesView() != null)
-                    values.view(view.getValuesView());
+                    values.load(view.getValuesView());
                 break;
         }
     }
 
     @Override
-    public void viewRenameCommand(CommandView commandView) {
+    public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
             renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-        renameCommand.view(commandView);
+        renameCommand.load(commandView);
     }
 
     @Override
@@ -128,7 +176,7 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public Object<?, ?> getChild(String id) {
+    public Object<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id)) {
             if(renameCommand == null)
                 renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));

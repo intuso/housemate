@@ -5,6 +5,9 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -16,8 +19,8 @@ import java.util.Map;
 
 /**
  */
-public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
-        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>>>
+public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
+        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>>, ListView<?>>
         implements RealList<ELEMENT, RealListGeneratedImpl<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements;
@@ -41,6 +44,46 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
         this.elements = Maps.newHashMap();
         for(ELEMENT element : elements)
             this.elements.put(element.getId(), element);
+    }
+
+    @Override
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
+    }
+
+    @Override
+    public Tree getTree(ListView<?> view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getElementView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getElements() != null)
+                        for (String elementId : view.getElements())
+                            if (elements.containsKey(elementId))
+                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getElementView()));
+                    break;
+            }
+
+        }
+
+        return result;
     }
 
     @Override
@@ -104,7 +147,7 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         return get(id);
     }
 
@@ -118,11 +161,11 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
         return elements.values().iterator();
     }
 
-    public interface Factory<ELEMENT extends RealObject<?, ?>> {
+    public interface Factory<ELEMENT extends RealObject<?, ?, ?>> {
         RealListGeneratedImpl<ELEMENT> create(Logger logger,
-                                          @Assisted("id") String id,
-                                          @Assisted("name") String name,
-                                          @Assisted("description") String description,
-                                          Iterable<? extends ELEMENT> elements);
+                                              @Assisted("id") String id,
+                                              @Assisted("name") String name,
+                                              @Assisted("description") String description,
+                                              Iterable<? extends ELEMENT> elements);
     }
 }

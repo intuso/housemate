@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
@@ -17,7 +18,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class RealPropertyBridge
-        extends RealValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Property.Data, Property.Data, Property.Listener<? super RealPropertyBridge>, RealPropertyBridge>
+        extends RealValueBaseBridge<com.intuso.housemate.client.v1_0.api.object.Property.Data, Property.Data, Property.Listener<? super RealPropertyBridge>, PropertyView, RealPropertyBridge>
         implements Property<Type.Instances, RealTypeBridge, RealCommandBridge, RealPropertyBridge> {
 
     private final RealCommandBridge setCommand;
@@ -55,7 +56,7 @@ public class RealPropertyBridge
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(SET_COMMAND_ID.equals(id))
             return setCommand;
         return null;

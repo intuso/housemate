@@ -3,9 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Task;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.*;
-import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -59,14 +60,75 @@ public abstract class ProxyTask<
     }
 
     @Override
-    public TaskView createView() {
-        return new TaskView();
+    public TaskView createView(View.Mode mode) {
+        return new TaskView(mode);
     }
 
     @Override
-    public void view(TaskView view) {
+    public Tree getTree(TaskView view) {
 
-        super.view(view);
+        // make sure what they want is loaded
+        load(view);
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getErrorValueView() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getDriverPropertyView() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    if(view.getDriverLoadedValueView() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    if(view.getPropertiesView() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    if(view.getExecutingValueView() != null)
+                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
+    public void load(TaskView view) {
+
+        super.load(view);
+
+        if(view == null || view.getMode() == null)
+            return;
 
         // create things according to the view's mode, sub-views, and what's already created
         switch (view.getMode()) {
@@ -108,46 +170,46 @@ public abstract class ProxyTask<
         // view things according to the view's mode and sub-views
         switch (view.getMode()) {
             case ANCESTORS:
-                renameCommand.view(new CommandView(View.Mode.ANCESTORS));
-                removeCommand.view(new CommandView(View.Mode.ANCESTORS));
-                errorValue.view(new ValueView(View.Mode.ANCESTORS));
-                driverProperty.view(new PropertyView(View.Mode.ANCESTORS));
-                driverLoadedValue.view(new ValueView(View.Mode.ANCESTORS));
-                properties.view(new ListView(View.Mode.ANCESTORS));
-                executingValue.view(new ValueView(View.Mode.ANCESTORS));
+                renameCommand.load(new CommandView(View.Mode.ANCESTORS));
+                removeCommand.load(new CommandView(View.Mode.ANCESTORS));
+                errorValue.load(new ValueView(View.Mode.ANCESTORS));
+                driverProperty.load(new PropertyView(View.Mode.ANCESTORS));
+                driverLoadedValue.load(new ValueView(View.Mode.ANCESTORS));
+                properties.load(new ListView(View.Mode.ANCESTORS));
+                executingValue.load(new ValueView(View.Mode.ANCESTORS));
                 break;
             case CHILDREN:
             case SELECTION:
                 if(view.getRenameCommandView() != null)
-                    renameCommand.view(view.getRenameCommandView());
+                    renameCommand.load(view.getRenameCommandView());
                 if(view.getRemoveCommandView() != null)
-                    removeCommand.view(view.getRemoveCommandView());
+                    removeCommand.load(view.getRemoveCommandView());
                 if(view.getErrorValueView() != null)
-                    errorValue.view(view.getErrorValueView());
+                    errorValue.load(view.getErrorValueView());
                 if(view.getDriverPropertyView() != null)
-                    driverProperty.view(view.getDriverPropertyView());
+                    driverProperty.load(view.getDriverPropertyView());
                 if(view.getDriverLoadedValueView() != null)
-                    driverLoadedValue.view(view.getDriverLoadedValueView());
+                    driverLoadedValue.load(view.getDriverLoadedValueView());
                 if(view.getPropertiesView() != null)
-                    properties.view(view.getPropertiesView());
+                    properties.load(view.getPropertiesView());
                 if(view.getExecutingValueView() != null)
-                    executingValue.view(view.getExecutingValueView());
+                    executingValue.load(view.getExecutingValueView());
                 break;
         }
     }
 
     @Override
-    public void viewRemoveCommand(CommandView commandView) {
+    public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
             removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-        removeCommand.view(commandView);
+        removeCommand.load(commandView);
     }
 
     @Override
-    public void viewRenameCommand(CommandView commandView) {
+    public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
             renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-        renameCommand.view(commandView);
+        renameCommand.load(commandView);
     }
 
     @Override
@@ -257,12 +319,12 @@ public abstract class ProxyTask<
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:21
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:21
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyTask<
             ProxyCommand.Simple,
             ProxyValue.Simple,

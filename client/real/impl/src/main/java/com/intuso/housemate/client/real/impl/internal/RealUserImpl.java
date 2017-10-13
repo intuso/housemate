@@ -5,8 +5,13 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
+import com.intuso.housemate.client.api.internal.object.view.UserView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealUser;
@@ -18,7 +23,7 @@ import org.slf4j.Logger;
  * Base class for all user
  */
 public final class RealUserImpl
-        extends RealObject<User.Data, User.Listener<? super RealUserImpl>>
+        extends RealObject<User.Data, User.Listener<? super RealUserImpl>, UserView>
         implements RealUser<RealCommandImpl, RealPropertyImpl<String>, RealUserImpl> {
 
     private final RealCommandImpl renameCommand;
@@ -88,6 +93,50 @@ public final class RealUserImpl
     }
 
     @Override
+    public UserView createView(View.Mode mode) {
+        return new UserView(mode);
+    }
+
+    @Override
+    public Tree getTree(UserView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getEmailPropertyView() != null)
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
     protected void initChildren(String name) {
         super.initChildren(name);
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
@@ -127,7 +176,7 @@ public final class RealUserImpl
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

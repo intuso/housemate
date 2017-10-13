@@ -2,6 +2,8 @@ package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -10,8 +12,9 @@ import org.slf4j.Logger;
 public abstract class RealObjectBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
         INTERNAL_DATA extends Object.Data,
-        LISTENER extends Object.Listener>
-        implements Object<INTERNAL_DATA, LISTENER> {
+        LISTENER extends Object.Listener,
+        VIEW extends View>
+        implements Object<INTERNAL_DATA, LISTENER, VIEW> {
 
     protected final Logger logger;
     protected VERSION_DATA data;
@@ -37,6 +40,16 @@ public abstract class RealObjectBridge<
         this.versionDataClass = versionDataClass;
         this.dataMapper = dataMapper;
         this.listeners = managedCollectionFactory.create();
+    }
+
+    @Override
+    public VIEW createView(View.Mode mode) {
+        throw new UnsupportedOperationException("This implementation should not be viewed");
+    }
+
+    @Override
+    public Tree getTree(VIEW view) {
+        throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 
     public final void init(String versionName, String internalName) {
@@ -103,7 +116,7 @@ public abstract class RealObjectBridge<
         return listeners.add(listener);
     }
 
-    public interface Factory<OBJECT extends RealObjectBridge<?, ?, ?>> {
+    public interface Factory<OBJECT extends RealObjectBridge<?, ?, ?, ?>> {
         OBJECT create(Logger logger);
     }
 }

@@ -4,6 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
+import com.intuso.housemate.client.api.internal.object.view.NodeView;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ServerBaseNode;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
@@ -14,7 +15,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class RealNodeBridge
-        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Node.Data, Node.Data, Node.Listener<? super RealNodeBridge>>
+        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Node.Data, Node.Data, Node.Listener<? super RealNodeBridge>, NodeView>
         implements Node<RealCommandBridge, RealListBridge<RealTypeBridge>, RealListBridge<RealHardwareBridge>, RealNodeBridge>,
         ServerBaseNode<RealCommandBridge, RealListBridge<RealTypeBridge>, RealListBridge<RealHardwareBridge>, RealNodeBridge> {
 
@@ -95,7 +96,7 @@ public class RealNodeBridge
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(ADD_HARDWARE_ID.equals(id))
             return addHardwareCommand;
         else if(HARDWARES_ID.equals(id))

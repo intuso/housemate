@@ -2,10 +2,12 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.proxy.internal.object.view.ValueView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -14,8 +16,8 @@ import org.slf4j.Logger;
  * @param <VALUE> the type of the value
  */
 public abstract class ProxyValue<
-            TYPE extends ProxyType<?>,
-            VALUE extends ProxyValue<TYPE, VALUE>>
+        TYPE extends ProxyType<?>,
+        VALUE extends ProxyValue<TYPE, VALUE>>
         extends ProxyValueBase<Value.Data, Value.Listener<? super VALUE>, ValueView, TYPE, VALUE>
         implements Value<Type.Instances, TYPE, VALUE> {
 
@@ -30,8 +32,13 @@ public abstract class ProxyValue<
     }
 
     @Override
-    public ValueView createView() {
-        return new ValueView();
+    public ValueView createView(View.Mode mode) {
+        return new ValueView(mode);
+    }
+
+    @Override
+    public Tree getTree(ValueView view) {
+        return new Tree(getData());
     }
 
     @Override
@@ -40,12 +47,12 @@ public abstract class ProxyValue<
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:21
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:21
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyValue<ProxyType.Simple, Simple> {
 
         @Inject

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.api.internal.object.view.NoView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -13,7 +14,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyOptionBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Option.Data, Option.Data, Option.Listener<? super ProxyOptionBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Option.Data, Option.Data, Option.Listener<? super ProxyOptionBridge>, NoView>
         implements Option<ProxyListBridge<ProxySubTypeBridge>, ProxyOptionBridge> {
 
     private final ProxyListBridge<ProxySubTypeBridge> subTypes;
@@ -50,7 +51,7 @@ public class ProxyOptionBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(SUB_TYPES_ID.equals(id))
             return subTypes;
         return null;

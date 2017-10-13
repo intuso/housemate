@@ -1,13 +1,15 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.ValueView;
+
 /**
  * @param <DATA_TYPE> the type of the value's type
  * @param <VALUE> the type of the value
  */
 public interface Value<DATA_TYPE,
-            TYPE extends Type<?>,
-            VALUE extends Value<?, ?, ?>>
-        extends ValueBase<Value.Data, DATA_TYPE, TYPE, Value.Listener<? super VALUE>, VALUE> {
+        TYPE extends Type<?>,
+        VALUE extends Value<?, ?, ?>>
+        extends ValueBase<Value.Data, DATA_TYPE, TYPE, Value.Listener<? super VALUE>, ValueView, VALUE> {
 
     /**
      *

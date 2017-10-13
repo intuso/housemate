@@ -1,12 +1,13 @@
-package com.intuso.housemate.client.proxy.internal.object.view;
+package com.intuso.housemate.client.api.internal.object.view;
 
 /**
  * Created by tomc on 19/06/17.
  */
-public class ServerView extends View<ServerView> {
+public class ServerView extends View {
 
     private ListView<AutomationView> automationsView;
     private CommandView addAutomationCommandView;
+    private ListView<DeviceView<?>> devicesView;
     private ListView<DeviceGroupView> deviceGroupsView;
     private CommandView addDeviceGroupCommandView;
     private ListView<UserView> usersView;
@@ -21,6 +22,7 @@ public class ServerView extends View<ServerView> {
 
     public ServerView(ListView<AutomationView> automationsView,
                       CommandView addAutomationCommandView,
+                      ListView<DeviceView<?>> devicesView,
                       ListView<DeviceGroupView> deviceGroupsView,
                       CommandView addDeviceGroupCommandView,
                       ListView<UserView> usersView,
@@ -28,6 +30,7 @@ public class ServerView extends View<ServerView> {
                       ListView<NodeView> nodesView) {
         this.automationsView = automationsView;
         this.addAutomationCommandView = addAutomationCommandView;
+        this.devicesView = devicesView;
         this.deviceGroupsView = deviceGroupsView;
         this.addDeviceGroupCommandView = addDeviceGroupCommandView;
         this.usersView = usersView;
@@ -50,6 +53,15 @@ public class ServerView extends View<ServerView> {
 
     public ServerView setAddAutomationCommandView(CommandView addAutomationCommandView) {
         this.addAutomationCommandView = addAutomationCommandView;
+        return this;
+    }
+
+    public ListView<DeviceView<?>> getDevicesView() {
+        return devicesView;
+    }
+
+    public ServerView setDevicesView(ListView<DeviceView<?>> devicesView) {
+        this.devicesView = devicesView;
         return this;
     }
 

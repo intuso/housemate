@@ -4,6 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Hardware;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.NodeView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
@@ -11,7 +16,7 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 public class RealNodeImpl
-        extends RealObject<com.intuso.housemate.client.api.internal.object.Node.Data, com.intuso.housemate.client.api.internal.object.Node.Listener<? super RealNodeImpl>>
+        extends RealObject<com.intuso.housemate.client.api.internal.object.Node.Data, com.intuso.housemate.client.api.internal.object.Node.Listener<? super RealNodeImpl>, NodeView>
         implements RealNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListPersistedImpl<Hardware.Data, RealHardwareImpl>, RealNodeImpl>,
         ServerBaseNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealListPersistedImpl<Hardware.Data, RealHardwareImpl>, RealNodeImpl>,
         AddHardwareCommand.Callback {
@@ -54,6 +59,50 @@ public class RealNodeImpl
     }
 
     @Override
+    public NodeView createView(View.Mode mode) {
+        return new NodeView(mode);
+    }
+
+    @Override
+    public Tree getTree(NodeView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(TYPES_ID, types.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getTypesView() != null)
+                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
+                    if(view.getHardwaresView() != null)
+                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
+                    if(view.getAddHardwareCommandView() != null)
+                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
     protected void initChildren(String name) {
         super.initChildren(name);
         types.init(ChildUtil.name(name, TYPES_ID));
@@ -90,7 +139,7 @@ public class RealNodeImpl
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(ADD_HARDWARE_ID.equals(id))
             return addHardwareCommand;
         else if(HARDWARES_ID.equals(id))

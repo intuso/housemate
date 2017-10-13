@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.UserMapper;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.view.UserView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -15,7 +16,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyUserBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.User.Data, User.Data, User.Listener<? super ProxyUserBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.User.Data, User.Data, User.Listener<? super ProxyUserBridge>, UserView>
         implements User<ProxyCommandBridge, ProxyCommandBridge, ProxyPropertyBridge, ProxyUserBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -77,7 +78,7 @@ public class ProxyUserBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))

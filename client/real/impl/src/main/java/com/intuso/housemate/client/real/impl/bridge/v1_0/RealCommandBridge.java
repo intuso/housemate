@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.CommandMapper;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
@@ -19,7 +20,7 @@ import java.util.Map;
  * Created by tomc on 28/11/16.
  */
 public class RealCommandBridge
-        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Command.Data, Command.Data, Command.Listener<? super RealCommandBridge>>
+        extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Command.Data, Command.Data, Command.Listener<? super RealCommandBridge>, CommandView>
         implements Command<Type.InstanceMap, RealValueBridge, RealListBridge<RealParameterBridge>, RealCommandBridge> {
 
     private final CommandMapper commandMapper;
@@ -148,7 +149,7 @@ public class RealCommandBridge
     }
 
     @Override
-    public RealObjectBridge<?, ?, ?> getChild(String id) {
+    public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(ENABLED_ID.equals(id))
             return enabledValue;
         else if(PARAMETERS_ID.equals(id))

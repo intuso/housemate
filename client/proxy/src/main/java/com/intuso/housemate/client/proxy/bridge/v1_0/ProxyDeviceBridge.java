@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -16,13 +17,15 @@ import org.slf4j.Logger;
 public abstract class ProxyDeviceBridge<VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Device.Data,
         INTERNAL_DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
-        DEVICE extends ProxyDeviceBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, DEVICE>>
-        extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER>
+        VIEW extends DeviceView<VIEW>,
+        DEVICE extends ProxyDeviceBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW, DEVICE>>
+        extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW>
         implements Device<INTERNAL_DATA,
         LISTENER,
         ProxyCommandBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
+        VIEW,
         DEVICE> {
 
     private final ProxyCommandBridge renameCommand;
@@ -86,7 +89,7 @@ public abstract class ProxyDeviceBridge<VERSION_DATA extends com.intuso.housemat
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(COMMANDS_ID.equals(id))

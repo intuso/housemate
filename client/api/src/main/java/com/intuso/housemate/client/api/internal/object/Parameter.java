@@ -1,11 +1,13 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.ParameterView;
+
 /**
  * @param <PARAMETER> the type of the subclass
  */
 public interface Parameter<TYPE extends Type<?>,
-            PARAMETER extends Parameter<TYPE, PARAMETER>>
-        extends Object<Parameter.Data, Parameter.Listener<? super PARAMETER>> {
+        PARAMETER extends Parameter<TYPE, PARAMETER>>
+        extends Object<Parameter.Data, Parameter.Listener<? super PARAMETER>, ParameterView> {
 
     /**
      * Gets the type id of the parameter

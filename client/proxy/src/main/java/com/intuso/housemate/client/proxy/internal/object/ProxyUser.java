@@ -2,12 +2,16 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.view.CommandView;
+import com.intuso.housemate.client.api.internal.object.view.PropertyView;
+import com.intuso.housemate.client.api.internal.object.view.UserView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
 import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
-import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -46,14 +50,59 @@ public abstract class ProxyUser<
     }
 
     @Override
-    public UserView createView() {
-        return new UserView();
+    public UserView createView(View.Mode mode) {
+        return new UserView(mode);
     }
 
     @Override
-    public void view(UserView view) {
+    public Tree getTree(UserView view) {
 
-        super.view(view);
+        // make sure what they want is loaded
+        load(view);
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getEmailPropertyView() != null)
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
+    public void load(UserView view) {
+
+        super.load(view);
+
+        if(view == null || view.getMode() == null)
+            return;
 
         // create things according to the view's mode, sub-views, and what's already created
         switch (view.getMode()) {
@@ -79,34 +128,34 @@ public abstract class ProxyUser<
         // view things according to the view's mode and sub-views
         switch (view.getMode()) {
             case ANCESTORS:
-                renameCommand.view(new CommandView(View.Mode.ANCESTORS));
-                removeCommand.view(new CommandView(View.Mode.ANCESTORS));
-                emailProperty.view(new PropertyView(View.Mode.ANCESTORS));
+                renameCommand.load(new CommandView(View.Mode.ANCESTORS));
+                removeCommand.load(new CommandView(View.Mode.ANCESTORS));
+                emailProperty.load(new PropertyView(View.Mode.ANCESTORS));
                 break;
             case CHILDREN:
             case SELECTION:
                 if(view.getRenameCommandView() != null)
-                    renameCommand.view(view.getRenameCommandView());
+                    renameCommand.load(view.getRenameCommandView());
                 if(view.getRemoveCommandView() != null)
-                    removeCommand.view(view.getRemoveCommandView());
+                    removeCommand.load(view.getRemoveCommandView());
                 if(view.getEmailPropertyView() != null)
-                    emailProperty.view(view.getEmailPropertyView());
+                    emailProperty.load(view.getEmailPropertyView());
                 break;
         }
     }
 
     @Override
-    public void viewRemoveCommand(CommandView commandView) {
+    public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
             removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-        removeCommand.view(commandView);
+        removeCommand.load(commandView);
     }
 
     @Override
-    public void viewRenameCommand(CommandView commandView) {
+    public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
             renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-        renameCommand.view(commandView);
+        renameCommand.load(commandView);
     }
 
     @Override
@@ -154,12 +203,12 @@ public abstract class ProxyUser<
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:21
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:21
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyUser<
             ProxyCommand.Simple,
             ProxyProperty.Simple,

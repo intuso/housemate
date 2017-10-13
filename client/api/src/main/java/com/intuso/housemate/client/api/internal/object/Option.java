@@ -1,11 +1,13 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.NoView;
+
 /**
  * @param <SUB_TYPES> the type of the sub types list
  */
 public interface Option<SUB_TYPES extends List<? extends SubType<?, ?>, ?>,
         OPTION extends Option<?, ?>>
-        extends Object<Option.Data, Option.Listener<? super OPTION>>, SubType.Container<SUB_TYPES> {
+        extends Object<Option.Data, Option.Listener<? super OPTION>, NoView>, SubType.Container<SUB_TYPES> {
 
     String SUB_TYPES_ID = "sub-type";
 

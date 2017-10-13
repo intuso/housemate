@@ -3,9 +3,12 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.NoView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.view.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -31,12 +34,17 @@ public abstract class ProxyOption<
                        ProxyObject.Factory<SUB_TYPES> subTypesFactory) {
         super(logger, name, Option.Data.class, managedCollectionFactory, receiverFactory);
         subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID), ChildUtil.name(name, SUB_TYPES_ID));
-        subTypes.view(new ListView(View.Mode.ANCESTORS));
+        subTypes.load(new ListView(View.Mode.ANCESTORS));
     }
 
     @Override
-    public NoView createView() {
-        return new NoView();
+    public NoView createView(View.Mode mode) {
+        return new NoView(mode);
+    }
+
+    @Override
+    public Tree getTree(NoView view) {
+        return new Tree(getData());
     }
 
     @Override
@@ -58,12 +66,12 @@ public abstract class ProxyOption<
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:17
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:17
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyOption<ProxyList.Simple<ProxySubType.Simple>, Simple> {
 
         @Inject

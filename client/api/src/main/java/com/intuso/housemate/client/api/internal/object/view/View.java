@@ -1,11 +1,11 @@
-package com.intuso.housemate.client.proxy.internal.object.view;
+package com.intuso.housemate.client.api.internal.object.view;
 
 import java.io.Serializable;
 
 /**
  * Created by tomc on 19/06/17.
  */
-public abstract class View<VIEW extends View<?>> implements Serializable {
+public abstract class View implements Serializable {
 
     public enum Mode {
         ANCESTORS,

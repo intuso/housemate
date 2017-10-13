@@ -5,6 +5,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
+import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -17,9 +18,10 @@ public abstract class ProxyValueBaseBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.ValueBase.Data,
         INTERNAL_DATA extends ValueBase.Data,
         LISTENER extends ValueBase.Listener<? super VALUE>,
-        VALUE extends ProxyValueBaseBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VALUE>>
-        extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER>
-        implements ValueBase<INTERNAL_DATA, Type.Instances, ProxyTypeBridge, LISTENER, VALUE> {
+        VIEW extends ValueBaseView,
+        VALUE extends ProxyValueBaseBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW, VALUE>>
+        extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW>
+        implements ValueBase<INTERNAL_DATA, Type.Instances, ProxyTypeBridge, LISTENER, VIEW, VALUE> {
 
     private final TypeInstancesMapper typeInstancesMapper;
 

@@ -7,10 +7,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.view.ListView;
-import com.intuso.housemate.client.proxy.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -53,15 +54,13 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()), ChildUtil.name(name, data.getId()));
             if (element != null) {
                 // view the element according to views we've already been given
-                if(ancestors) {
-                    View<?> ancestorsView = element.createView();
-                    ancestorsView.setMode(View.Mode.ANCESTORS);
-                    ((ProxyObject) element).view(ancestorsView);
-                } else {
+                if(ancestors)
+                    ((ProxyObject) element).load(element.createView(View.Mode.ANCESTORS));
+                else {
                     // check each list view to see if it's for this element
                     for (ListView<?> view : views)
-                        if (view.isViewAll() || view.getElements().contains(element.getId()))
-                            ((ProxyObject) element).view(view.getElementView());
+                        if (view.getMode() == View.Mode.CHILDREN || (view.getElements() != null && view.getElements().contains(element.getId())))
+                            ((ProxyObject) element).load(view.getElementView());
                 }
                 elements.put(data.getId(), element);
                 for (List.Listener<? super ELEMENT, ? super LIST> listener : listeners)
@@ -71,14 +70,55 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
     }
 
     @Override
-    public ListView<?> createView() {
-        return new ListView<>();
+    public ListView<?> createView(View.Mode mode) {
+        return new ListView<>(mode);
     }
 
     @Override
-    public synchronized void view(ListView<?> view) {
+    public Tree getTree(ListView<?> view) {
 
-        super.view(view);
+        // make sure what they want is loaded
+        load(view);
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    for(Map.Entry<String, ELEMENT> element : elements.entrySet())
+                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(view.getElementView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getElements() != null)
+                        for (String elementId : view.getElements())
+                            if (elements.containsKey(elementId))
+                                result.getChildren().put(elementId, ((ProxyObject) elements.get(elementId)).getTree(view.getElementView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
+    @Override
+    public synchronized void load(ListView<?> view) {
+
+        super.load(view);
+
+        if(view == null || view.getMode() == null)
+            return;
 
         // if already viewing ancestors, don't do anything as entire object tree will already be loaded
         if (ancestors)
@@ -91,11 +131,8 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
                 ancestors = true;
                 views.clear();
                 ensureSubscribedToAll();
-                for (ELEMENT element : elements.values()) {
-                    View<?> ancestorsView = element.createView();
-                    ancestorsView.setMode(View.Mode.ANCESTORS);
-                    ((ProxyObject) element).view(ancestorsView);
-                }
+                for (ELEMENT element : elements.values())
+                    ((ProxyObject) element).load(element.createView(View.Mode.ANCESTORS));
                 break;
 
             // else if children, make sure we subscribed to all, and view any current elements with the element view
@@ -103,7 +140,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
                 views.add(view);
                 ensureSubscribedToAll();
                 for (ELEMENT element : elements.values())
-                    ((ProxyObject) element).view(view.getElementView());
+                    ((ProxyObject) element).load(element.createView(View.Mode.SELECTION));
                 break;
 
             // else if selection, make sure we're subscribed to those elements and view any current relevant elements
@@ -111,9 +148,9 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
                 views.add(view);
                 if (view.getElements() != null) {
                     ensureSubscribedTo(view.getElements());
-                    for (String elementName : view.getElements()) {
-                        if (elements.containsKey(elementName))
-                            ((ProxyObject) elements.get(elementName)).view(view.getElementView());
+                    for (String elementId : view.getElements()) {
+                        if (elements.containsKey(elementId))
+                            ((ProxyObject) elements.get(elementId)).load(view.getElementView());
                     }
                 }
                 break;
@@ -129,7 +166,12 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
         if(allExistingObjectReceiver == null) {
             // subscribe to all child topics and create children as new topics are discovered
             allExistingObjectReceiver = receiverFactory.create(logger, ChildUtil.name(name, "*"), Object.Data.class);
-            allExistingObjectReceiver.listen(this::loadElement);
+            allExistingObjectReceiver.listen(new Receiver.Listener<Object.Data>() {
+                @Override
+                public void onMessage(Object.Data data1, boolean wasPersisted) {
+                    ProxyList.this.loadElement(data1, wasPersisted);
+                }
+            });
         }
     }
 
@@ -142,7 +184,12 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
         for(String element : elements) {
             if(!namedExistingObjectReceivers.containsKey(element)) {
                 namedExistingObjectReceivers.put(element, receiverFactory.create(logger, ChildUtil.name(name, element), Object.Data.class));
-                namedExistingObjectReceivers.get(element).listen(this::loadElement);
+                namedExistingObjectReceivers.get(element).listen(new Receiver.Listener<Object.Data>() {
+                    @Override
+                    public void onMessage(Object.Data data1, boolean wasPersisted) {
+                        ProxyList.this.loadElement(data1, wasPersisted);
+                    }
+                });
             }
         }
     }
@@ -199,12 +246,12 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:16
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:16
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple<ELEMENT extends ProxyObject<?, ?, ?>> extends ProxyList<ELEMENT, Simple<ELEMENT>> {
 
         @Inject

@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
 
 import java.io.Serializable;
@@ -8,7 +9,10 @@ import java.io.Serializable;
  * Base interface for all other object interfaces
  * @param <LISTENER> the type of the object's listeners
  */
-public interface Object<DATA extends Object.Data, LISTENER extends Object.Listener> {
+public interface Object<
+        DATA extends Object.Data,
+        LISTENER extends Object.Listener,
+        VIEW extends View> {
 
     String VERSION = "internal";
 
@@ -45,7 +49,11 @@ public interface Object<DATA extends Object.Data, LISTENER extends Object.Listen
      */
     ManagedCollection.Registration addObjectListener(LISTENER listener);
 
-    Object<?, ?> getChild(String id);
+    Object<?, ?, ?> getChild(String id);
+
+    VIEW createView(View.Mode mode);
+
+    Tree getTree(VIEW view);
 
     /**
      *

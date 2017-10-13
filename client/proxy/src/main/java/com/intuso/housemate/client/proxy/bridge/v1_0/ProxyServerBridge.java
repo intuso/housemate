@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
+import com.intuso.housemate.client.api.internal.object.view.ServerView;
 import com.intuso.housemate.client.proxy.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
@@ -17,9 +18,9 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyServerBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>, ServerView>
         implements Server<ProxyCommandBridge,
-        List<Device<?, ?, ?, ?, ?, ?>, ?>,
+        List<Device<?, ?, ?, ?, ?, ?, ?>, ?>,
         ProxyListBridge<ProxyAutomationBridge>,
         ProxyListBridge<ProxyDeviceGroupBridge>,
         ProxyListBridge<ProxyUserBridge>,
@@ -120,7 +121,7 @@ public class ProxyServerBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?>, ?> getDevices() {
+    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getDevices() {
         throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
     }
 
@@ -163,7 +164,7 @@ public class ProxyServerBridge
     }
 
     @Override
-    public Object<?, ?> getChild(String id) {
+    public Object<?, ?, ?> getChild(String id) {
         if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
         else if(ADD_DEVICE_GROUP_ID.equals(id))

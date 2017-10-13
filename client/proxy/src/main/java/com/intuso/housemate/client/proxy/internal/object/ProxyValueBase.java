@@ -4,7 +4,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.view.ValueBaseView;
+import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -16,11 +16,11 @@ import org.slf4j.Logger;
 public abstract class ProxyValueBase<
         DATA extends ValueBase.Data,
         LISTENER extends ValueBase.Listener<? super VALUE>,
-        VIEW extends ValueBaseView<?>,
+        VIEW extends ValueBaseView,
         TYPE extends ProxyType<?>,
         VALUE extends ProxyValueBase<DATA, LISTENER, VIEW, TYPE, VALUE>>
         extends ProxyObject<DATA, LISTENER, VIEW>
-        implements ValueBase<DATA, Type.Instances, TYPE, LISTENER, VALUE> {
+        implements ValueBase<DATA, Type.Instances, TYPE, LISTENER, VIEW, VALUE> {
 
     private Receiver<Type.Instances> valueReceiver;
 
@@ -29,7 +29,7 @@ public abstract class ProxyValueBase<
     /**
      * @param logger {@inheritDoc}
      */
-    public ProxyValueBase(Logger logger,
+    public ProxyValueBase(final Logger logger,
                           String name,
                           Class<DATA> dataClass,
                           ManagedCollectionFactory managedCollectionFactory,
@@ -38,10 +38,13 @@ public abstract class ProxyValueBase<
         valueReceiver = receiverFactory.create(logger, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
         value = valueReceiver.getMessage();
         logger.trace("Got initial value {}", value);
-        valueReceiver.listen((instances, wasPersisted) -> {
-            value = instances;
-            logger.trace("Got new value {}", value);
-            // todo call object listeners
+        valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
+            @Override
+            public void onMessage(Type.Instances instances, boolean wasPersisted) {
+                value = instances;
+                logger.trace("Got new value {}", value);
+                // todo call object listeners
+            }
         });
     }
 

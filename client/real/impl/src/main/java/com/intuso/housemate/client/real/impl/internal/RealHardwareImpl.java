@@ -5,15 +5,12 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
-import com.intuso.housemate.client.api.bridge.v1_0.driver.HardwareDriverBridge;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.api.internal.driver.PluginDependency;
-import com.intuso.housemate.client.api.internal.object.Device;
-import com.intuso.housemate.client.api.internal.object.Hardware;
-import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
@@ -29,7 +26,7 @@ import java.util.Map;
  * Base class for all hardwares
  */
 public final class RealHardwareImpl
-        extends RealObject<Hardware.Data, Hardware.Listener<? super RealHardwareImpl>>
+        extends RealObject<Hardware.Data, Hardware.Listener<? super RealHardwareImpl>, HardwareView>
         implements RealHardware<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealCommandImpl>,
         RealListGeneratedImpl<RealValueImpl<?>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
@@ -58,7 +55,7 @@ public final class RealHardwareImpl
 
     private final RealListPersistedImpl.RemoveCallback<RealHardwareImpl> removeCallback;
 
-    private final Map<java.lang.Object, RealDeviceImpl> objectDevices = Maps.newHashMap();
+    private final Map<java.lang.Object, RealDeviceConnectedImpl> objectDevices = Maps.newHashMap();
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private HardwareDriver driver;
@@ -221,6 +218,86 @@ public final class RealHardwareImpl
         });
     }
 
+    @Override
+    public HardwareView createView(View.Mode mode) {
+        return new HardwareView(mode);
+    }
+
+    @Override
+    public Tree getTree(HardwareView view) {
+
+        // create a result even for a null view
+        Tree result = new Tree(getData());
+
+        // get anything else the view wants
+        if(view != null && view.getMode() != null) {
+            switch (view.getMode()) {
+
+                // get recursively
+                case ANCESTORS:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS)));
+                    break;
+
+                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                case CHILDREN:
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValueView()));
+                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommandView()));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommandView()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
+                    result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
+                    break;
+
+                case SELECTION:
+                    if(view.getRenameCommandView() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
+                    if(view.getRemoveCommandView() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
+                    if(view.getRunningValueView() != null)
+                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValueView()));
+                    if(view.getStartCommandView() != null)
+                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommandView()));
+                    if(view.getStopCommandView() != null)
+                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommandView()));
+                    if(view.getErrorValueView() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getDriverPropertyView() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
+                    if(view.getDriverLoadedValueView() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
+                    if(view.getCommandsView() != null)
+                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
+                    if(view.getValuesView() != null)
+                        result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    if(view.getPropertiesView() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
+                    if(view.getDevicesView() != null)
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
+                    break;
+            }
+
+        }
+
+        return result;
+    }
+
     private void initDriverListener() {
         PluginDependency<HardwareDriver.Factory<?>> driverFactory = driverProperty.getValue();
         driverAvailableListenerRegsitration = driverFactory.addListener(new PluginDependency.Listener<HardwareDriver.Factory<?>>() {
@@ -247,16 +324,11 @@ public final class RealHardwareImpl
         if(driver != null)
             uninit();
         driver = driverFactory.create(logger, this);
-        java.lang.Object annotatedObject;
-        if(driver instanceof HardwareDriverBridge)
-            annotatedObject = ((HardwareDriverBridge) driver).getHardwareDriver();
-        else
-            annotatedObject = driver;
-        for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
+        for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
             commands.add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
             values.add(value);
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
             properties.add(property);
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);
@@ -266,7 +338,7 @@ public final class RealHardwareImpl
 
     private void uninitDriver() {
         // clear all the objects from the devices, but not the devices themselves
-        for(RealDeviceImpl device : objectDevices.values())
+        for(RealDeviceConnectedImpl device : objectDevices.values())
             device.clear();
         objectDevices.clear();
         if(driver != null) {
@@ -299,8 +371,6 @@ public final class RealHardwareImpl
         // do driver last as it's better to have the devices loaded already
         driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
-        if(isRunning())
-            startDriver();
     }
 
     @Override
@@ -406,7 +476,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public RealObject<?, ?> getChild(String id) {
+    public RealObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
         else if(REMOVE_ID.equals(id))
@@ -438,7 +508,7 @@ public final class RealHardwareImpl
         try {
             if(driver != null) {
                 driver.init(logger, this);
-                for (RealDeviceImpl device : devices)
+                for (RealDeviceConnectedImpl device : devices)
                     driver.foundDeviceId(device.getId());
             }
         } catch (Throwable t) {
@@ -478,7 +548,7 @@ public final class RealHardwareImpl
 
     @Override
     public void removeDevice(java.lang.Object object) {
-        RealDeviceImpl device = objectDevices.remove(object);
+        RealDeviceConnectedImpl device = objectDevices.remove(object);
         if(device != null)
             devices.remove(device.getId());
     }

@@ -2,6 +2,7 @@ package com.intuso.housemate.client.api.internal.object;
 
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
+import com.intuso.housemate.client.api.internal.object.view.UserView;
 
 /**
  * @param <REMOVE_COMMAND> the type of the remove command
@@ -10,7 +11,7 @@ public interface User<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         PROPERTY extends Property<?, ?, ?, ?>,
         USER extends User<RENAME_COMMAND, REMOVE_COMMAND, PROPERTY, USER>>
-        extends Object<User.Data, User.Listener<? super USER>>, Renameable<RENAME_COMMAND>, Removeable<REMOVE_COMMAND> {
+        extends Object<User.Data, User.Listener<? super USER>, UserView>, Renameable<RENAME_COMMAND>, Removeable<REMOVE_COMMAND> {
 
     String EMAIL_ID = "email";
 

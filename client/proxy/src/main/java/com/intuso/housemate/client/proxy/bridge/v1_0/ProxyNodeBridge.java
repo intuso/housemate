@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
+import com.intuso.housemate.client.api.internal.object.view.NodeView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -13,7 +14,7 @@ import org.slf4j.Logger;
  * Created by tomc on 28/11/16.
  */
 public class ProxyNodeBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Node.Data, Node.Data, Node.Listener<? super ProxyNodeBridge>>
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Node.Data, Node.Data, Node.Listener<? super ProxyNodeBridge>, NodeView>
         implements Node<ProxyCommandBridge, ProxyListBridge<ProxyTypeBridge>, ProxyListBridge<ProxyHardwareBridge>, ProxyNodeBridge> {
 
     private final ProxyListBridge<ProxyTypeBridge> types;
@@ -76,7 +77,7 @@ public class ProxyNodeBridge
     }
 
     @Override
-    public ProxyObjectBridge<?, ?, ?> getChild(String id) {
+    public ProxyObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(ADD_HARDWARE_ID.equals(id))
             return addHardwareCommand;
         else if(HARDWARES_ID.equals(id))
