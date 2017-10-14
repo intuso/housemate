@@ -2,11 +2,13 @@ package com.intuso.housemate.client.real.impl.internal.annotation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.housemate.client.v1_0.api.ability.Ability;
 import com.intuso.housemate.client.v1_0.api.annotation.*;
 import org.slf4j.Logger;
 
@@ -17,6 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Processor of annotated devices etc
@@ -37,6 +40,28 @@ public class AnnotationParserV1_0 implements AnnotationParser {
         this.parameterFactory = parameterFactory;
         this.propertyFactory = propertyFactory;
         this.valueFactory = valueFactory;
+    }
+
+    @Override
+    public Set<String> findAbilities(Logger logger, Object object) {
+        Set<String> result = Sets.newHashSet();
+        findAbilities(logger, object.getClass(), result);
+        return result;
+    }
+
+    private void findAbilities(Logger logger, Class<?> clazz, Set<String> abilities) {
+        Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
+        if(interfaces.contains(Ability.class)) {
+            Id id = clazz.getAnnotation(Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on ability class " + clazz.getName());
+            abilities.add(id.value());
+        } else {
+            if(clazz.getSuperclass() != null)
+                findAbilities(logger, clazz.getSuperclass(), abilities);
+            for(Class<?> interfaceClass : interfaces)
+                findAbilities(logger, interfaceClass, abilities);
+        }
     }
 
     @Override

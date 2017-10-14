@@ -9,7 +9,7 @@ import com.intuso.utilities.collection.ManagedCollection;
  * API for temperature monitoring
  */
 @Id(value = "temperature", name = "Temperature", description = "Temperature")
-public interface TemperatureSensor {
+public interface TemperatureSensor extends Ability {
 
     String ID = TemperatureSensor.class.getAnnotation(Id.class).value();
 

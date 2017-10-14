@@ -17,6 +17,8 @@ import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 /**
  * @param <COMMAND> the type of the commands
  * @param <VALUE> the type of the values
@@ -195,6 +197,11 @@ public abstract class ProxyDeviceGroup<
         addTemperatureSensorDeviceCommand.uninit();
         volumeDeviceReferences.uninit();
         addVolumeDeviceCommand.uninit();
+    }
+
+    @Override
+    public Set<String> getAbilities() {
+        return getData().getAbilities();
     }
 
     @Override

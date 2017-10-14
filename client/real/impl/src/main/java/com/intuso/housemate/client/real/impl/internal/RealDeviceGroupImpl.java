@@ -17,10 +17,11 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealDeviceGroup;
-import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+
+import java.util.Set;
 
 /**
  * Base class for all device
@@ -77,7 +78,6 @@ public final class RealDeviceGroupImpl
                                @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback,
                                ManagedCollectionFactory managedCollectionFactory,
                                Sender.Factory senderFactory,
-                               AnnotationParser annotationParser,
                                RealCommandImpl.Factory commandFactory,
                                RealParameterImpl.Factory parameterFactory,
                                RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
@@ -85,8 +85,8 @@ public final class RealDeviceGroupImpl
                                RealValueImpl.Factory valueFactory,
                                RealListPersistedImpl.Factory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> devicesFactory,
                                final TypeRepository typeRepository) {
-        super(logger, new Group.Data(id, name, description), managedCollectionFactory, senderFactory,
-                annotationParser, commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
+        super(logger, new Group.Data(id, name, description), managedCollectionFactory, senderFactory, commandFactory,
+                parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -241,6 +241,11 @@ public final class RealDeviceGroupImpl
             listener.renamed(RealDeviceGroupImpl.this, RealDeviceGroupImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
+    }
+
+    @Override
+    public Set<String> getAbilities() {
+        return getData().getAbilities();
     }
 
     @Override

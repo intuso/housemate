@@ -7,9 +7,9 @@ import com.intuso.utilities.collection.ManagedCollection;
  * API for controlling volume
  */
 @Id(value = "volume", name = "Volume", description = "Volume")
-public interface VolumeControl {
+public interface Volume extends Ability {
 
-    String ID = VolumeControl.class.getAnnotation(Id.class).value();
+    String ID = Volume.class.getAnnotation(Id.class).value();
 
     /**
      * Mute the device

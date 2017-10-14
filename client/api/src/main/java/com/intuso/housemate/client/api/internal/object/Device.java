@@ -7,6 +7,9 @@ import com.intuso.housemate.client.api.internal.object.view.DeviceConnectedView;
 import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
 import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @param <COMMANDS> the type of the commands list
  * @param <VALUES> the type of the values list
@@ -28,6 +31,8 @@ public interface Device<
 
     String COMMANDS_ID = "command";
     String VALUES_ID = "value";
+
+    Set<String> getAbilities();
 
     /**
      *
@@ -56,10 +61,25 @@ public interface Device<
 
         private static final long serialVersionUID = -1L;
 
+        private Set<String> abilities = new HashSet<>();
+
         public Data() {}
 
         public Data(String objectClass, String id, String name, String description) {
             super(objectClass, id, name, description);
+        }
+
+        public Data(String objectClass, String id, String name, String description, Set<String> abilities) {
+            super(objectClass, id, name, description);
+            this.abilities = abilities;
+        }
+
+        public Set<String> getAbilities() {
+            return abilities;
+        }
+
+        public void setAbilities(Set<String> abilities) {
+            this.abilities = abilities;
         }
     }
 
@@ -105,7 +125,11 @@ public interface Device<
             public Data() {}
 
             public Data(String id, String name, String description) {
-                super(OBJECT_CLASS, id, name, description);
+                this(id, name, description, new HashSet<String>());
+            }
+
+            public Data(String id, String name, String description, Set<String> abilities) {
+                super(OBJECT_CLASS, id, name, description, abilities);
             }
         }
     }
@@ -184,6 +208,10 @@ public interface Device<
 
             public Data(String id, String name, String description) {
                 super(OBJECT_CLASS, id, name, description);
+            }
+
+            public Data(String id, String name, String description, Set<String> abilities) {
+                super(OBJECT_CLASS, id, name, description, abilities);
             }
         }
     }

@@ -7,9 +7,9 @@ import com.intuso.utilities.collection.ManagedCollection;
  * API for running something
  */
 @Id(value = "run", name = "Run", description = "Run")
-public interface RunControl {
+public interface Run extends Ability {
 
-    String ID = RunControl.class.getAnnotation(Id.class).value();
+    String ID = Run.class.getAnnotation(Id.class).value();
 
     /**
      * Start

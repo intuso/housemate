@@ -11,6 +11,8 @@ import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 /**
  * Created by tomc on 28/11/16.
  */
@@ -144,6 +146,11 @@ public class ProxyDeviceGroupBridge
         addTemperatureSensorDeviceCommand.uninit();
         volumeDevices.uninit();
         addVolumeDeviceCommand.uninit();
+    }
+
+    @Override
+    public Set<String> getAbilities() {
+        return getData().getAbilities();
     }
 
     @Override

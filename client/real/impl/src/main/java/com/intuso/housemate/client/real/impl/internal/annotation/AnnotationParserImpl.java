@@ -1,11 +1,14 @@
 package com.intuso.housemate.client.real.impl.internal.annotation;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealValueImpl;
 import org.slf4j.Logger;
+
+import java.util.Set;
 
 /**
  * Created by tomc on 16/12/16.
@@ -19,6 +22,14 @@ public class AnnotationParserImpl implements AnnotationParser {
     public AnnotationParserImpl(AnnotationParserInternal annotationParserInternal, AnnotationParserV1_0 annotationParserV1_0) {
         this.annotationParserInternal = annotationParserInternal;
         this.annotationParserV1_0 = annotationParserV1_0;
+    }
+
+    @Override
+    public Set<String> findAbilities(Logger logger, Object object) {
+        return Sets.newHashSet(Sets.union(
+                annotationParserInternal.findAbilities(logger, object),
+                annotationParserV1_0.findAbilities(logger, object)
+        ));
     }
 
     @Override

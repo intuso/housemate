@@ -16,7 +16,6 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -28,10 +27,6 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
         extends RealObject<DATA, LISTENER, VIEW>
         implements RealDevice<DATA, LISTENER, RealCommandImpl, RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, VIEW, DEVICE> {
 
-    private final static String PROPERTIES_DESCRIPTION = "The device's properties";
-
-    private final AnnotationParser annotationParser;
-
     private final RealCommandImpl renameCommand;
     private final RealListGeneratedImpl<RealCommandImpl> commands;
     private final RealListGeneratedImpl<RealValueImpl<?>> values;
@@ -41,14 +36,12 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
                           DATA data,
                           ManagedCollectionFactory managedCollectionFactory,
                           Sender.Factory senderFactory,
-                          AnnotationParser annotationParser,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                           RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                           TypeRepository typeRepository) {
         super(logger, data, managedCollectionFactory, senderFactory);
-        this.annotationParser = annotationParser;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
                 Renameable.RENAME_ID,
@@ -175,15 +168,6 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
         else if(VALUES_ID.equals(id))
             return values;
         return null;
-    }
-
-    void wrap(java.lang.Object object) {
-        clear();
-        // add the commands, values and properties specified by the object
-        for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
-            commands.add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
-            values.add(value);
     }
 
     public DEVICE getThis() {

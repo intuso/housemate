@@ -12,12 +12,16 @@ import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 public final class RealDeviceConnectedImpl
         extends RealDeviceImpl<Device.Connected.Data, Device.Connected.Listener<? super RealDeviceConnectedImpl>, DeviceConnectedView, RealDeviceConnectedImpl>
         implements RealDeviceConnected<RealCommandImpl,
         RealListGeneratedImpl<RealCommandImpl>,
         RealListGeneratedImpl<RealValueImpl<?>>,
         RealDeviceConnectedImpl> {
+
+    private final AnnotationParser annotationParser;
 
     @Inject
     public RealDeviceConnectedImpl(@Assisted final Logger logger,
@@ -33,12 +37,29 @@ public final class RealDeviceConnectedImpl
                                    RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                                    TypeRepository typeRepository) {
         super(logger, new Device.Connected.Data(id, name, description), managedCollectionFactory, senderFactory,
-                annotationParser, commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
+                commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
+        this.annotationParser = annotationParser;
     }
 
     @Override
     public DeviceConnectedView createView(View.Mode mode) {
         return new DeviceConnectedView(mode);
+    }
+
+    @Override
+    public Set<String> getAbilities() {
+        return getData().getAbilities();
+    }
+
+    void wrap(java.lang.Object object) {
+        clear();
+        // find the device's abilities, and add the commands and values specified by the object
+        getData().setAbilities(annotationParser.findAbilities(logger, object));
+        sendData();
+        for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
+            getCommands().add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
+            getValues().add(value);
     }
 
     public interface Factory {

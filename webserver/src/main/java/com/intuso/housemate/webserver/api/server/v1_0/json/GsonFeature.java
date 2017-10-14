@@ -43,12 +43,14 @@ public class GsonFeature implements MessageBodyReader<Object>, MessageBodyWriter
     }
 
     @Override
-    public long getSize(Object o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
-        return -1;
+    public long getSize(Object o, Class<?> clazz, Type type, Annotation[] annotations, MediaType mediaType) {
+        return -1L;//gson.toJson(o, clazz).getBytes().length;
     }
 
     @Override
     public void writeTo(Object o, Class<?> clazz, Type type, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap, OutputStream outputStream) throws IOException, WebApplicationException {
-        gson.toJson(o, clazz, new JsonWriter(new OutputStreamWriter(outputStream)));
+        JsonWriter writer = new JsonWriter(new OutputStreamWriter(new BufferedOutputStream(outputStream)));
+        gson.toJson(o, clazz, writer);
+        writer.flush();
     }
 }

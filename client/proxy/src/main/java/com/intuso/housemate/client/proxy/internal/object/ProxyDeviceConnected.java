@@ -9,6 +9,8 @@ import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.Set;
+
 /**
  * Base interface for all proxy features
  * @param <DEVICE> the feature type
@@ -36,6 +38,11 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
     @Override
     public DeviceConnectedView createView(View.Mode mode) {
         return new DeviceConnectedView(mode);
+    }
+
+    @Override
+    public Set<String> getAbilities() {
+        return getData().getAbilities();
     }
 
     /**
