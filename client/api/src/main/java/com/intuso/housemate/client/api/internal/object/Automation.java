@@ -34,12 +34,12 @@ public interface Automation<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         Removeable<REMOVE_COMMAND>,
         Condition.Container<CONDITIONS> {
 
-    String CONDITIONS_ID = "condition";
-    String SATISFIED_TASKS_ID = "satisfied-task";
-    String UNSATISFIED_TASKS_ID = "unsatisfied-task";
-    String ADD_CONDITION_ID = "add-condition";
-    String ADD_SATISFIED_TASK_ID = "add-satisfied-task";
-    String ADD_UNSATISFIED_TASK_ID = "add-unsatisfied-task";
+    String CONDITIONS_ID = "conditions";
+    String SATISFIED_TASKS_ID = "satisfiedTasks";
+    String UNSATISFIED_TASKS_ID = "unsatisfiedTasks";
+    String ADD_CONDITION_ID = "addCondition";
+    String ADD_SATISFIED_TASK_ID = "addSatisfiedTask";
+    String ADD_UNSATISFIED_TASK_ID = "addUnsatisfiedTask";
 
     /**
      * Gets the satisfied tasks list

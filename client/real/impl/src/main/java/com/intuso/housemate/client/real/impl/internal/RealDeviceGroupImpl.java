@@ -183,15 +183,15 @@ public final class RealDeviceGroupImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
                     break;
 
                 case SELECTION:
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getErrorValueView() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getErrorValue() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
                     break;
             }
         }
@@ -241,6 +241,11 @@ public final class RealDeviceGroupImpl
             listener.renamed(RealDeviceGroupImpl.this, RealDeviceGroupImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
+    }
+
+    @Override
+    public Set<String> getClasses() {
+        return getData().getClasses();
     }
 
     @Override

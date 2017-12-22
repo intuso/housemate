@@ -9,7 +9,7 @@ public interface Option<SUB_TYPES extends List<? extends SubType<?, ?>, ?>,
         OPTION extends Option<?, ?>>
         extends Object<Option.Data, Option.Listener<? super OPTION>, NoView>, SubType.Container<SUB_TYPES> {
 
-    String SUB_TYPES_ID = "sub-type";
+    String SUB_TYPES_ID = "subTypes";
 
     /**
      *

@@ -3,6 +3,7 @@ package com.intuso.housemate.plugin.rfxcom;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
+import com.intuso.housemate.client.v1_0.api.annotation.Classes;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -121,6 +122,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
         }
     }
 
+    @Classes(Classes.LIGHT)
     public class PowerImpl extends PowerBase {
 
         private final byte houseCode;

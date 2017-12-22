@@ -11,6 +11,7 @@ import java.util.Set;
  * Processor of annotated devices etc
  */
 public interface AnnotationParser {
+    Set<String> findClasses(Logger logger, Object object);
     Set<String> findAbilities(Logger logger, Object object);
     Iterable<RealCommandImpl> findCommands(Logger logger, String idPrefix, Object object);
     Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object);

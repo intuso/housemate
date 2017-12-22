@@ -5,19 +5,19 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class HardwareView extends View {
 
-    private CommandView renameCommandView;
-    private CommandView startCommandView;
-    private CommandView stopCommandView;
-    private ValueView runningValueView;
-    private ValueView errorValueView;
-    private CommandView removeCommandView;
-    private PropertyView driverPropertyView;
-    private ValueView driverLoadedValueView;
-    private ValueView satisfiedValueView;
-    private ListView<CommandView> commandsView;
-    private ListView<ValueView> valuesView;
-    private ListView<PropertyView> propertiesView;
-    private ListView<DeviceConnectedView> devicesView;
+    private CommandView renameCommand;
+    private CommandView startCommand;
+    private CommandView stopCommand;
+    private ValueView runningValue;
+    private ValueView errorValue;
+    private CommandView removeCommand;
+    private PropertyView driverProperty;
+    private ValueView driverLoadedValue;
+    private ValueView satisfiedValue;
+    private ListView<CommandView> commands;
+    private ListView<ValueView> values;
+    private ListView<PropertyView> properties;
+    private ListView<DeviceConnectedView> devices;
 
     public HardwareView() {}
 
@@ -25,149 +25,149 @@ public class HardwareView extends View {
         super(mode);
     }
 
-    public HardwareView(CommandView renameCommandView, 
-                        CommandView startCommandView,
-                        CommandView stopCommandView,
-                        ValueView runningValueView,
-                        ValueView errorValueView,
-                        CommandView removeCommandView,
-                        PropertyView driverPropertyView,
-                        ValueView driverLoadedValueView,
-                        ValueView satisfiedValueView, 
-                        ListView<CommandView> commandsView,
-                        ListView<ValueView> valuesView,
-                        ListView<PropertyView> propertiesView,
-                        ListView<DeviceConnectedView> devicesView) {
+    public HardwareView(CommandView renameCommand,
+                        CommandView startCommand,
+                        CommandView stopCommand,
+                        ValueView runningValue,
+                        ValueView errorValue,
+                        CommandView removeCommand,
+                        PropertyView driverProperty,
+                        ValueView driverLoadedValue,
+                        ValueView satisfiedValue,
+                        ListView<CommandView> commands,
+                        ListView<ValueView> values,
+                        ListView<PropertyView> properties,
+                        ListView<DeviceConnectedView> devices) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.startCommandView = startCommandView;
-        this.stopCommandView = stopCommandView;
-        this.runningValueView = runningValueView;
-        this.errorValueView = errorValueView;
-        this.removeCommandView = removeCommandView;
-        this.driverPropertyView = driverPropertyView;
-        this.driverLoadedValueView = driverLoadedValueView;
-        this.satisfiedValueView = satisfiedValueView;
-        this.commandsView = commandsView;
-        this.valuesView = valuesView;
-        this.propertiesView = propertiesView;
-        this.devicesView = devicesView;
+        this.renameCommand = renameCommand;
+        this.startCommand = startCommand;
+        this.stopCommand = stopCommand;
+        this.runningValue = runningValue;
+        this.errorValue = errorValue;
+        this.removeCommand = removeCommand;
+        this.driverProperty = driverProperty;
+        this.driverLoadedValue = driverLoadedValue;
+        this.satisfiedValue = satisfiedValue;
+        this.commands = commands;
+        this.values = values;
+        this.properties = properties;
+        this.devices = devices;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public HardwareView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public HardwareView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public CommandView getStartCommandView() {
-        return startCommandView;
+    public CommandView getStartCommand() {
+        return startCommand;
     }
 
-    public HardwareView setStartCommandView(CommandView startCommandView) {
-        this.startCommandView = startCommandView;
+    public HardwareView setStartCommand(CommandView startCommand) {
+        this.startCommand = startCommand;
         return this;
     }
 
-    public CommandView getStopCommandView() {
-        return stopCommandView;
+    public CommandView getStopCommand() {
+        return stopCommand;
     }
 
-    public HardwareView setStopCommandView(CommandView stopCommandView) {
-        this.stopCommandView = stopCommandView;
+    public HardwareView setStopCommand(CommandView stopCommand) {
+        this.stopCommand = stopCommand;
         return this;
     }
 
-    public ValueView getRunningValueView() {
-        return runningValueView;
+    public ValueView getRunningValue() {
+        return runningValue;
     }
 
-    public HardwareView setRunningValueView(ValueView runningValueView) {
-        this.runningValueView = runningValueView;
+    public HardwareView setRunningValue(ValueView runningValue) {
+        this.runningValue = runningValue;
         return this;
     }
 
-    public ValueView getErrorValueView() {
-        return errorValueView;
+    public ValueView getErrorValue() {
+        return errorValue;
     }
 
-    public HardwareView setErrorValueView(ValueView errorValueView) {
-        this.errorValueView = errorValueView;
+    public HardwareView setErrorValue(ValueView errorValue) {
+        this.errorValue = errorValue;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public HardwareView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public HardwareView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 
-    public PropertyView getDriverPropertyView() {
-        return driverPropertyView;
+    public PropertyView getDriverProperty() {
+        return driverProperty;
     }
 
-    public HardwareView setDriverPropertyView(PropertyView driverPropertyView) {
-        this.driverPropertyView = driverPropertyView;
+    public HardwareView setDriverProperty(PropertyView driverProperty) {
+        this.driverProperty = driverProperty;
         return this;
     }
 
-    public ValueView getDriverLoadedValueView() {
-        return driverLoadedValueView;
+    public ValueView getDriverLoadedValue() {
+        return driverLoadedValue;
     }
 
-    public HardwareView setDriverLoadedValueView(ValueView driverLoadedValueView) {
-        this.driverLoadedValueView = driverLoadedValueView;
+    public HardwareView setDriverLoadedValue(ValueView driverLoadedValue) {
+        this.driverLoadedValue = driverLoadedValue;
         return this;
     }
 
-    public ValueView getSatisfiedValueView() {
-        return satisfiedValueView;
+    public ValueView getSatisfiedValue() {
+        return satisfiedValue;
     }
 
-    public HardwareView setSatisfiedValueView(ValueView satisfiedValueView) {
-        this.satisfiedValueView = satisfiedValueView;
+    public HardwareView setSatisfiedValue(ValueView satisfiedValue) {
+        this.satisfiedValue = satisfiedValue;
         return this;
     }
 
-    public ListView<CommandView> getCommandsView() {
-        return commandsView;
+    public ListView<CommandView> getCommands() {
+        return commands;
     }
 
-    public HardwareView setCommandsView(ListView<CommandView> commandsView) {
-        this.commandsView = commandsView;
+    public HardwareView setCommands(ListView<CommandView> commands) {
+        this.commands = commands;
         return this;
     }
 
-    public ListView<ValueView> getValuesView() {
-        return valuesView;
+    public ListView<ValueView> getValues() {
+        return values;
     }
 
-    public HardwareView setValuesView(ListView<ValueView> valuesView) {
-        this.valuesView = valuesView;
+    public HardwareView setValues(ListView<ValueView> values) {
+        this.values = values;
         return this;
     }
 
-    public ListView<PropertyView> getPropertiesView() {
-        return propertiesView;
+    public ListView<PropertyView> getProperties() {
+        return properties;
     }
 
-    public HardwareView setPropertiesView(ListView<PropertyView> propertiesView) {
-        this.propertiesView = propertiesView;
+    public HardwareView setProperties(ListView<PropertyView> properties) {
+        this.properties = properties;
         return this;
     }
 
-    public ListView<DeviceConnectedView> getDevicesView() {
-        return devicesView;
+    public ListView<DeviceConnectedView> getDevices() {
+        return devices;
     }
 
-    public HardwareView setDevicesView(ListView<DeviceConnectedView> devicesView) {
-        this.devicesView = devicesView;
+    public HardwareView setDevices(ListView<DeviceConnectedView> devices) {
+        this.devices = devices;
         return this;
     }
 }

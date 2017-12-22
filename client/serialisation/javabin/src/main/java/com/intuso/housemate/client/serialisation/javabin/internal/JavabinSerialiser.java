@@ -30,7 +30,7 @@ public class JavabinSerialiser implements Serialiser<byte[]> {
     public <T extends Serializable> T deserialise(byte[] bytes, Class<T> tClass) {
         try {
             Object object = new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
-            if(!tClass.isAssignableFrom(object.getClass()))
+            if(object != null && !tClass.isAssignableFrom(object.getClass()))
                 throw new SerialisationException("Deserialised object is not a " + tClass.getName() + " but a " + object.getClass().getName());
             return (T) object;
         } catch(IOException e) {

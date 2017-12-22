@@ -80,14 +80,14 @@ public final class RealNodeListImpl
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getElementView()));
+                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getView()));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getElementView()));
+                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getView()));
                     break;
             }
 

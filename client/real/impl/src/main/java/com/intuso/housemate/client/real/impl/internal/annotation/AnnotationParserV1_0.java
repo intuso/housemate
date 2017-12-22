@@ -43,6 +43,24 @@ public class AnnotationParserV1_0 implements AnnotationParser {
     }
 
     @Override
+    public Set<String> findClasses(Logger logger, Object object) {
+        Set<String> result = Sets.newHashSet();
+        findClasses(logger, object.getClass(), result);
+        return result;
+    }
+
+    private void findClasses(Logger logger, Class<?> clazz, Set<String> classes) {
+        Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
+        Classes clazzClasses = clazz.getAnnotation(Classes.class);
+        if(clazzClasses != null)
+            classes.addAll(Sets.newHashSet(clazzClasses.value()));
+        if(clazz.getSuperclass() != null)
+            findClasses(logger, clazz.getSuperclass(), classes);
+        for(Class<?> interfaceClass : interfaces)
+            findClasses(logger, interfaceClass, classes);
+    }
+
+    @Override
     public Set<String> findAbilities(Logger logger, Object object) {
         Set<String> result = Sets.newHashSet();
         findAbilities(logger, object.getClass(), result);

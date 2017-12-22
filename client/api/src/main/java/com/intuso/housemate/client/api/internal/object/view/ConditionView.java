@@ -5,15 +5,15 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class ConditionView extends View {
 
-    private CommandView renameCommandView;
-    private ValueView errorValueView;
-    private CommandView removeCommandView;
-    private PropertyView driverPropertyView;
-    private ValueView driverLoadedValueView;
-    private ValueView satisfiedValueView;
-    private ListView<PropertyView> propertiesView;
-    private ListView<ConditionView> conditionsView;
-    private CommandView addConditionCommandView;
+    private CommandView renameCommand;
+    private ValueView errorValue;
+    private CommandView removeCommand;
+    private PropertyView driverProperty;
+    private ValueView driverLoadedValue;
+    private ValueView satisfiedValue;
+    private ListView<PropertyView> properties;
+    private ListView<ConditionView> conditions;
+    private CommandView addConditionCommand;
 
     public ConditionView() {}
 
@@ -21,105 +21,105 @@ public class ConditionView extends View {
         super(mode);
     }
 
-    public ConditionView(CommandView renameCommandView,
-                         ValueView errorValueView,
-                         CommandView removeCommandView,
-                         PropertyView driverPropertyView,
-                         ValueView driverLoadedValueView,
-                         ValueView satisfiedValueView,
-                         ListView<PropertyView> propertiesView,
-                         ListView<ConditionView> conditionsView,
-                         CommandView addConditionCommandView) {
+    public ConditionView(CommandView renameCommand,
+                         ValueView errorValue,
+                         CommandView removeCommand,
+                         PropertyView driverProperty,
+                         ValueView driverLoadedValue,
+                         ValueView satisfiedValue,
+                         ListView<PropertyView> properties,
+                         ListView<ConditionView> conditions,
+                         CommandView addConditionCommand) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.errorValueView = errorValueView;
-        this.removeCommandView = removeCommandView;
-        this.driverPropertyView = driverPropertyView;
-        this.driverLoadedValueView = driverLoadedValueView;
-        this.satisfiedValueView = satisfiedValueView;
-        this.propertiesView = propertiesView;
-        this.conditionsView = conditionsView;
-        this.addConditionCommandView = addConditionCommandView;
+        this.renameCommand = renameCommand;
+        this.errorValue = errorValue;
+        this.removeCommand = removeCommand;
+        this.driverProperty = driverProperty;
+        this.driverLoadedValue = driverLoadedValue;
+        this.satisfiedValue = satisfiedValue;
+        this.properties = properties;
+        this.conditions = conditions;
+        this.addConditionCommand = addConditionCommand;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public ConditionView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public ConditionView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public ValueView getErrorValueView() {
-        return errorValueView;
+    public ValueView getErrorValue() {
+        return errorValue;
     }
 
-    public ConditionView setErrorValueView(ValueView errorValueView) {
-        this.errorValueView = errorValueView;
+    public ConditionView setErrorValue(ValueView errorValue) {
+        this.errorValue = errorValue;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public ConditionView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public ConditionView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 
-    public PropertyView getDriverPropertyView() {
-        return driverPropertyView;
+    public PropertyView getDriverProperty() {
+        return driverProperty;
     }
 
-    public ConditionView setDriverPropertyView(PropertyView driverPropertyView) {
-        this.driverPropertyView = driverPropertyView;
+    public ConditionView setDriverProperty(PropertyView driverProperty) {
+        this.driverProperty = driverProperty;
         return this;
     }
 
-    public ValueView getDriverLoadedValueView() {
-        return driverLoadedValueView;
+    public ValueView getDriverLoadedValue() {
+        return driverLoadedValue;
     }
 
-    public ConditionView setDriverLoadedValueView(ValueView driverLoadedValueView) {
-        this.driverLoadedValueView = driverLoadedValueView;
+    public ConditionView setDriverLoadedValue(ValueView driverLoadedValue) {
+        this.driverLoadedValue = driverLoadedValue;
         return this;
     }
 
-    public ValueView getSatisfiedValueView() {
-        return satisfiedValueView;
+    public ValueView getSatisfiedValue() {
+        return satisfiedValue;
     }
 
-    public ConditionView setSatisfiedValueView(ValueView satisfiedValueView) {
-        this.satisfiedValueView = satisfiedValueView;
+    public ConditionView setSatisfiedValue(ValueView satisfiedValue) {
+        this.satisfiedValue = satisfiedValue;
         return this;
     }
 
-    public ListView<PropertyView> getPropertiesView() {
-        return propertiesView;
+    public ListView<PropertyView> getProperties() {
+        return properties;
     }
 
-    public ConditionView setPropertiesView(ListView<PropertyView> propertiesView) {
-        this.propertiesView = propertiesView;
+    public ConditionView setProperties(ListView<PropertyView> properties) {
+        this.properties = properties;
         return this;
     }
 
-    public ListView<ConditionView> getConditionsView() {
-        return conditionsView;
+    public ListView<ConditionView> getConditions() {
+        return conditions;
     }
 
-    public ConditionView setConditionsView(ListView<ConditionView> conditionsView) {
-        this.conditionsView = conditionsView;
+    public ConditionView setConditions(ListView<ConditionView> conditions) {
+        this.conditions = conditions;
         return this;
     }
 
-    public CommandView getAddConditionCommandView() {
-        return addConditionCommandView;
+    public CommandView getAddConditionCommand() {
+        return addConditionCommand;
     }
 
-    public ConditionView setAddConditionCommandView(CommandView addConditionCommandView) {
-        this.addConditionCommandView = addConditionCommandView;
+    public ConditionView setAddConditionCommand(CommandView addConditionCommand) {
+        this.addConditionCommand = addConditionCommand;
         return this;
     }
 }

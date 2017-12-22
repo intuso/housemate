@@ -94,18 +94,18 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
-                    result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands()));
+                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues()));
                     break;
 
                 case SELECTION:
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getCommandsView() != null)
-                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
-                    if(view.getValuesView() != null)
-                        result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getCommands() != null)
+                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands()));
+                    if(view.getValues() != null)
+                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues()));
                     break;
             }
         }

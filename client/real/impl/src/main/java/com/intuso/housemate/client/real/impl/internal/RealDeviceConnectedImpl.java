@@ -47,6 +47,11 @@ public final class RealDeviceConnectedImpl
     }
 
     @Override
+    public Set<String> getClasses() {
+        return getData().getClasses();
+    }
+
+    @Override
     public Set<String> getAbilities() {
         return getData().getAbilities();
     }
@@ -54,6 +59,7 @@ public final class RealDeviceConnectedImpl
     void wrap(java.lang.Object object) {
         clear();
         // find the device's abilities, and add the commands and values specified by the object
+        getData().setClasses(annotationParser.findClasses(logger, object));
         getData().setAbilities(annotationParser.findAbilities(logger, object));
         sendData();
         for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))

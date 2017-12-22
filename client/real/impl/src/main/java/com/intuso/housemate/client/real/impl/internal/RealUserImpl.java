@@ -116,18 +116,18 @@ public final class RealUserImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
                     break;
 
                 case SELECTION:
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getEmailPropertyView() != null)
-                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getEmailProperty() != null)
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
                     break;
             }
 

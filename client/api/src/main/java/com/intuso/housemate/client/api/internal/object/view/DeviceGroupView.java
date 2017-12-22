@@ -5,8 +5,8 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class DeviceGroupView extends DeviceView<DeviceGroupView> {
 
-    private ValueView errorValueView;
-    private CommandView removeCommandView;
+    private ValueView errorValue;
+    private CommandView removeCommand;
 
     public DeviceGroupView() {}
 
@@ -15,30 +15,30 @@ public class DeviceGroupView extends DeviceView<DeviceGroupView> {
     }
 
     public DeviceGroupView(CommandView renameCommandView,
-                           ValueView errorValueView,
-                           CommandView removeCommandView,
+                           ValueView errorValue,
+                           CommandView removeCommand,
                            ListView<CommandView> commandsView,
                            ListView<ValueView> valuesView) {
         super(renameCommandView, commandsView, valuesView);
-        this.errorValueView = errorValueView;
-        this.removeCommandView = removeCommandView;
+        this.errorValue = errorValue;
+        this.removeCommand = removeCommand;
     }
 
-    public ValueView getErrorValueView() {
-        return errorValueView;
+    public ValueView getErrorValue() {
+        return errorValue;
     }
 
-    public DeviceGroupView setErrorValueView(ValueView errorValueView) {
-        this.errorValueView = errorValueView;
+    public DeviceGroupView setErrorValue(ValueView errorValue) {
+        this.errorValue = errorValue;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public DeviceGroupView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public DeviceGroupView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 }

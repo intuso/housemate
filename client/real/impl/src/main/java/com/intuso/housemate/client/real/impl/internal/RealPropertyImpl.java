@@ -3,10 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.object.Command;
-import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.Tree;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.api.internal.object.view.View;
@@ -56,14 +53,14 @@ public class RealPropertyImpl<O>
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap serialisedValues) {
-                        List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.getChildren().get(Property.VALUE_PARAM));
+                        List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.getChildren().get(Value.VALUE_ID));
                         RealPropertyImpl.this.setValues(values);
                     }
                 },
                 Lists.newArrayList(parameterFactory.create(
-                        ChildUtil.logger(logger, Property.SET_COMMAND_ID, Property.VALUE_PARAM),
-                        Property.VALUE_PARAM,
-                        Property.VALUE_PARAM,
+                        ChildUtil.logger(logger, Property.SET_COMMAND_ID, Value.VALUE_ID),
+                        Value.VALUE_ID,
+                        Value.VALUE_ID,
                         "The new value for the property",
                         type,
                         minValues,
@@ -92,12 +89,12 @@ public class RealPropertyImpl<O>
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
                     break;
 
                 case SELECTION:
-                    if(view.getSetCommandView() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    if(view.getSetCommand() != null)
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
                     break;
             }
 

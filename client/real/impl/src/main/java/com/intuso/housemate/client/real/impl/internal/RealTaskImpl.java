@@ -188,30 +188,30 @@ public final class RealTaskImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
                     break;
 
                 case SELECTION:
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getErrorValueView() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    if(view.getDriverPropertyView() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    if(view.getDriverLoadedValueView() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    if(view.getPropertiesView() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    if(view.getExecutingValueView() != null)
-                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getErrorValue() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    if(view.getDriverProperty() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    if(view.getDriverLoadedValue() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    if(view.getProperties() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    if(view.getExecutingValue() != null)
+                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
                     break;
             }
 

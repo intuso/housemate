@@ -218,36 +218,36 @@ public final class RealConditionImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValueView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue()));
                     break;
 
                 case SELECTION:
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getErrorValueView() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    if(view.getDriverPropertyView() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    if(view.getDriverLoadedValueView() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    if(view.getPropertiesView() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    if(view.getConditionsView() != null)
-                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditionsView()));
-                    if(view.getAddConditionCommandView() != null)
-                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommandView()));
-                    if(view.getSatisfiedValueView() != null)
-                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValueView()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getErrorValue() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    if(view.getDriverProperty() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    if(view.getDriverLoadedValue() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    if(view.getProperties() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    if(view.getConditions() != null)
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
+                    if(view.getAddConditionCommand() != null)
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
+                    if(view.getSatisfiedValue() != null)
+                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue()));
                     break;
             }
 

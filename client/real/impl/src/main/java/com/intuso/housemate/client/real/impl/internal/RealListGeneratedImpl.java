@@ -70,14 +70,14 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getElementView()));
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getView()));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getElementView()));
+                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getView()));
                     break;
             }
 

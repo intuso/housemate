@@ -1,5 +1,6 @@
 package com.intuso.housemate.plugin.tvremote;
 
+import com.intuso.housemate.client.v1_0.api.annotation.Classes;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.ability.Playback;
@@ -12,6 +13,7 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 import java.io.IOException;
 
 @Id(value = "tv-remote", name = "TV Remote", description = "TV Remote")
+@Classes(Classes.TV)
 public class TVRemote implements Power, Playback, Volume {
 
     private final ManagedCollection<Power.Listener> powerListeners;

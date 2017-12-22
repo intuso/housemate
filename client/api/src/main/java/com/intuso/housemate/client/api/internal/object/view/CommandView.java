@@ -5,8 +5,8 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class CommandView extends View {
 
-    private ValueView enabledValueView;
-    private ListView<ParameterView> parametersView;
+    private ValueView enabledValue;
+    private ListView<ParameterView> parameters;
 
     public CommandView() {}
 
@@ -14,27 +14,27 @@ public class CommandView extends View {
         super(mode);
     }
 
-    public CommandView(ValueView enabledValueView, ListView<ParameterView> parametersView) {
+    public CommandView(ValueView enabledValue, ListView<ParameterView> parameters) {
         super(Mode.SELECTION);
-        this.enabledValueView = enabledValueView;
-        this.parametersView = parametersView;
+        this.enabledValue = enabledValue;
+        this.parameters = parameters;
     }
 
-    public ValueView getEnabledValueView() {
-        return enabledValueView;
+    public ValueView getEnabledValue() {
+        return enabledValue;
     }
 
-    public CommandView setEnabledValueView(ValueView enabledValueView) {
-        this.enabledValueView = enabledValueView;
+    public CommandView setEnabledValue(ValueView enabledValue) {
+        this.enabledValue = enabledValue;
         return this;
     }
 
-    public ListView<ParameterView> getParametersView() {
-        return parametersView;
+    public ListView<ParameterView> getParameters() {
+        return parameters;
     }
 
-    public CommandView setParametersView(ListView<ParameterView> parametersView) {
-        this.parametersView = parametersView;
+    public CommandView setParameters(ListView<ParameterView> parameters) {
+        this.parameters = parameters;
         return this;
     }
 }

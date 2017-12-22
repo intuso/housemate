@@ -90,30 +90,30 @@ public abstract class ProxyTask<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
                     break;
 
                 case SELECTION:
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getErrorValueView() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
-                    if(view.getDriverPropertyView() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverPropertyView()));
-                    if(view.getDriverLoadedValueView() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValueView()));
-                    if(view.getPropertiesView() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getPropertiesView()));
-                    if(view.getExecutingValueView() != null)
-                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValueView()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getErrorValue() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    if(view.getDriverProperty() != null)
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                    if(view.getDriverLoadedValue() != null)
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                    if(view.getProperties() != null)
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                    if(view.getExecutingValue() != null)
+                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
                     break;
             }
 
@@ -150,19 +150,19 @@ public abstract class ProxyTask<
                     executingValue = valueFactory.create(ChildUtil.logger(logger, EXECUTING_ID), ChildUtil.name(name, EXECUTING_ID));
                 break;
             case SELECTION:
-                if(renameCommand == null && view.getRenameCommandView() != null)
+                if(renameCommand == null && view.getRenameCommand() != null)
                     renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-                if(removeCommand == null && view.getRemoveCommandView() != null)
+                if(removeCommand == null && view.getRemoveCommand() != null)
                     removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-                if(errorValue == null && view.getErrorValueView() != null)
+                if(errorValue == null && view.getErrorValue() != null)
                     errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
-                if(driverProperty == null && view.getDriverPropertyView() != null)
+                if(driverProperty == null && view.getDriverProperty() != null)
                     driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
-                if(driverLoadedValue == null && view.getDriverLoadedValueView() != null)
+                if(driverLoadedValue == null && view.getDriverLoadedValue() != null)
                     driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
-                if(properties == null && view.getPropertiesView() != null)
+                if(properties == null && view.getProperties() != null)
                     properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
-                if(executingValue == null && view.getExecutingValueView() != null)
+                if(executingValue == null && view.getExecutingValue() != null)
                     executingValue = valueFactory.create(ChildUtil.logger(logger, EXECUTING_ID), ChildUtil.name(name, EXECUTING_ID));
                 break;
         }
@@ -180,20 +180,20 @@ public abstract class ProxyTask<
                 break;
             case CHILDREN:
             case SELECTION:
-                if(view.getRenameCommandView() != null)
-                    renameCommand.load(view.getRenameCommandView());
-                if(view.getRemoveCommandView() != null)
-                    removeCommand.load(view.getRemoveCommandView());
-                if(view.getErrorValueView() != null)
-                    errorValue.load(view.getErrorValueView());
-                if(view.getDriverPropertyView() != null)
-                    driverProperty.load(view.getDriverPropertyView());
-                if(view.getDriverLoadedValueView() != null)
-                    driverLoadedValue.load(view.getDriverLoadedValueView());
-                if(view.getPropertiesView() != null)
-                    properties.load(view.getPropertiesView());
-                if(view.getExecutingValueView() != null)
-                    executingValue.load(view.getExecutingValueView());
+                if(view.getRenameCommand() != null)
+                    renameCommand.load(view.getRenameCommand());
+                if(view.getRemoveCommand() != null)
+                    removeCommand.load(view.getRemoveCommand());
+                if(view.getErrorValue() != null)
+                    errorValue.load(view.getErrorValue());
+                if(view.getDriverProperty() != null)
+                    driverProperty.load(view.getDriverProperty());
+                if(view.getDriverLoadedValue() != null)
+                    driverLoadedValue.load(view.getDriverLoadedValue());
+                if(view.getProperties() != null)
+                    properties.load(view.getProperties());
+                if(view.getExecutingValue() != null)
+                    executingValue.load(view.getExecutingValue());
                 break;
         }
     }

@@ -148,33 +148,33 @@ public class RealServerImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomationsView()));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommandView()));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroupsView()));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommandView()));
-                    result.getChildren().put(USERS_ID, users.getTree(view.getUsersView()));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommandView()));
-                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodesView()));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations()));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand()));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices()));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups()));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand()));
+                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers()));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand()));
+                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes()));
                     break;
 
                 case SELECTION:
-                    if(view.getAutomationsView() != null)
-                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomationsView()));
-                    if(view.getAddAutomationCommandView() != null)
-                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommandView()));
-                    if(view.getDevicesView() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
-                    if(view.getDeviceGroupsView() != null)
-                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroupsView()));
-                    if(view.getAddDeviceGroupCommandView() != null)
-                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommandView()));
-                    if(view.getUsersView() != null)
-                        result.getChildren().put(USERS_ID, users.getTree(view.getUsersView()));
-                    if(view.getAddUserCommandView() != null)
-                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommandView()));
-                    if(view.getNodesView() != null)
-                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodesView()));
+                    if(view.getAutomations() != null)
+                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations()));
+                    if(view.getAddAutomationCommand() != null)
+                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand()));
+                    if(view.getDevices() != null)
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices()));
+                    if(view.getDeviceGroups() != null)
+                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups()));
+                    if(view.getAddDeviceGroupCommand() != null)
+                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand()));
+                    if(view.getUsers() != null)
+                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers()));
+                    if(view.getAddUserCommand() != null)
+                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand()));
+                    if(view.getNodes() != null)
+                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes()));
                     break;
             }
 

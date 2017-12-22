@@ -82,18 +82,18 @@ public class RealNodeImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes()));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares()));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand()));
                     break;
 
                 case SELECTION:
-                    if(view.getTypesView() != null)
-                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
-                    if(view.getHardwaresView() != null)
-                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
-                    if(view.getAddHardwareCommandView() != null)
-                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    if(view.getTypes() != null)
+                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes()));
+                    if(view.getHardwares() != null)
+                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares()));
+                    if(view.getAddHardwareCommand() != null)
+                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand()));
                     break;
             }
 

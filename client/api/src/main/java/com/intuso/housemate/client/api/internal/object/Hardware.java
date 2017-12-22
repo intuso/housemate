@@ -34,10 +34,10 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         Property.Container<PROPERTIES>,
         Device.Connected.Container<DEVICES> {
 
-    String COMMANDS_ID = "command";
-    String VALUES_ID = "value";
-    String PROPERTIES_ID = "property";
-    String DEVICES_ID = "device";
+    String COMMANDS_ID = "commands";
+    String VALUES_ID = "values";
+    String PROPERTIES_ID = "properties";
+    String DEVICES_ID = "devices";
 
     /**
      *

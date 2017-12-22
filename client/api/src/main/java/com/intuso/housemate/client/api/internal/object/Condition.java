@@ -32,9 +32,9 @@ public interface Condition<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE> {
 
     String SATISFIED_ID = "satisfied";
-    String PROPERTIES_ID = "property";
-    String CONDITIONS_ID = "condition";
-    String ADD_CONDITION_ID = "add-condition";
+    String PROPERTIES_ID = "properties";
+    String CONDITIONS_ID = "conditions";
+    String ADD_CONDITION_ID = "addCondition";
 
     CHILD_CONDITIONS getConditions();
 

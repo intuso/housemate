@@ -171,33 +171,33 @@ public abstract class ProxyServer<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomationsView()));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommandView()));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroupsView()));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommandView()));
-                    result.getChildren().put(USERS_ID, users.getTree(view.getUsersView()));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommandView()));
-                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodesView()));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations()));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand()));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices()));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups()));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand()));
+                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers()));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand()));
+                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes()));
                     break;
 
                 case SELECTION:
-                    if(view.getAutomationsView() != null)
-                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomationsView()));
-                    if(view.getAddAutomationCommandView() != null)
-                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommandView()));
-                    if(view.getDevicesView() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevicesView()));
-                    if(view.getDeviceGroupsView() != null)
-                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroupsView()));
-                    if(view.getAddDeviceGroupCommandView() != null)
-                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommandView()));
-                    if(view.getUsersView() != null)
-                        result.getChildren().put(USERS_ID, users.getTree(view.getUsersView()));
-                    if(view.getAddUserCommandView() != null)
-                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommandView()));
-                    if(view.getNodesView() != null)
-                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodesView()));
+                    if(view.getAutomations() != null)
+                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations()));
+                    if(view.getAddAutomationCommand() != null)
+                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand()));
+                    if(view.getDevices() != null)
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices()));
+                    if(view.getDeviceGroups() != null)
+                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups()));
+                    if(view.getAddDeviceGroupCommand() != null)
+                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand()));
+                    if(view.getUsers() != null)
+                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers()));
+                    if(view.getAddUserCommand() != null)
+                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand()));
+                    if(view.getNodes() != null)
+                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes()));
                     break;
             }
 
@@ -234,19 +234,19 @@ public abstract class ProxyServer<
                     nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
                 break;
             case SELECTION:
-                if(automations == null && view.getAutomationsView() != null)
+                if(automations == null && view.getAutomations() != null)
                     automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
-                if(addAutomationCommand == null && view.getAddAutomationCommandView() != null)
+                if(addAutomationCommand == null && view.getAddAutomationCommand() != null)
                     addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
-                if(deviceGroups == null && view.getDeviceGroupsView() != null)
+                if(deviceGroups == null && view.getDeviceGroups() != null)
                     deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
-                if(addDeviceGroupCommand == null && view.getAddDeviceGroupCommandView() != null)
+                if(addDeviceGroupCommand == null && view.getAddDeviceGroupCommand() != null)
                     addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
-                if(users == null && view.getUsersView() != null)
+                if(users == null && view.getUsers() != null)
                     users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
-                if(addUserCommand == null && view.getAddUserCommandView() != null)
+                if(addUserCommand == null && view.getAddUserCommand() != null)
                     addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
-                if(nodes == null && view.getNodesView() != null)
+                if(nodes == null && view.getNodes() != null)
                     nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
                 break;
         }
@@ -266,22 +266,22 @@ public abstract class ProxyServer<
                 break;
             case CHILDREN:
             case SELECTION:
-                if(view.getAutomationsView() != null)
-                    automations.load(view.getAutomationsView());
-                if(view.getAddAutomationCommandView() != null)
-                    addAutomationCommand.load(view.getAddAutomationCommandView());
-                if(view.getDevicesView() != null)
-                    devices.load(view.getDevicesView());
-                if(view.getDeviceGroupsView() != null)
-                    deviceGroups.load(view.getDeviceGroupsView());
-                if(view.getAddDeviceGroupCommandView() != null)
-                    addDeviceGroupCommand.load(view.getAddDeviceGroupCommandView());
-                if(view.getUsersView() != null)
-                    users.load(view.getUsersView());
-                if(view.getAddUserCommandView() != null)
-                    addUserCommand.load(view.getAddUserCommandView());
-                if(view.getNodesView() != null)
-                    nodes.load(view.getNodesView());
+                if(view.getAutomations() != null)
+                    automations.load(view.getAutomations());
+                if(view.getAddAutomationCommand() != null)
+                    addAutomationCommand.load(view.getAddAutomationCommand());
+                if(view.getDevices() != null)
+                    devices.load(view.getDevices());
+                if(view.getDeviceGroups() != null)
+                    deviceGroups.load(view.getDeviceGroups());
+                if(view.getAddDeviceGroupCommand() != null)
+                    addDeviceGroupCommand.load(view.getAddDeviceGroupCommand());
+                if(view.getUsers() != null)
+                    users.load(view.getUsers());
+                if(view.getAddUserCommand() != null)
+                    addUserCommand.load(view.getAddUserCommand());
+                if(view.getNodes() != null)
+                    nodes.load(view.getNodes());
                 break;
         }
     }

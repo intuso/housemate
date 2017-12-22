@@ -5,7 +5,7 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class PropertyView extends ValueBaseView {
 
-    private CommandView setCommandView;
+    private CommandView setCommand;
 
     public PropertyView() {}
 
@@ -13,17 +13,17 @@ public class PropertyView extends ValueBaseView {
         super(mode);
     }
 
-    public PropertyView(CommandView setCommandView) {
+    public PropertyView(CommandView setCommand) {
         super(Mode.SELECTION);
-        this.setCommandView = setCommandView;
+        this.setCommand = setCommand;
     }
 
-    public CommandView getSetCommandView() {
-        return setCommandView;
+    public CommandView getSetCommand() {
+        return setCommand;
     }
 
-    public PropertyView setSetCommandView(CommandView setCommandView) {
-        this.setCommandView = setCommandView;
+    public PropertyView setSetCommand(CommandView setCommand) {
+        this.setCommand = setCommand;
         return this;
     }
 }

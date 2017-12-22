@@ -116,15 +116,15 @@ public abstract class ProxyDeviceGroup<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
                     break;
 
                 case SELECTION:
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getErrorValueView() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValueView()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getErrorValue() != null)
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
                     break;
             }
         }
@@ -150,9 +150,9 @@ public abstract class ProxyDeviceGroup<
                     errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 break;
             case SELECTION:
-                if(removeCommand == null && view.getRemoveCommandView() != null)
+                if(removeCommand == null && view.getRemoveCommand() != null)
                     removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-                if (errorValue == null && view.getErrorValueView() != null)
+                if (errorValue == null && view.getErrorValue() != null)
                     errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 break;
         }
@@ -165,10 +165,10 @@ public abstract class ProxyDeviceGroup<
                 break;
             case CHILDREN:
             case SELECTION:
-                if (view.getRemoveCommandView() != null)
-                    removeCommand.load(view.getRemoveCommandView());
-                if (view.getErrorValueView() != null)
-                    errorValue.load(view.getErrorValueView());
+                if (view.getRemoveCommand() != null)
+                    removeCommand.load(view.getRemoveCommand());
+                if (view.getErrorValue() != null)
+                    errorValue.load(view.getErrorValue());
                 break;
         }
     }
@@ -197,6 +197,11 @@ public abstract class ProxyDeviceGroup<
         addTemperatureSensorDeviceCommand.uninit();
         volumeDeviceReferences.uninit();
         addVolumeDeviceCommand.uninit();
+    }
+
+    @Override
+    public Set<String> getClasses() {
+        return getData().getClasses();
     }
 
     @Override

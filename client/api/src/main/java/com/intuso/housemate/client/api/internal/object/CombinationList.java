@@ -112,14 +112,14 @@ public class CombinationList<T extends Object<?, ?, ?>>
                 break;
             case CHILDREN:
                 for(T t : this)
-                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.SELECTION)));
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(view.getView()));
                 break;
             case SELECTION:
                 if (view.getElements() != null) {
                     for (String id : view.getElements()) {
                         T t = get(id);
                         if (t != null)
-                            result.getChildren().put(id, ((Object) t).getTree(view.getElementView()));
+                            result.getChildren().put(id, ((Object) t).getTree(view.getView()));
                     }
                 }
                 break;

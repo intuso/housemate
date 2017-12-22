@@ -5,14 +5,14 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class ServerView extends View {
 
-    private ListView<AutomationView> automationsView;
-    private CommandView addAutomationCommandView;
-    private ListView<DeviceView<?>> devicesView;
-    private ListView<DeviceGroupView> deviceGroupsView;
-    private CommandView addDeviceGroupCommandView;
-    private ListView<UserView> usersView;
-    private CommandView addUserCommandView;
-    private ListView<NodeView> nodesView;
+    private ListView<AutomationView> automations;
+    private CommandView addAutomationCommand;
+    private ListView<DeviceView<?>> devices;
+    private ListView<DeviceGroupView> deviceGroups;
+    private CommandView addDeviceGroupCommand;
+    private ListView<UserView> users;
+    private CommandView addUserCommand;
+    private ListView<NodeView> nodes;
 
     public ServerView() {}
 
@@ -20,93 +20,93 @@ public class ServerView extends View {
         super(mode);
     }
 
-    public ServerView(ListView<AutomationView> automationsView,
-                      CommandView addAutomationCommandView,
-                      ListView<DeviceView<?>> devicesView,
-                      ListView<DeviceGroupView> deviceGroupsView,
-                      CommandView addDeviceGroupCommandView,
-                      ListView<UserView> usersView,
-                      CommandView addUserCommandView,
-                      ListView<NodeView> nodesView) {
-        this.automationsView = automationsView;
-        this.addAutomationCommandView = addAutomationCommandView;
-        this.devicesView = devicesView;
-        this.deviceGroupsView = deviceGroupsView;
-        this.addDeviceGroupCommandView = addDeviceGroupCommandView;
-        this.usersView = usersView;
-        this.addUserCommandView = addUserCommandView;
-        this.nodesView = nodesView;
+    public ServerView(ListView<AutomationView> automations,
+                      CommandView addAutomationCommand,
+                      ListView<DeviceView<?>> devices,
+                      ListView<DeviceGroupView> deviceGroups,
+                      CommandView addDeviceGroupCommand,
+                      ListView<UserView> users,
+                      CommandView addUserCommand,
+                      ListView<NodeView> nodes) {
+        this.automations = automations;
+        this.addAutomationCommand = addAutomationCommand;
+        this.devices = devices;
+        this.deviceGroups = deviceGroups;
+        this.addDeviceGroupCommand = addDeviceGroupCommand;
+        this.users = users;
+        this.addUserCommand = addUserCommand;
+        this.nodes = nodes;
     }
 
-    public ListView<AutomationView> getAutomationsView() {
-        return automationsView;
+    public ListView<AutomationView> getAutomations() {
+        return automations;
     }
 
-    public ServerView setAutomationsView(ListView<AutomationView> automationsView) {
-        this.automationsView = automationsView;
+    public ServerView setAutomations(ListView<AutomationView> automations) {
+        this.automations = automations;
         return this;
     }
 
-    public CommandView getAddAutomationCommandView() {
-        return addAutomationCommandView;
+    public CommandView getAddAutomationCommand() {
+        return addAutomationCommand;
     }
 
-    public ServerView setAddAutomationCommandView(CommandView addAutomationCommandView) {
-        this.addAutomationCommandView = addAutomationCommandView;
+    public ServerView setAddAutomationCommand(CommandView addAutomationCommand) {
+        this.addAutomationCommand = addAutomationCommand;
         return this;
     }
 
-    public ListView<DeviceView<?>> getDevicesView() {
-        return devicesView;
+    public ListView<DeviceView<?>> getDevices() {
+        return devices;
     }
 
-    public ServerView setDevicesView(ListView<DeviceView<?>> devicesView) {
-        this.devicesView = devicesView;
+    public ServerView setDevices(ListView<DeviceView<?>> devices) {
+        this.devices = devices;
         return this;
     }
 
-    public ListView<DeviceGroupView> getDeviceGroupsView() {
-        return deviceGroupsView;
+    public ListView<DeviceGroupView> getDeviceGroups() {
+        return deviceGroups;
     }
 
-    public ServerView setDeviceGroupsView(ListView<DeviceGroupView> deviceGroupsView) {
-        this.deviceGroupsView = deviceGroupsView;
+    public ServerView setDeviceGroups(ListView<DeviceGroupView> deviceGroups) {
+        this.deviceGroups = deviceGroups;
         return this;
     }
 
-    public CommandView getAddDeviceGroupCommandView() {
-        return addDeviceGroupCommandView;
+    public CommandView getAddDeviceGroupCommand() {
+        return addDeviceGroupCommand;
     }
 
-    public ServerView setAddDeviceGroupCommandView(CommandView addDeviceGroupCommandView) {
-        this.addDeviceGroupCommandView = addDeviceGroupCommandView;
+    public ServerView setAddDeviceGroupCommand(CommandView addDeviceGroupCommand) {
+        this.addDeviceGroupCommand = addDeviceGroupCommand;
         return this;
     }
 
-    public ListView<UserView> getUsersView() {
-        return usersView;
+    public ListView<UserView> getUsers() {
+        return users;
     }
 
-    public ServerView setUsersView(ListView<UserView> usersView) {
-        this.usersView = usersView;
+    public ServerView setUsers(ListView<UserView> users) {
+        this.users = users;
         return this;
     }
 
-    public CommandView getAddUserCommandView() {
-        return addUserCommandView;
+    public CommandView getAddUserCommand() {
+        return addUserCommand;
     }
 
-    public ServerView setAddUserCommandView(CommandView addUserCommandView) {
-        this.addUserCommandView = addUserCommandView;
+    public ServerView setAddUserCommand(CommandView addUserCommand) {
+        this.addUserCommand = addUserCommand;
         return this;
     }
 
-    public ListView<NodeView> getNodesView() {
-        return nodesView;
+    public ListView<NodeView> getNodes() {
+        return nodes;
     }
 
-    public ServerView setNodesView(ListView<NodeView> nodesView) {
-        this.nodesView = nodesView;
+    public ServerView setNodes(ListView<NodeView> nodes) {
+        this.nodes = nodes;
         return this;
     }
 }

@@ -75,18 +75,18 @@ public abstract class ProxyNode<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes()));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares()));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand()));
                     break;
 
                 case SELECTION:
-                    if(view.getTypesView() != null)
-                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypesView()));
-                    if(view.getHardwaresView() != null)
-                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwaresView()));
-                    if(view.getAddHardwareCommandView() != null)
-                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommandView()));
+                    if(view.getTypes() != null)
+                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes()));
+                    if(view.getHardwares() != null)
+                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares()));
+                    if(view.getAddHardwareCommand() != null)
+                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand()));
                     break;
             }
 
@@ -115,11 +115,11 @@ public abstract class ProxyNode<
                     addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
                 break;
             case SELECTION:
-                if(types == null && view.getTypesView() != null)
+                if(types == null && view.getTypes() != null)
                     types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.name(name, TYPES_ID));
-                if(hardwares == null && view.getHardwaresView() != null)
+                if(hardwares == null && view.getHardwares() != null)
                     hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
-                if(addHardwareCommand == null && view.getAddHardwareCommandView() != null)
+                if(addHardwareCommand == null && view.getAddHardwareCommand() != null)
                     addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
                 break;
         }
@@ -133,12 +133,12 @@ public abstract class ProxyNode<
                 break;
             case CHILDREN:
             case SELECTION:
-                if(view.getTypesView() != null)
-                    types.load(view.getTypesView());
-                if(view.getHardwaresView() != null)
-                    hardwares.load(view.getHardwaresView());
-                if(view.getAddHardwareCommandView() != null)
-                    addHardwareCommand.load(view.getAddHardwareCommandView());
+                if(view.getTypes() != null)
+                    types.load(view.getTypes());
+                if(view.getHardwares() != null)
+                    hardwares.load(view.getHardwares());
+                if(view.getAddHardwareCommand() != null)
+                    addHardwareCommand.load(view.getAddHardwareCommand());
                 break;
         }
     }

@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class ListView<CHILD_VIEW extends View> extends View {
 
-    private CHILD_VIEW elementView;
+    private CHILD_VIEW view;
     private Set<String> elements = Sets.newHashSet();
 
     public ListView() {}
@@ -18,27 +18,27 @@ public class ListView<CHILD_VIEW extends View> extends View {
         super(mode);
     }
 
-    public ListView(CHILD_VIEW elementView) {
+    public ListView(CHILD_VIEW view) {
         super(Mode.CHILDREN);
-        this.elementView = elementView;
+        this.view = view;
     }
 
-    public ListView(CHILD_VIEW elementView, String... elements) {
-        this(elementView, Sets.newHashSet(elements));
+    public ListView(CHILD_VIEW view, String... elements) {
+        this(view, Sets.newHashSet(elements));
     }
 
-    public ListView(CHILD_VIEW elementView, Set<String> elements) {
+    public ListView(CHILD_VIEW view, Set<String> elements) {
         super(Mode.SELECTION);
-        this.elementView = elementView;
+        this.view = view;
         this.elements = elements;
     }
 
-    public CHILD_VIEW getElementView() {
-        return elementView;
+    public CHILD_VIEW getView() {
+        return view;
     }
 
-    public ListView<CHILD_VIEW> setElementView(CHILD_VIEW elementView) {
-        this.elementView = elementView;
+    public ListView<CHILD_VIEW> setView(CHILD_VIEW view) {
+        this.view = view;
         return this;
     }
 

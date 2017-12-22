@@ -5,9 +5,9 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class DeviceView<VIEW extends DeviceView<?>> extends View {
 
-    private CommandView renameCommandView;
-    private ListView<CommandView> commandsView;
-    private ListView<ValueView> valuesView;
+    private CommandView renameCommand;
+    private ListView<CommandView> commands;
+    private ListView<ValueView> values;
 
     public DeviceView() {}
 
@@ -15,37 +15,37 @@ public class DeviceView<VIEW extends DeviceView<?>> extends View {
         super(mode);
     }
 
-    public DeviceView(CommandView renameCommandView, ListView<CommandView> commandsView, ListView<ValueView> valuesView) {
+    public DeviceView(CommandView renameCommand, ListView<CommandView> commands, ListView<ValueView> values) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.commandsView = commandsView;
-        this.valuesView = valuesView;
+        this.renameCommand = renameCommand;
+        this.commands = commands;
+        this.values = values;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public DeviceView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public DeviceView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public ListView<CommandView> getCommandsView() {
-        return commandsView;
+    public ListView<CommandView> getCommands() {
+        return commands;
     }
 
-    public VIEW setCommandsView(ListView<CommandView> commandsView) {
-        this.commandsView = commandsView;
+    public VIEW setCommands(ListView<CommandView> commands) {
+        this.commands = commands;
         return (VIEW) this;
     }
 
-    public ListView<ValueView> getValuesView() {
-        return valuesView;
+    public ListView<ValueView> getValues() {
+        return values;
     }
 
-    public VIEW setValuesView(ListView<ValueView> valuesView) {
-        this.valuesView = valuesView;
+    public VIEW setValues(ListView<ValueView> values) {
+        this.values = values;
         return (VIEW) this;
     }
 }

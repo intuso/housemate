@@ -25,6 +25,14 @@ public class AnnotationParserImpl implements AnnotationParser {
     }
 
     @Override
+    public Set<String> findClasses(Logger logger, Object object) {
+        return Sets.newHashSet(Sets.union(
+                annotationParserInternal.findClasses(logger, object),
+                annotationParserV1_0.findClasses(logger, object)
+        ));
+    }
+
+    @Override
     public Set<String> findAbilities(Logger logger, Object object) {
         return Sets.newHashSet(Sets.union(
                 annotationParserInternal.findAbilities(logger, object),

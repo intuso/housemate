@@ -75,18 +75,18 @@ public abstract class ProxyDevice<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
-                    result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands()));
+                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues()));
                     break;
 
                 case SELECTION:
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getCommandsView() != null)
-                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommandsView()));
-                    if(view.getValuesView() != null)
-                        result.getChildren().put(VALUES_ID, values.getTree(view.getValuesView()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getCommands() != null)
+                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands()));
+                    if(view.getValues() != null)
+                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues()));
                     break;
             }
         }
@@ -114,11 +114,11 @@ public abstract class ProxyDevice<
                     values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
                 break;
             case SELECTION:
-                if(renameCommand == null && view.getRenameCommandView() != null)
+                if(renameCommand == null && view.getRenameCommand() != null)
                     renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-                if(commands == null && view.getCommandsView() != null)
+                if(commands == null && view.getCommands() != null)
                     commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
-                if(values == null && view.getValuesView() != null)
+                if(values == null && view.getValues() != null)
                     values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
                 break;
         }
@@ -132,12 +132,12 @@ public abstract class ProxyDevice<
                 break;
             case CHILDREN:
             case SELECTION:
-                if(view.getRenameCommandView() != null)
-                    renameCommand.load(view.getRenameCommandView());
-                if(view.getCommandsView() != null)
-                    commands.load(view.getCommandsView());
-                if(view.getValuesView() != null)
-                    values.load(view.getValuesView());
+                if(view.getRenameCommand() != null)
+                    renameCommand.load(view.getRenameCommand());
+                if(view.getCommands() != null)
+                    commands.load(view.getCommands());
+                if(view.getValues() != null)
+                    values.load(view.getValues());
                 break;
         }
     }

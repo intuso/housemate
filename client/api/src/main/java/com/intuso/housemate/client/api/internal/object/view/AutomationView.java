@@ -5,18 +5,18 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class AutomationView extends View {
 
-    private CommandView renameCommandView;
-    private CommandView startCommandView;
-    private CommandView stopCommandView;
-    private ValueView runningValueView;
-    private ValueView errorValueView;
-    private CommandView removeCommandView;
-    private ListView<ConditionView> conditionsView;
-    private CommandView addConditionCommandView;
-    private ListView<TaskView> satisfiedTasksView;
-    private CommandView addSatisfiedTaskCommandView;
-    private ListView<TaskView> unsatisfiedTasksView;
-    private CommandView addUnsatisfiedTaskCommandView;
+    private CommandView renameCommand;
+    private CommandView startCommand;
+    private CommandView stopCommand;
+    private ValueView runningValue;
+    private ValueView errorValue;
+    private CommandView removeCommand;
+    private ListView<ConditionView> conditions;
+    private CommandView addConditionCommand;
+    private ListView<TaskView> satisfiedTasks;
+    private CommandView addSatisfiedTaskCommand;
+    private ListView<TaskView> unsatisfiedTasks;
+    private CommandView addUnsatisfiedTaskCommand;
 
     public AutomationView() {}
 
@@ -24,138 +24,138 @@ public class AutomationView extends View {
         super(mode);
     }
 
-    public AutomationView(CommandView renameCommandView,
-                          CommandView startCommandView,
-                          CommandView stopCommandView,
-                          ValueView runningValueView,
-                          ValueView errorValueView,
-                          CommandView removeCommandView,
-                          ListView<ConditionView> conditionsView,
-                          CommandView addConditionCommandView,
-                          ListView<TaskView> satisfiedTasksView,
-                          CommandView addSatisfiedTaskCommandView,
-                          ListView<TaskView> unsatisfiedTasksView,
-                          CommandView addUnsatisfiedTaskCommandView) {
+    public AutomationView(CommandView renameCommand,
+                          CommandView startCommand,
+                          CommandView stopCommand,
+                          ValueView runningValue,
+                          ValueView errorValue,
+                          CommandView removeCommand,
+                          ListView<ConditionView> conditions,
+                          CommandView addConditionCommand,
+                          ListView<TaskView> satisfiedTasks,
+                          CommandView addSatisfiedTaskCommand,
+                          ListView<TaskView> unsatisfiedTasks,
+                          CommandView addUnsatisfiedTaskCommand) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.startCommandView = startCommandView;
-        this.stopCommandView = stopCommandView;
-        this.runningValueView = runningValueView;
-        this.errorValueView = errorValueView;
-        this.removeCommandView = removeCommandView;
-        this.conditionsView = conditionsView;
-        this.addConditionCommandView = addConditionCommandView;
-        this.satisfiedTasksView = satisfiedTasksView;
-        this.addSatisfiedTaskCommandView = addSatisfiedTaskCommandView;
-        this.unsatisfiedTasksView = unsatisfiedTasksView;
-        this.addUnsatisfiedTaskCommandView = addUnsatisfiedTaskCommandView;
+        this.renameCommand = renameCommand;
+        this.startCommand = startCommand;
+        this.stopCommand = stopCommand;
+        this.runningValue = runningValue;
+        this.errorValue = errorValue;
+        this.removeCommand = removeCommand;
+        this.conditions = conditions;
+        this.addConditionCommand = addConditionCommand;
+        this.satisfiedTasks = satisfiedTasks;
+        this.addSatisfiedTaskCommand = addSatisfiedTaskCommand;
+        this.unsatisfiedTasks = unsatisfiedTasks;
+        this.addUnsatisfiedTaskCommand = addUnsatisfiedTaskCommand;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public AutomationView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public AutomationView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public CommandView getStartCommandView() {
-        return startCommandView;
+    public CommandView getStartCommand() {
+        return startCommand;
     }
 
-    public AutomationView setStartCommandView(CommandView startCommandView) {
-        this.startCommandView = startCommandView;
+    public AutomationView setStartCommand(CommandView startCommand) {
+        this.startCommand = startCommand;
         return this;
     }
 
-    public CommandView getStopCommandView() {
-        return stopCommandView;
+    public CommandView getStopCommand() {
+        return stopCommand;
     }
 
-    public AutomationView setStopCommandView(CommandView stopCommandView) {
-        this.stopCommandView = stopCommandView;
+    public AutomationView setStopCommand(CommandView stopCommand) {
+        this.stopCommand = stopCommand;
         return this;
     }
 
-    public ValueView getRunningValueView() {
-        return runningValueView;
+    public ValueView getRunningValue() {
+        return runningValue;
     }
 
-    public AutomationView setRunningValueView(ValueView runningValueView) {
-        this.runningValueView = runningValueView;
+    public AutomationView setRunningValue(ValueView runningValue) {
+        this.runningValue = runningValue;
         return this;
     }
 
-    public ValueView getErrorValueView() {
-        return errorValueView;
+    public ValueView getErrorValue() {
+        return errorValue;
     }
 
-    public AutomationView setErrorValueView(ValueView errorValueView) {
-        this.errorValueView = errorValueView;
+    public AutomationView setErrorValue(ValueView errorValue) {
+        this.errorValue = errorValue;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public AutomationView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public AutomationView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 
-    public ListView<ConditionView> getConditionsView() {
-        return conditionsView;
+    public ListView<ConditionView> getConditions() {
+        return conditions;
     }
 
-    public AutomationView setConditionsView(ListView<ConditionView> conditionsView) {
-        this.conditionsView = conditionsView;
+    public AutomationView setConditions(ListView<ConditionView> conditions) {
+        this.conditions = conditions;
         return this;
     }
 
-    public CommandView getAddConditionCommandView() {
-        return addConditionCommandView;
+    public CommandView getAddConditionCommand() {
+        return addConditionCommand;
     }
 
-    public AutomationView setAddConditionCommandView(CommandView addConditionCommandView) {
-        this.addConditionCommandView = addConditionCommandView;
+    public AutomationView setAddConditionCommand(CommandView addConditionCommand) {
+        this.addConditionCommand = addConditionCommand;
         return this;
     }
 
-    public ListView<TaskView> getSatisfiedTasksView() {
-        return satisfiedTasksView;
+    public ListView<TaskView> getSatisfiedTasks() {
+        return satisfiedTasks;
     }
 
-    public AutomationView setSatisfiedTasksView(ListView<TaskView> satisfiedTasksView) {
-        this.satisfiedTasksView = satisfiedTasksView;
+    public AutomationView setSatisfiedTasks(ListView<TaskView> satisfiedTasks) {
+        this.satisfiedTasks = satisfiedTasks;
         return this;
     }
 
-    public CommandView getAddSatisfiedTaskCommandView() {
-        return addSatisfiedTaskCommandView;
+    public CommandView getAddSatisfiedTaskCommand() {
+        return addSatisfiedTaskCommand;
     }
 
-    public AutomationView setAddSatisfiedTaskCommandView(CommandView addSatisfiedTaskCommandView) {
-        this.addSatisfiedTaskCommandView = addSatisfiedTaskCommandView;
+    public AutomationView setAddSatisfiedTaskCommand(CommandView addSatisfiedTaskCommand) {
+        this.addSatisfiedTaskCommand = addSatisfiedTaskCommand;
         return this;
     }
 
-    public ListView<TaskView> getUnsatisfiedTasksView() {
-        return unsatisfiedTasksView;
+    public ListView<TaskView> getUnsatisfiedTasks() {
+        return unsatisfiedTasks;
     }
 
-    public AutomationView setUnsatisfiedTasksView(ListView<TaskView> unsatisfiedTasksView) {
-        this.unsatisfiedTasksView = unsatisfiedTasksView;
+    public AutomationView setUnsatisfiedTasks(ListView<TaskView> unsatisfiedTasks) {
+        this.unsatisfiedTasks = unsatisfiedTasks;
         return this;
     }
 
-    public CommandView getAddUnsatisfiedTaskCommandView() {
-        return addUnsatisfiedTaskCommandView;
+    public CommandView getAddUnsatisfiedTaskCommand() {
+        return addUnsatisfiedTaskCommand;
     }
 
-    public AutomationView setAddUnsatisfiedTaskCommandView(CommandView addUnsatisfiedTaskCommandView) {
-        this.addUnsatisfiedTaskCommandView = addUnsatisfiedTaskCommandView;
+    public AutomationView setAddUnsatisfiedTaskCommand(CommandView addUnsatisfiedTaskCommand) {
+        this.addUnsatisfiedTaskCommand = addUnsatisfiedTaskCommand;
         return this;
     }
 }

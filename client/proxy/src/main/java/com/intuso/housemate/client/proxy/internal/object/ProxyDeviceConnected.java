@@ -41,6 +41,11 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
     }
 
     @Override
+    public Set<String> getClasses() {
+        return getData().getClasses();
+    }
+
+    @Override
     public Set<String> getAbilities() {
         return getData().getAbilities();
     }

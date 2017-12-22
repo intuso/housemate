@@ -66,12 +66,12 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
                     break;
 
                 case SELECTION:
-                    if(view.getSetCommandView() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommandView()));
+                    if(view.getSetCommand() != null)
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
                     break;
             }
 
@@ -96,7 +96,7 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
                     setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID), ChildUtil.name(name, SET_COMMAND_ID));
                 break;
             case SELECTION:
-                if (setCommand == null && view.getSetCommandView() != null)
+                if (setCommand == null && view.getSetCommand() != null)
                     setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID), ChildUtil.name(name, SET_COMMAND_ID));
         }
 
@@ -106,8 +106,8 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
                 setCommand.load(new CommandView(View.Mode.ANCESTORS));
             case CHILDREN:
             case SELECTION:
-                if (view.getSetCommandView() != null)
-                    setCommand.load(view.getSetCommandView());
+                if (view.getSetCommand() != null)
+                    setCommand.load(view.getSetCommand());
         }
     }
 

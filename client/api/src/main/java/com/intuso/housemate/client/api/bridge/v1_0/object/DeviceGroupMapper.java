@@ -11,13 +11,13 @@ public class DeviceGroupMapper implements ObjectMapper<Device.Group.Data, com.in
     public Device.Group.Data map(com.intuso.housemate.client.api.internal.object.Device.Group.Data data) {
         if(data == null)
             return null;
-        return new Device.Group.Data(data.getId(), data.getName(), data.getDescription(), data.getAbilities());
+        return new Device.Group.Data(data.getId(), data.getName(), data.getDescription(), data.getClasses(), data.getAbilities());
     }
 
     @Override
     public com.intuso.housemate.client.api.internal.object.Device.Group.Data map(Device.Group.Data data) {
         if(data == null)
             return null;
-        return new com.intuso.housemate.client.api.internal.object.Device.Group.Data(data.getId(), data.getName(), data.getDescription(), data.getAbilities());
+        return new com.intuso.housemate.client.api.internal.object.Device.Group.Data(data.getId(), data.getName(), data.getDescription(), data.getClasses(), data.getAbilities());
     }
 }

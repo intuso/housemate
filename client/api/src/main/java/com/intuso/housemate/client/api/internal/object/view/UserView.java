@@ -5,9 +5,9 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class UserView extends View {
 
-    private CommandView renameCommandView;
-    private CommandView removeCommandView;
-    private PropertyView emailPropertyView;
+    private CommandView renameCommand;
+    private CommandView removeCommand;
+    private PropertyView emailProperty;
 
     public UserView() {}
 
@@ -15,39 +15,39 @@ public class UserView extends View {
         super(mode);
     }
 
-    public UserView(CommandView renameCommandView,
-                    CommandView removeCommandView,
-                    PropertyView emailPropertyView) {
+    public UserView(CommandView renameCommand,
+                    CommandView removeCommand,
+                    PropertyView emailProperty) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.removeCommandView = removeCommandView;
-        this.emailPropertyView = emailPropertyView;
+        this.renameCommand = renameCommand;
+        this.removeCommand = removeCommand;
+        this.emailProperty = emailProperty;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public UserView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public UserView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public UserView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public UserView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 
-    public PropertyView getEmailPropertyView() {
-        return emailPropertyView;
+    public PropertyView getEmailProperty() {
+        return emailProperty;
     }
 
-    public UserView setEmailPropertyView(PropertyView emailPropertyView) {
-        this.emailPropertyView = emailPropertyView;
+    public UserView setEmailProperty(PropertyView emailProperty) {
+        this.emailProperty = emailProperty;
         return this;
     }
 }

@@ -104,15 +104,15 @@ public abstract class ProxyCommand<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
                     break;
 
                 case SELECTION:
-                    if(view.getEnabledValueView() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
-                    if(view.getParametersView() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    if(view.getEnabledValue() != null)
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
+                    if(view.getParameters() != null)
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
                     break;
             }
 
@@ -136,9 +136,9 @@ public abstract class ProxyCommand<
                     parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
                 break;
             case SELECTION:
-                if (enabledValue == null && view.getEnabledValueView() != null)
+                if (enabledValue == null && view.getEnabledValue() != null)
                     enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
-                if (parameters == null && view.getParametersView() != null)
+                if (parameters == null && view.getParameters() != null)
                     parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
                 break;
         }
@@ -151,10 +151,10 @@ public abstract class ProxyCommand<
                 break;
             case CHILDREN:
             case SELECTION:
-                if (view.getEnabledValueView() != null)
-                    enabledValue.load(view.getEnabledValueView());
-                if (view.getParametersView() != null)
-                    parameters.load(view.getParametersView());
+                if (view.getEnabledValue() != null)
+                    enabledValue.load(view.getEnabledValue());
+                if (view.getParameters() != null)
+                    parameters.load(view.getParameters());
                 break;
         }
     }

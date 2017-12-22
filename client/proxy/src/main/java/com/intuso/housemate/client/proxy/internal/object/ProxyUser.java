@@ -76,18 +76,18 @@ public abstract class ProxyUser<
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
                     break;
 
                 case SELECTION:
-                    if(view.getRemoveCommandView() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommandView()));
-                    if(view.getRenameCommandView() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommandView()));
-                    if(view.getEmailPropertyView() != null)
-                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailPropertyView()));
+                    if(view.getRemoveCommand() != null)
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                    if(view.getRenameCommand() != null)
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                    if(view.getEmailProperty() != null)
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
                     break;
             }
 
@@ -116,11 +116,11 @@ public abstract class ProxyUser<
                     emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
                 break;
             case SELECTION:
-                if(renameCommand == null && view.getRenameCommandView() != null)
+                if(renameCommand == null && view.getRenameCommand() != null)
                     renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-                if(removeCommand == null && view.getRemoveCommandView() != null)
+                if(removeCommand == null && view.getRemoveCommand() != null)
                     removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-                if(emailProperty == null && view.getEmailPropertyView() != null)
+                if(emailProperty == null && view.getEmailProperty() != null)
                     emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
                 break;
         }
@@ -134,12 +134,12 @@ public abstract class ProxyUser<
                 break;
             case CHILDREN:
             case SELECTION:
-                if(view.getRenameCommandView() != null)
-                    renameCommand.load(view.getRenameCommandView());
-                if(view.getRemoveCommandView() != null)
-                    removeCommand.load(view.getRemoveCommandView());
-                if(view.getEmailPropertyView() != null)
-                    emailProperty.load(view.getEmailPropertyView());
+                if(view.getRenameCommand() != null)
+                    renameCommand.load(view.getRenameCommand());
+                if(view.getRemoveCommand() != null)
+                    removeCommand.load(view.getRemoveCommand());
+                if(view.getEmailProperty() != null)
+                    emailProperty.load(view.getEmailProperty());
                 break;
         }
     }

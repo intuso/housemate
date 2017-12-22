@@ -87,14 +87,14 @@ public class ConvertingList<
                     break;
                 case CHILDREN:
                     for (TO to : this)
-                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.SELECTION)));
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(view.getView()));
                     break;
                 case SELECTION:
                     if (view.getElements() != null) {
                         for (String id : view.getElements()) {
                             TO to = get(id);
                             if (to != null)
-                                result.getChildren().put(id, ((Object) to).getTree(view.getElementView()));
+                                result.getChildren().put(id, ((Object) to).getTree(view.getView()));
                         }
                     }
                     break;

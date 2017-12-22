@@ -94,15 +94,15 @@ public final class RealCommandImpl
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
                     break;
 
                 case SELECTION:
-                    if(view.getEnabledValueView() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValueView()));
-                    if(view.getParametersView() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParametersView()));
+                    if(view.getEnabledValue() != null)
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
+                    if(view.getParameters() != null)
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
                     break;
             }
 

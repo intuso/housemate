@@ -5,9 +5,9 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class NodeView extends View {
 
-    private ListView<TypeView> typesView;
-    private ListView<HardwareView> hardwaresView;
-    private CommandView addHardwareCommandView;
+    private ListView<TypeView> types;
+    private ListView<HardwareView> hardwares;
+    private CommandView addHardwareCommand;
 
     public NodeView() {}
 
@@ -15,37 +15,37 @@ public class NodeView extends View {
         super(mode);
     }
 
-    public NodeView(ListView<TypeView> typesView, ListView<HardwareView> hardwaresView, CommandView addHardwareCommandView) {
+    public NodeView(ListView<TypeView> types, ListView<HardwareView> hardwares, CommandView addHardwareCommand) {
         super(Mode.SELECTION);
-        this.typesView = typesView;
-        this.hardwaresView = hardwaresView;
-        this.addHardwareCommandView = addHardwareCommandView;
+        this.types = types;
+        this.hardwares = hardwares;
+        this.addHardwareCommand = addHardwareCommand;
     }
 
-    public ListView<TypeView> getTypesView() {
-        return typesView;
+    public ListView<TypeView> getTypes() {
+        return types;
     }
 
-    public NodeView setTypesView(ListView<TypeView> typesView) {
-        this.typesView = typesView;
+    public NodeView setTypes(ListView<TypeView> types) {
+        this.types = types;
         return this;
     }
 
-    public ListView<HardwareView> getHardwaresView() {
-        return hardwaresView;
+    public ListView<HardwareView> getHardwares() {
+        return hardwares;
     }
 
-    public NodeView setHardwaresView(ListView<HardwareView> hardwaresView) {
-        this.hardwaresView = hardwaresView;
+    public NodeView setHardwares(ListView<HardwareView> hardwares) {
+        this.hardwares = hardwares;
         return this;
     }
 
-    public CommandView getAddHardwareCommandView() {
-        return addHardwareCommandView;
+    public CommandView getAddHardwareCommand() {
+        return addHardwareCommand;
     }
 
-    public NodeView setAddHardwareCommandView(CommandView addHardwareCommandView) {
-        this.addHardwareCommandView = addHardwareCommandView;
+    public NodeView setAddHardwareCommand(CommandView addHardwareCommand) {
+        this.addHardwareCommand = addHardwareCommand;
         return this;
     }
 }

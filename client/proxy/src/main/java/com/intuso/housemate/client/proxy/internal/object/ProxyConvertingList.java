@@ -55,7 +55,7 @@ public class ProxyConvertingList<
                     for (String elementName : view.getElements()) {
                         TO to = get(elementName);
                         if (to != null)
-                            ((ProxyObject) to).load(view.getElementView());
+                            ((ProxyObject) to).load(view.getView());
                     }
                 }
                 break;
@@ -70,7 +70,7 @@ public class ProxyConvertingList<
             // check each list view to see if it's for this element
             for (ListView<?> view : views)
                 if (view.getMode() == View.Mode.CHILDREN || (view.getElements() != null && view.getElements().contains(element.getId())))
-                    ((ProxyObject) element).load(view.getElementView());
+                    ((ProxyObject) element).load(view.getView());
         }
     }
 

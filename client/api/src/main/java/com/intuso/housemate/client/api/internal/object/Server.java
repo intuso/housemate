@@ -17,14 +17,14 @@ public interface Server<
         User.Container<USERS>,
         Node.Container<NODES> {
 
-    String DEVICES_ID = "device";
-    String AUTOMATIONS_ID = "automation";
-    String DEVICE_GROUPS_ID = "device-group";
-    String USERS_ID = "user";
-    String NODES_ID = "node";
-    String ADD_AUTOMATION_ID = "add-automation";
-    String ADD_DEVICE_GROUP_ID = "add-device-group";
-    String ADD_USER_ID = "add-user";
+    String DEVICES_ID = "devices";
+    String AUTOMATIONS_ID = "automations";
+    String DEVICE_GROUPS_ID = "deviceGroups";
+    String USERS_ID = "users";
+    String NODES_ID = "nodes";
+    String ADD_AUTOMATION_ID = "addAutomation";
+    String ADD_DEVICE_GROUP_ID = "addDeviceGroup";
+    String ADD_USER_ID = "addUser";
 
     COMMAND getAddAutomationCommand();
     COMMAND getAddDeviceGroupCommand();

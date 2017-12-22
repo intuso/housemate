@@ -14,8 +14,7 @@ public interface Property<
         PROPERTY extends Property<?, ?, ?, ?>>
         extends ValueBase<Property.Data, DATA_TYPE, TYPE, Property.Listener<? super PROPERTY>, PropertyView, PROPERTY> {
 
-    String SET_COMMAND_ID = "set-command";
-    String VALUE_PARAM = "value";
+    String SET_COMMAND_ID = "setCommand";
 
     /**
      * Sets the value of this property

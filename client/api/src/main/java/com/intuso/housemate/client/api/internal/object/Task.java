@@ -28,7 +28,7 @@ public interface Task<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE> {
 
     String EXECUTING_ID = "executing";
-    String PROPERTIES_ID = "property";
+    String PROPERTIES_ID = "properties";
 
     /**
      * Gets the executing value object

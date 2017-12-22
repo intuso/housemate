@@ -11,13 +11,13 @@ public class DeviceConnectedMapper implements ObjectMapper<Device.Connected.Data
     public Device.Connected.Data map(com.intuso.housemate.client.api.internal.object.Device.Connected.Data data) {
         if(data == null)
             return null;
-        return new Device.Connected.Data(data.getId(), data.getName(), data.getDescription(), data.getAbilities());
+        return new Device.Connected.Data(data.getId(), data.getName(), data.getDescription(), data.getClasses(), data.getAbilities());
     }
 
     @Override
     public com.intuso.housemate.client.api.internal.object.Device.Connected.Data map(Device.Connected.Data data) {
         if(data == null)
             return null;
-        return new com.intuso.housemate.client.api.internal.object.Device.Connected.Data(data.getId(), data.getName(), data.getDescription(), data.getAbilities());
+        return new com.intuso.housemate.client.api.internal.object.Device.Connected.Data(data.getId(), data.getName(), data.getDescription(), data.getClasses(), data.getAbilities());
     }
 }

@@ -5,13 +5,13 @@ package com.intuso.housemate.client.api.internal.object.view;
  */
 public class TaskView extends View {
 
-    private CommandView renameCommandView;
-    private ValueView errorValueView;
-    private CommandView removeCommandView;
-    private PropertyView driverPropertyView;
-    private ValueView driverLoadedValueView;
-    private ValueView executingValueView;
-    private ListView<PropertyView> propertiesView;
+    private CommandView renameCommand;
+    private ValueView errorValue;
+    private CommandView removeCommand;
+    private PropertyView driverProperty;
+    private ValueView driverLoadedValue;
+    private ValueView executingValue;
+    private ListView<PropertyView> properties;
 
     public TaskView() {}
 
@@ -19,83 +19,83 @@ public class TaskView extends View {
         super(mode);
     }
 
-    public TaskView(CommandView renameCommandView,
-                    ValueView errorValueView,
-                    CommandView removeCommandView,
-                    PropertyView driverPropertyView,
-                    ValueView driverLoadedValueView,
-                    ValueView executingValueView,
-                    ListView<PropertyView> propertiesView) {
+    public TaskView(CommandView renameCommand,
+                    ValueView errorValue,
+                    CommandView removeCommand,
+                    PropertyView driverProperty,
+                    ValueView driverLoadedValue,
+                    ValueView executingValue,
+                    ListView<PropertyView> properties) {
         super(Mode.SELECTION);
-        this.renameCommandView = renameCommandView;
-        this.errorValueView = errorValueView;
-        this.removeCommandView = removeCommandView;
-        this.driverPropertyView = driverPropertyView;
-        this.driverLoadedValueView = driverLoadedValueView;
-        this.executingValueView = executingValueView;
-        this.propertiesView = propertiesView;
+        this.renameCommand = renameCommand;
+        this.errorValue = errorValue;
+        this.removeCommand = removeCommand;
+        this.driverProperty = driverProperty;
+        this.driverLoadedValue = driverLoadedValue;
+        this.executingValue = executingValue;
+        this.properties = properties;
     }
 
-    public CommandView getRenameCommandView() {
-        return renameCommandView;
+    public CommandView getRenameCommand() {
+        return renameCommand;
     }
 
-    public TaskView setRenameCommandView(CommandView renameCommandView) {
-        this.renameCommandView = renameCommandView;
+    public TaskView setRenameCommand(CommandView renameCommand) {
+        this.renameCommand = renameCommand;
         return this;
     }
 
-    public ValueView getErrorValueView() {
-        return errorValueView;
+    public ValueView getErrorValue() {
+        return errorValue;
     }
 
-    public TaskView setErrorValueView(ValueView errorValueView) {
-        this.errorValueView = errorValueView;
+    public TaskView setErrorValue(ValueView errorValue) {
+        this.errorValue = errorValue;
         return this;
     }
 
-    public CommandView getRemoveCommandView() {
-        return removeCommandView;
+    public CommandView getRemoveCommand() {
+        return removeCommand;
     }
 
-    public TaskView setRemoveCommandView(CommandView removeCommandView) {
-        this.removeCommandView = removeCommandView;
+    public TaskView setRemoveCommand(CommandView removeCommand) {
+        this.removeCommand = removeCommand;
         return this;
     }
 
-    public PropertyView getDriverPropertyView() {
-        return driverPropertyView;
+    public PropertyView getDriverProperty() {
+        return driverProperty;
     }
 
-    public TaskView setDriverPropertyView(PropertyView driverPropertyView) {
-        this.driverPropertyView = driverPropertyView;
+    public TaskView setDriverProperty(PropertyView driverProperty) {
+        this.driverProperty = driverProperty;
         return this;
     }
 
-    public ValueView getDriverLoadedValueView() {
-        return driverLoadedValueView;
+    public ValueView getDriverLoadedValue() {
+        return driverLoadedValue;
     }
 
-    public TaskView setDriverLoadedValueView(ValueView driverLoadedValueView) {
-        this.driverLoadedValueView = driverLoadedValueView;
+    public TaskView setDriverLoadedValue(ValueView driverLoadedValue) {
+        this.driverLoadedValue = driverLoadedValue;
         return this;
     }
 
-    public ValueView getExecutingValueView() {
-        return executingValueView;
+    public ValueView getExecutingValue() {
+        return executingValue;
     }
 
-    public TaskView setExecutingValueView(ValueView executingValueView) {
-        this.executingValueView = executingValueView;
+    public TaskView setExecutingValue(ValueView executingValue) {
+        this.executingValue = executingValue;
         return this;
     }
 
-    public ListView<PropertyView> getPropertiesView() {
-        return propertiesView;
+    public ListView<PropertyView> getProperties() {
+        return properties;
     }
 
-    public TaskView setPropertiesView(ListView<PropertyView> propertiesView) {
-        this.propertiesView = propertiesView;
+    public TaskView setProperties(ListView<PropertyView> properties) {
+        this.properties = properties;
         return this;
     }
 }

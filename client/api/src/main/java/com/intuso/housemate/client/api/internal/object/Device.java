@@ -32,6 +32,7 @@ public interface Device<
     String COMMANDS_ID = "command";
     String VALUES_ID = "value";
 
+    Set<String> getClasses();
     Set<String> getAbilities();
 
     /**
@@ -61,6 +62,7 @@ public interface Device<
 
         private static final long serialVersionUID = -1L;
 
+        private Set<String> classes = new HashSet<>();
         private Set<String> abilities = new HashSet<>();
 
         public Data() {}
@@ -69,9 +71,18 @@ public interface Device<
             super(objectClass, id, name, description);
         }
 
-        public Data(String objectClass, String id, String name, String description, Set<String> abilities) {
+        public Data(String objectClass, String id, String name, String description, Set<String> classes, Set<String> abilities) {
             super(objectClass, id, name, description);
+            this.classes = classes;
             this.abilities = abilities;
+        }
+
+        public Set<String> getClasses() {
+            return classes;
+        }
+
+        public void setClasses(Set<String> classes) {
+            this.classes = classes;
         }
 
         public Set<String> getAbilities() {
@@ -125,11 +136,11 @@ public interface Device<
             public Data() {}
 
             public Data(String id, String name, String description) {
-                this(id, name, description, new HashSet<String>());
+                this(id, name, description, new HashSet<>(), new HashSet<>());
             }
 
-            public Data(String id, String name, String description, Set<String> abilities) {
-                super(OBJECT_CLASS, id, name, description, abilities);
+            public Data(String id, String name, String description, Set<String> classes, Set<String> abilities) {
+                super(OBJECT_CLASS, id, name, description, classes, abilities);
             }
         }
     }
@@ -152,16 +163,16 @@ public interface Device<
             Failable<ERROR_VALUE>,
             Removeable<REMOVE_COMMAND> {
 
-        String PLAYBACK = "playback";
-        String ADD_PLAYBACK = "add-playback";
-        String POWER = "power";
-        String ADD_POWER = "add-power";
-        String RUN = "run";
-        String ADD_RUN = "add-run";
-        String TEMPERATURE_SENSOR = "temperature-sensor";
-        String ADD_TEMPERATURE_SENSOR = "add-temperature-sensor";
-        String VOLUME = "volume";
-        String ADD_VOLUME = "add-volume";
+        String PLAYBACK = "playbacks";
+        String ADD_PLAYBACK = "addPlayback";
+        String POWER = "powers";
+        String ADD_POWER = "addPower";
+        String RUN = "runs";
+        String ADD_RUN = "addRun";
+        String TEMPERATURE_SENSOR = "temperatureSensors";
+        String ADD_TEMPERATURE_SENSOR = "addTemperatureSensor";
+        String VOLUME = "volumes";
+        String ADD_VOLUME = "addVolume";
 
         DEVICES getPlaybackDevices();
         ADD_COMMAND getAddPlaybackDeviceCommand();
@@ -207,11 +218,11 @@ public interface Device<
             public Data() {}
 
             public Data(String id, String name, String description) {
-                super(OBJECT_CLASS, id, name, description);
+                this(id, name, description, new HashSet<>(), new HashSet<>());
             }
 
-            public Data(String id, String name, String description, Set<String> abilities) {
-                super(OBJECT_CLASS, id, name, description, abilities);
+            public Data(String id, String name, String description, Set<String> classes, Set<String> abilities) {
+                super(OBJECT_CLASS, id, name, description, classes, abilities);
             }
         }
     }
