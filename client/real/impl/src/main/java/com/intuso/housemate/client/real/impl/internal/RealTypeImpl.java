@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.TypeView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
@@ -39,7 +40,7 @@ public abstract class RealTypeImpl<O>
     }
 
     @Override
-    public Tree getTree(TypeView view) {
+    public Tree getTree(TypeView view, ValueBase.Listener listener) {
         return new Tree(getData());
     }
 

@@ -75,7 +75,7 @@ public class ConvertingList<
     }
 
     @Override
-    public Tree getTree(ListView<?> view) {
+    public Tree getTree(ListView<?> view, ValueBase.Listener listener) {
 
         Tree result = new Tree(getData());
 
@@ -83,18 +83,18 @@ public class ConvertingList<
             switch (view.getMode()) {
                 case ANCESTORS:
                     for (TO to : this)
-                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.ANCESTORS)));
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.ANCESTORS), listener));
                     break;
                 case CHILDREN:
                     for (TO to : this)
-                        result.getChildren().put(to.getId(), ((Object) to).getTree(view.getView()));
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(view.getView(), listener));
                     break;
                 case SELECTION:
                     if (view.getElements() != null) {
                         for (String id : view.getElements()) {
                             TO to = get(id);
                             if (to != null)
-                                result.getChildren().put(id, ((Object) to).getTree(view.getView()));
+                                result.getChildren().put(id, ((Object) to).getTree(view.getView(), listener));
                         }
                     }
                     break;

@@ -103,23 +103,23 @@ public class CombinationList<T extends Object<?, ?, ?>>
     }
 
     @Override
-    public Tree getTree(ListView<?> view) {
+    public Tree getTree(ListView<?> view, ValueBase.Listener listener) {
         Tree result = new Tree(getData());
         switch (view.getMode()) {
             case ANCESTORS:
                 for(T t : this)
-                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.ANCESTORS), listener));
                 break;
             case CHILDREN:
                 for(T t : this)
-                    result.getChildren().put(t.getId(), ((Object) t).getTree(view.getView()));
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(view.getView(), listener));
                 break;
             case SELECTION:
                 if (view.getElements() != null) {
                     for (String id : view.getElements()) {
                         T t = get(id);
                         if (t != null)
-                            result.getChildren().put(id, ((Object) t).getTree(view.getView()));
+                            result.getChildren().put(id, ((Object) t).getTree(view.getView(), listener));
                     }
                 }
                 break;

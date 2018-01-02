@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.bridge.v1_0;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -48,7 +49,7 @@ public abstract class RealObjectBridge<
     }
 
     @Override
-    public Tree getTree(VIEW view) {
+    public Tree getTree(VIEW view, ValueBase.Listener listener) {
         throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 

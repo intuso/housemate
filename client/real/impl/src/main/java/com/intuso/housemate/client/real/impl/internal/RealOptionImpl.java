@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.NoView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -45,7 +46,7 @@ public final class RealOptionImpl
     }
 
     @Override
-    public Tree getTree(NoView view) {
+    public Tree getTree(NoView view, ValueBase.Listener listener) {
         return new Tree(getData());
     }
 

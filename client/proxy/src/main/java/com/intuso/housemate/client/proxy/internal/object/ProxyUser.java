@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.api.internal.object.view.UserView;
@@ -55,7 +56,7 @@ public abstract class ProxyUser<
     }
 
     @Override
-    public Tree getTree(UserView view) {
+    public Tree getTree(UserView view, ValueBase.Listener listener) {
 
         // make sure what they want is loaded
         load(view);
@@ -69,25 +70,25 @@ public abstract class ProxyUser<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
                     if(view.getEmailProperty() != null)
-                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty()));
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), listener));
                     break;
             }
 

@@ -11,10 +11,7 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.UsesDriver;
 import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
-import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.Task;
-import com.intuso.housemate.client.api.internal.object.Tree;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -166,7 +163,7 @@ public final class RealTaskImpl
     }
 
     @Override
-    public Tree getTree(TaskView view) {
+    public Tree getTree(TaskView view, ValueBase.Listener listener) {
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -177,41 +174,41 @@ public final class RealTaskImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
-                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener));
+                    result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
                     if(view.getDriverProperty() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener));
                     if(view.getDriverLoadedValue() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener));
                     if(view.getProperties() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener));
                     if(view.getExecutingValue() != null)
-                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue()));
+                        result.getChildren().put(EXECUTING_ID, executingValue.getTree(view.getExecutingValue(), listener));
                     break;
             }
 
@@ -246,7 +243,7 @@ public final class RealTaskImpl
         if(driver != null)
             uninit();
         driver = driverFactory.create(logger, this);
-        Object annotatedObject;
+        java.lang.Object annotatedObject;
         if(driver instanceof TaskDriverBridge)
             annotatedObject = ((TaskDriverBridge) driver).getTaskDriver();
         else

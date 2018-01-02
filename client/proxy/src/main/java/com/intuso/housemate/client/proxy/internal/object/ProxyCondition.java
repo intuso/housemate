@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -74,7 +75,7 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    public Tree getTree(ConditionView view) {
+    public Tree getTree(ConditionView view, ValueBase.Listener listener) {
 
         // make sure what they want is loaded
         load(view);
@@ -88,49 +89,49 @@ public abstract class ProxyCondition<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
                     if(view.getDriverProperty() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty()));
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener));
                     if(view.getDriverLoadedValue() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue()));
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener));
                     if(view.getProperties() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties()));
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener));
                     if(view.getConditions() != null)
-                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener));
                     if(view.getAddConditionCommand() != null)
-                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener));
                     if(view.getSatisfiedValue() != null)
-                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue()));
+                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener));
                     break;
             }
 

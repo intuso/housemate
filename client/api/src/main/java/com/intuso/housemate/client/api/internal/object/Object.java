@@ -53,7 +53,7 @@ public interface Object<
 
     VIEW createView(View.Mode mode);
 
-    Tree getTree(VIEW view);
+    Tree getTree(VIEW view, ValueBase.Listener listener);
 
     /**
      *

@@ -2,10 +2,8 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.object.ConvertingList;
-import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
 import com.intuso.housemate.client.api.internal.object.view.ValueView;
@@ -96,13 +94,13 @@ public abstract class ProxyDeviceGroup<
     }
 
     @Override
-    public Tree getTree(DeviceGroupView view) {
+    public Tree getTree(DeviceGroupView view, ValueBase.Listener listener) {
 
         // make sure what they want is loaded
         load(view);
 
         // create a result even for a null view
-        Tree result = super.getTree(view);
+        Tree result = super.getTree(view, listener);
 
         // get anything else the view wants
         if(view != null && view.getMode() != null) {
@@ -110,21 +108,21 @@ public abstract class ProxyDeviceGroup<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
                     break;
             }
         }

@@ -73,7 +73,7 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    public Tree getTree(PropertyView view) {
+    public Tree getTree(PropertyView view, ValueBase.Listener listener) {
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -84,17 +84,17 @@ public class RealPropertyImpl<O>
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getSetCommand() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
                     break;
             }
 

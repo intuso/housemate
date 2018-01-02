@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;

@@ -233,7 +233,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public Tree getTree(AutomationView view) {
+    public Tree getTree(AutomationView view, ValueBase.Listener listener) {
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -244,61 +244,61 @@ public final class RealAutomationImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
-                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue()));
-                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand()));
-                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand()));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
-                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasks()));
-                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommand()));
-                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasks()));
-                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommand()));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), listener));
+                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), listener));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), listener));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener));
+                    result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasks(), listener));
+                    result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommand(), listener));
+                    result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasks(), listener));
+                    result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommand(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand()));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand()));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
                     if(view.getRunningValue() != null)
-                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue()));
+                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), listener));
                     if(view.getStartCommand() != null)
-                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand()));
+                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), listener));
                     if(view.getStopCommand() != null)
-                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand()));
+                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), listener));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue()));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
                     if(view.getConditions() != null)
-                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions()));
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener));
                     if(view.getAddConditionCommand() != null)
-                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand()));
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener));
                     if(view.getSatisfiedTasks() != null)
-                        result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasks()));
+                        result.getChildren().put(SATISFIED_TASKS_ID, satisfiedTasks.getTree(view.getSatisfiedTasks(), listener));
                     if(view.getAddSatisfiedTaskCommand() != null)
-                        result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommand()));
+                        result.getChildren().put(ADD_SATISFIED_TASK_ID, addSatisfiedTaskCommand.getTree(view.getAddSatisfiedTaskCommand(), listener));
                     if(view.getUnsatisfiedTasks() != null)
-                        result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasks()));
+                        result.getChildren().put(UNSATISFIED_TASKS_ID, unsatisfiedTasks.getTree(view.getUnsatisfiedTasks(), listener));
                     if(view.getAddUnsatisfiedTaskCommand() != null)
-                        result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommand()));
+                        result.getChildren().put(ADD_UNSATISFIED_TASK_ID, addUnsatisfiedTaskCommand.getTree(view.getAddUnsatisfiedTaskCommand(), listener));
                     break;
             }
 

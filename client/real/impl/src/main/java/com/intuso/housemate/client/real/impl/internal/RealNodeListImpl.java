@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.NodeView;
 import com.intuso.housemate.client.api.internal.object.view.View;
@@ -62,7 +63,7 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public Tree getTree(ListView<?> view) {
+    public Tree getTree(ListView<?> view, ValueBase.Listener listener) {
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -74,20 +75,20 @@ public final class RealNodeListImpl
                 // get recursively
                 case ANCESTORS:
                     for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), element.getValue().getTree(new NodeView(View.Mode.ANCESTORS)));
+                        result.getChildren().put(element.getKey(), element.getValue().getTree(new NodeView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getView()));
+                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getView(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getView()));
+                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getView(), listener));
                     break;
             }
 

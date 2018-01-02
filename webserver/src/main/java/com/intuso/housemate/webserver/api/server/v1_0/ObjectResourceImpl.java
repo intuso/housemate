@@ -62,7 +62,7 @@ public class ObjectResourceImpl implements ObjectResource {
         Object<?, ?, ?> object = SessionUtils.getServer(request.getSession()).find(path.split("/"), false);
         if(object == null)
             throw new NotFoundException();
-        return ((Object)object).getTree(view);
+        return ((Object)object).getTree(view, /* todo add a listener that writes events to a websocket */ null);
     }
 
     @Override

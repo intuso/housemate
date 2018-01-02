@@ -2,10 +2,7 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.object.Command;
-import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.Tree;
-import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.api.internal.object.view.View;
@@ -47,7 +44,7 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public Tree getTree(PropertyView view) {
+    public Tree getTree(PropertyView view, ValueBase.Listener listener) {
 
         // make sure what they want is loaded
         load(view);
@@ -61,17 +58,17 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getSetCommand() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand()));
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
                     break;
             }
 

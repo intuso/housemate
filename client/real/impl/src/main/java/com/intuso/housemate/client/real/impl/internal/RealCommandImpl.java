@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.ValueView;
@@ -77,7 +78,7 @@ public final class RealCommandImpl
     }
 
     @Override
-    public Tree getTree(CommandView view) {
+    public Tree getTree(CommandView view, ValueBase.Listener listener) {
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -88,21 +89,21 @@ public final class RealCommandImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS)));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS)));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), listener));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener));
                     break;
 
                 case SELECTION:
                     if(view.getEnabledValue() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue()));
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener));
                     if(view.getParameters() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters()));
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener));
                     break;
             }
 
