@@ -29,7 +29,7 @@ public class FieldPropertySetter<O> implements Property.Listener<RealPropertyImp
     @Override
     public void valueChanged(RealPropertyImpl<O> property) {
         try {
-            field.set(instance, property.getValue());
+            field.set(instance, property.getValues());
         } catch(IllegalAccessException e) {
             logger.error("Failed to update property field {}", field.getName(), e);
         }

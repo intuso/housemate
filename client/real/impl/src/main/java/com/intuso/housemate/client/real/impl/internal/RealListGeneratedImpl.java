@@ -6,7 +6,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Tree;
-import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
@@ -53,7 +52,10 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
     }
 
     @Override
-    public Tree getTree(ListView<?> view, ValueBase.Listener listener) {
+    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -65,20 +67,20 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
                 // get recursively
                 case ANCESTORS:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), listener));
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getView(), listener));
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getView(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getView(), listener));
+                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getView(), listener, listenerRegistrations));
                     break;
             }
 

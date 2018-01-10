@@ -3,12 +3,13 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Tree;
-import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 public abstract class ProxyObjectBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
@@ -83,7 +84,7 @@ public abstract class ProxyObjectBridge<
     }
 
     @Override
-    public Tree getTree(VIEW view, ValueBase.Listener listener) {
+    public Tree getTree(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
         throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 

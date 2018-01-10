@@ -247,7 +247,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
             @Override
             public void valueChanged(ProxyValue<?, ?> value) {
-                Object[] args = new Object[] {valueDeserialiser.deserialise(value.getValue())};
+                Object[] args = new Object[] {valueDeserialiser.deserialise(value.getValues())};
                 for(Object listener : listeners) {
                     try {
                         method.invoke(listener, args);
@@ -463,7 +463,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 ProxyValue<?, ?> value = values.get(valueId);
                 if(value == null)
                     throw new HousemateException("Could not find value " + valueId);
-                Type.Instances values = value.getValue();
+                Type.Instances values = value.getValues();
                 return valueDeserialiser.deserialise(values);
             }
         }

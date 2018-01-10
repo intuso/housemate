@@ -1,11 +1,14 @@
 package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 /**
  * @param <DATA> the type of the data
@@ -24,6 +27,7 @@ public abstract class ProxyObject<
     protected final Receiver.Factory receiverFactory;
 
     protected final ManagedCollection<LISTENER> listeners;
+    private final ManagedCollection<Tree.Listener> treeListeners;
 
     protected DATA data = null;
     private Receiver<DATA> receiver;
@@ -38,6 +42,7 @@ public abstract class ProxyObject<
         this.name = name;
         this.receiverFactory = receiverFactory;
         this.listeners = managedCollectionFactory.create();
+        this.treeListeners = managedCollectionFactory.create();
         receiver = receiverFactory.create(logger, name, dataClass);
         receiver.listen(new Receiver.Listener<DATA>() {
             @Override
@@ -79,6 +84,11 @@ public abstract class ProxyObject<
 
     public void load(VIEW view) {}
 
+    public void addTreeListener(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+        if(view != null && listener != null)
+            listenerRegistrations.add(treeListeners.add(listener));
+    }
+
     protected final void uninit() {
         logger.debug("Uninit");
         uninitChildren();
@@ -90,7 +100,10 @@ public abstract class ProxyObject<
 
     protected void uninitChildren() {}
 
-    protected void dataUpdated() {}
+    protected final void dataUpdated() {
+        for(Tree.Listener treeListener : treeListeners)
+            treeListener.updated("path" /* todo give the actual path */, data);
+    }
 
     public boolean isLoaded() {
         return data != null;

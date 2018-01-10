@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.api.internal.object.Command;
@@ -13,6 +14,7 @@ import com.intuso.housemate.client.v1_0.api.plugin.PluginListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,11 +77,11 @@ public class HardwareDetectorV1_0PluginListener implements PluginListener {
         }
 
         @Override
-        public void create(String id, String name, String description, Map<String, Object> properties) {
+        public void create(String id, String name, String description, Map<String, List<Object>> properties) {
             RealHardwareImpl hardware = hardwareFactory.create(ChildUtil.logger(node.getLogger(), Node.HARDWARES_ID, id), id, name, description, node.getHardwares().getRemoveCallback());
             node.getHardwares().add(hardware);
-            hardware.getDriverProperty().set(hardwareDriverType.deserialise(new Type.Instance(driverId)), dummyListener);
-            for (Map.Entry<String, Object> propertyEntry : properties.entrySet()) {
+            hardware.getDriverProperty().set(Lists.newArrayList(hardwareDriverType.deserialise(new Type.Instance(driverId))), dummyListener);
+            for (Map.Entry<String, List<Object>> propertyEntry : properties.entrySet()) {
                 // for properties to already exist, this requires the driver to already be initialised which it will be, as long as the types listener is called before this one!
                 RealPropertyImpl property = hardware.getProperties().get(propertyEntry.getKey());
                 if (property != null)

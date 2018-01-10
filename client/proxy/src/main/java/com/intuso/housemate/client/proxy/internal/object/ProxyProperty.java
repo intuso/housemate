@@ -8,8 +8,11 @@ import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 /**
  * @param <TYPE> the type of the type
@@ -44,7 +47,10 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     }
 
     @Override
-    public Tree getTree(PropertyView view, ValueBase.Listener listener) {
+    public Tree getTree(PropertyView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
 
         // make sure what they want is loaded
         load(view);
@@ -58,17 +64,17 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getSetCommand() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
                     break;
             }
 

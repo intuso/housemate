@@ -79,7 +79,7 @@ public abstract class RealValueBaseBridge<
     }
 
     @Override
-    public Type.Instances getValue() {
+    public Type.Instances getValues() {
         return value;
     }
 }

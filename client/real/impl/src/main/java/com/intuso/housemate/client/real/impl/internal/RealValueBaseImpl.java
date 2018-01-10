@@ -10,6 +10,8 @@ import com.intuso.housemate.client.real.api.internal.RealValueBase;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.List;
+
 /**
  * @param <O> the type of the value's value
  * @param <DATA> the type of the data object
@@ -29,7 +31,7 @@ public abstract class RealValueBaseImpl<O,
 
     private Sender valueSender;
 
-    private Iterable<O> values;
+    private List<O> values;
 
     /**
      * @param logger {@inheritDoc}
@@ -43,7 +45,7 @@ public abstract class RealValueBaseImpl<O,
                              Receiver.Factory receiverFactory,
                              Sender.Factory senderFactory,
                              RealTypeImpl<O> type,
-                             Iterable<O> values) {
+                             List<O> values) {
         super(logger, data, managedCollectionFactory, senderFactory);
         this.receiverFactory = receiverFactory;
         this.type = type;
@@ -90,11 +92,16 @@ public abstract class RealValueBaseImpl<O,
         return values != null && values.iterator().hasNext() ? values.iterator().next() : null;
     }
 
+    @Override
+    public List<O> getValues() {
+        return values;
+    }
+
     /**
      * Gets the object representation of this value
      * @return
      */
-    public Iterable<O> getValues() {
+    public Iterable<O> getTypedValues() {
         return values;
     }
 
@@ -107,13 +114,14 @@ public abstract class RealValueBaseImpl<O,
      * Sets the object representation of this value
      * @param values the new value
      */
-    public final void setValues(Iterable<O> values) {
+    public final void setValues(List<O> values) {
         for(LISTENER listener : listeners)
             listener.valueChanging((VALUE)this);
         this.values = values;
+        Type.Instances serialisedValues = RealTypeImpl.serialiseAll(type, values);
+        getData().setValues(serialisedValues);
         if(valueSender != null) {
             try {
-                Type.Instances serialisedValues = RealTypeImpl.serialiseAll(type, values);
                 valueSender.send(serialisedValues, true);
                 logger.trace("Set to {}", serialisedValues);
             } catch (Throwable t) {

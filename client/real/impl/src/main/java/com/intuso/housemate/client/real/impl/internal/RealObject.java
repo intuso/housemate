@@ -1,11 +1,14 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 public abstract class RealObject<DATA extends Object.Data,
         LISTENER extends Object.Listener,
@@ -17,6 +20,7 @@ public abstract class RealObject<DATA extends Object.Data,
     protected final Logger logger;
     protected final DATA data;
     protected final ManagedCollection<LISTENER> listeners;
+    private final ManagedCollection<Tree.Listener> treeListeners;
     protected final Sender.Factory senderFactory;
 
     private Sender sender;
@@ -30,12 +34,13 @@ public abstract class RealObject<DATA extends Object.Data,
         this.logger = logger;
         this.data = data;
         this.listeners = managedCollectionFactory.create();
+        this.treeListeners = managedCollectionFactory.create();
     }
 
     public final void init(String name) {
         logger.debug("Init {}", name);
         sender = senderFactory.create(logger, name);
-        sendData();
+        dataUpdated();
         initChildren(name);
     }
 
@@ -77,11 +82,18 @@ public abstract class RealObject<DATA extends Object.Data,
         return listeners.add(listener);
     }
 
+    public void addTreeListener(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+        if(view != null && listener != null)
+            listenerRegistrations.add(treeListeners.add(listener));
+    }
+
     public final DATA getData() {
         return data;
     }
 
-    protected final void sendData() {
+    protected final void dataUpdated() {
+        for(Tree.Listener treeListener : treeListeners)
+            treeListener.updated("path" /* todo give the actual path */, data);
         if(sender != null) {
             try {
                 sender.send(data, true);

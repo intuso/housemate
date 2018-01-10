@@ -61,7 +61,7 @@ public final class RealDeviceConnectedImpl
         // find the device's abilities, and add the commands and values specified by the object
         getData().setClasses(annotationParser.findClasses(logger, object));
         getData().setAbilities(annotationParser.findAbilities(logger, object));
-        sendData();
+        dataUpdated();
         for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
             getCommands().add(command);
         for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))

@@ -2,9 +2,9 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
+import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -23,7 +23,6 @@ public abstract class ProxyValueBase<
         implements ValueBase<DATA, Type.Instances, TYPE, LISTENER, VIEW, VALUE> {
 
     private Receiver<Type.Instances> valueReceiver;
-
     private Type.Instances value;
 
     /**
@@ -40,10 +39,15 @@ public abstract class ProxyValueBase<
         logger.trace("Got initial value {}", value);
         valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
             @Override
-            public void onMessage(Type.Instances instances, boolean wasPersisted) {
-                value = instances;
+            public void onMessage(Type.Instances values, boolean wasPersisted) {
+                for(LISTENER listener : listeners)
+                    listener.valueChanging((VALUE) ProxyValueBase.this);
+                value = values;
+                getData().setValues(values);
+                dataUpdated();
                 logger.trace("Got new value {}", value);
-                // todo call object listeners
+                for(LISTENER listener : listeners)
+                    listener.valueChanged((VALUE) ProxyValueBase.this);
             }
         });
     }
@@ -63,7 +67,7 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public Type.Instances getValue() {
+    public Type.Instances getValues() {
         return value;
     }
 }

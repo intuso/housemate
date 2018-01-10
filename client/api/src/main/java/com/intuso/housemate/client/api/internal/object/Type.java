@@ -278,10 +278,6 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
 
         private Map<String, Instances> children = new HashMap<>();
 
-        public static long getSerialVersionUID() {
-            return serialVersionUID;
-        }
-
         public Map<String, Instances> getChildren() {
             return children;
         }

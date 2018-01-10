@@ -18,9 +18,11 @@ import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealDeviceGroup;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -166,10 +168,10 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public Tree getTree(DeviceGroupView view, ValueBase.Listener listener) {
+    public Tree getTree(DeviceGroupView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // create a result even for a null view
-        Tree result = super.getTree(view, listener);
+        Tree result = super.getTree(view, listener, listenerRegistrations);
 
         // get anything else the view wants
         if(view != null && view.getMode() != null) {
@@ -177,21 +179,21 @@ public final class RealDeviceGroupImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
                     break;
             }
         }
@@ -240,7 +242,7 @@ public final class RealDeviceGroupImpl
         for(Group.Listener<? super RealDeviceGroupImpl> listener : listeners)
             listener.renamed(RealDeviceGroupImpl.this, RealDeviceGroupImpl.this.getName(), newName);
         data.setName(newName);
-        sendData();
+        dataUpdated();
     }
 
     @Override

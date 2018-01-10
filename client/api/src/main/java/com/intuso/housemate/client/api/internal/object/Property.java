@@ -56,8 +56,8 @@ public interface Property<
 
         private Data() {}
 
-        public Data(String id, String name, String description, String type, int minValues, int maxValues) {
-            super(OBJECT_CLASS, id, name, description, type, minValues, maxValues);
+        public Data(String id, String name, String description, String type, int minValues, int maxValues, Type.Instances values) {
+            super(OBJECT_CLASS, id, name, description, type, minValues, maxValues, values);
         }
     }
 }

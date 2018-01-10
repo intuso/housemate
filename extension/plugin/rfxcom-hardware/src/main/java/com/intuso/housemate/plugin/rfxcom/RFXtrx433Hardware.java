@@ -140,8 +140,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
                 RFXTRX.closePort();
 
                 // if we get here, there are no current drivers created but there is an RFXtrx433 attached.
-                Map<String, Object> properties = Maps.newHashMap();
-                properties.put("autocreate", true);
+                Map<String, List<Object>> properties = Maps.newHashMap();
+                properties.put("autocreate", Lists.newArrayList(true));
                 callback.create("rfxtrx433", "RFXtr433", "RFXCom 433MHz Transceiver", properties);
             } catch (IOException e) {
                 // do nothing, just testing if we can open one

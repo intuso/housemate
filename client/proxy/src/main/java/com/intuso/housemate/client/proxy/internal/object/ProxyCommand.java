@@ -7,7 +7,6 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.ValueView;
@@ -15,9 +14,11 @@ import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +86,10 @@ public abstract class ProxyCommand<
     }
 
     @Override
-    public Tree getTree(CommandView view, ValueBase.Listener listener) {
+    public Tree getTree(CommandView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
 
         // make sure what they want is loaded
         load(view);
@@ -99,21 +103,21 @@ public abstract class ProxyCommand<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getEnabledValue() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener));
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
                     if(view.getParameters() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener));
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
                     break;
             }
 
@@ -179,9 +183,9 @@ public abstract class ProxyCommand<
 
     public boolean isEnabled() {
         return enabledValue != null
-                && enabledValue.getValue() != null
-                && enabledValue.getValue().getFirstValue() != null
-                && Boolean.parseBoolean(enabledValue.getValue().getFirstValue());
+                && enabledValue.getValues() != null
+                && enabledValue.getValues().getFirstValue() != null
+                && Boolean.parseBoolean(enabledValue.getValues().getFirstValue());
     }
 
     @Override

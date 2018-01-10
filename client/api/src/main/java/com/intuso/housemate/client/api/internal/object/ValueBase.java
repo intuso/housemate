@@ -26,7 +26,7 @@ public interface ValueBase<DATA extends ValueBase.Data,
      * Gets the value's value
      * @return the value's value
      */
-    DATA_TYPE getValue();
+    DATA_TYPE getValues();
 
     /**
      *
@@ -58,14 +58,16 @@ public interface ValueBase<DATA extends ValueBase.Data,
         private String typePath;
         private int minValues;
         private int maxValues;
+        private Type.Instances values;
 
         public Data() {}
 
-        public Data(String objectType, String id, String name, String description, String typePath, int minValues, int maxValues) {
+        public Data(String objectType, String id, String name, String description, String typePath, int minValues, int maxValues, Type.Instances values) {
             super(objectType, id, name,  description);
             this.typePath = typePath;
             this.minValues = minValues;
             this.maxValues = maxValues;
+            this.values = values;
         }
 
         public String getTypePath() {
@@ -90,6 +92,14 @@ public interface ValueBase<DATA extends ValueBase.Data,
 
         public void setMinValues(int minValues) {
             this.minValues = minValues;
+        }
+
+        public Type.Instances getValues() {
+            return values;
+        }
+
+        public void setValues(Type.Instances values) {
+            this.values = values;
         }
     }
 }

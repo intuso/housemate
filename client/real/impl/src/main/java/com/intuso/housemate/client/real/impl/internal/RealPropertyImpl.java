@@ -10,6 +10,7 @@ import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -39,13 +40,13 @@ public class RealPropertyImpl<O>
                             @Assisted RealTypeImpl type,
                             @Assisted("min") int minValues,
                             @Assisted("max") int maxValues,
-                            @Assisted @Nullable Iterable values,
+                            @Assisted @Nullable List values,
                             ManagedCollectionFactory managedCollectionFactory,
                             Receiver.Factory receiverFactory,
                             Sender.Factory senderFactory,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory) {
-        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, receiverFactory, senderFactory, type, values);
+        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, receiverFactory, senderFactory, type, values);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
                 Property.SET_COMMAND_ID,
                 Property.SET_COMMAND_ID,
@@ -73,7 +74,10 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    public Tree getTree(PropertyView view, ValueBase.Listener listener) {
+    public Tree getTree(PropertyView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
 
         // create a result even for a null view
         Tree result = new Tree(getData());
@@ -84,17 +88,17 @@ public class RealPropertyImpl<O>
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getSetCommand() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener));
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
                     break;
             }
 
@@ -116,10 +120,10 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    public void set(final O value, Command.PerformListener<? super RealCommandImpl> listener) {
+    public void set(final List<O> values, Command.PerformListener<? super RealCommandImpl> listener) {
         getSetCommand().perform(new Type.InstanceMap() {
             {
-                getChildren().put(Property.VALUE_ID, RealTypeImpl.serialiseAll(getType(), value));
+                getChildren().put(Property.VALUE_ID, RealTypeImpl.serialiseAll(getType(), values));
             }
         }, listener);
     }
@@ -144,6 +148,6 @@ public class RealPropertyImpl<O>
                                    RealTypeImpl type,
                                    @Assisted("min") int minValues,
                                    @Assisted("max") int maxValues,
-                                   @Nullable Iterable values);
+                                   @Nullable List values);
     }
 }

@@ -46,17 +46,17 @@ public abstract class ProxyValueBaseBridge<
         super.initChildren(versionName, internalName);
         valueSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
         valueReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class);
-        valueReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<Type.Instances>() {
-            @Override
-            public void onMessage(Type.Instances instances, boolean wasPersisted) {
-                value = instances;
-                try {
-                    valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
-                } catch (Throwable t) {
-                    logger.error("Failed to send new values onto proxy versioned topic", t);
-                }
-                // todo call object listeners
+        valueReceiver.listen((instances, wasPersisted) -> {
+            for(ValueBase.Listener<? super VALUE> listener : listeners)
+                listener.valueChanging((VALUE) ProxyValueBaseBridge.this);
+            value = instances;
+            try {
+                valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
+            } catch (Throwable t) {
+                logger.error("Failed to send new values onto proxy versioned topic", t);
             }
+            for(ValueBase.Listener<? super VALUE> listener : listeners)
+                listener.valueChanged((VALUE) ProxyValueBaseBridge.this);
         });
     }
 
@@ -79,7 +79,7 @@ public abstract class ProxyValueBaseBridge<
     }
 
     @Override
-    public Type.Instances getValue() {
+    public Type.Instances getValues() {
         return value;
     }
 }

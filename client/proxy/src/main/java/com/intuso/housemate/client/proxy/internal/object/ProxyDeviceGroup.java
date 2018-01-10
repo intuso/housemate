@@ -12,9 +12,11 @@ import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyFailable;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -94,13 +96,13 @@ public abstract class ProxyDeviceGroup<
     }
 
     @Override
-    public Tree getTree(DeviceGroupView view, ValueBase.Listener listener) {
+    public Tree getTree(DeviceGroupView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // make sure what they want is loaded
         load(view);
 
         // create a result even for a null view
-        Tree result = super.getTree(view, listener);
+        Tree result = super.getTree(view, listener, listenerRegistrations);
 
         // get anything else the view wants
         if(view != null && view.getMode() != null) {
@@ -108,21 +110,21 @@ public abstract class ProxyDeviceGroup<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
                     break;
             }
         }
@@ -214,7 +216,7 @@ public abstract class ProxyDeviceGroup<
 
     @Override
     public final String getError() {
-        return errorValue.getValue() != null ? errorValue.getValue().getFirstValue() : null;
+        return errorValue.getValues() != null ? errorValue.getValues().getFirstValue() : null;
     }
 
     @Override

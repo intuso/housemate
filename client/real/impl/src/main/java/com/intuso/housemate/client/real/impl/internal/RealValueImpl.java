@@ -6,7 +6,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Value;
-import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.ValueView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
@@ -16,10 +15,12 @@ import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * @param <O> the type of this value's value
@@ -41,11 +42,11 @@ public final class RealValueImpl<O>
                          @Assisted RealTypeImpl type,
                          @Assisted("min") int minValues,
                          @Assisted("max") int maxValues,
-                         @Assisted @Nullable Iterable values,
+                         @Assisted @Nullable List values,
                          ManagedCollectionFactory managedCollectionFactory,
                          Receiver.Factory receiverFactory,
                          Sender.Factory senderFactory) {
-        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, receiverFactory, senderFactory, type, values);
+        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, receiverFactory, senderFactory, type, values);
     }
 
     @Override
@@ -54,7 +55,11 @@ public final class RealValueImpl<O>
     }
 
     @Override
-    public Tree getTree(ValueView view, ValueBase.Listener listener) {
+    public Tree getTree(ValueView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
+
         return new Tree(getData());
     }
 
@@ -71,7 +76,7 @@ public final class RealValueImpl<O>
                                 RealTypeImpl type,
                                 @Assisted("min") int minValues,
                                 @Assisted("max") int maxValues,
-                                @Nullable Iterable values);
+                                @Nullable List values);
     }
 
     public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> {

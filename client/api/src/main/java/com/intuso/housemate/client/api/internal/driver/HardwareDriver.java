@@ -2,6 +2,7 @@ package com.intuso.housemate.client.api.internal.driver;
 
 import org.slf4j.Logger;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ public interface HardwareDriver {
         void detect(Callback callback);
 
         interface Callback {
-            void create(String id, String name, String description, Map<String, Object> properties);
+            void create(String id, String name, String description, Map<String, List<Object>> properties);
         }
     }
 

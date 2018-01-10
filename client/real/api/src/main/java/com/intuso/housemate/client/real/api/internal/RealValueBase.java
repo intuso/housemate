@@ -3,6 +3,8 @@ package com.intuso.housemate.client.real.api.internal;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
 
+import java.util.List;
+
 /**
  * @param <O> the type of the value's value
  * @param <VALUE> the type of the value
@@ -14,17 +16,13 @@ public interface RealValueBase<DATA extends ValueBase.Data,
         VIEW extends ValueBaseView,
         VALUE extends RealValueBase<DATA, O, TYPE, LISTENER, VIEW, VALUE>>
         extends ValueBase<DATA,
-        O,
+        List<O>,
         TYPE,
         LISTENER,
         VIEW,
         VALUE> {
 
-    /**
-     * Gets the object representation of this value
-     * @return
-     */
-    Iterable<O> getValues();
+    O getValue();
 
     void setValue(O value);
 
@@ -32,5 +30,5 @@ public interface RealValueBase<DATA extends ValueBase.Data,
      * Sets the object representation of this value
      * @param values the new values
      */
-    void setValues(Iterable<O> values);
+    void setValues(List<O> values);
 }

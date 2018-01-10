@@ -142,9 +142,9 @@ public class ProxyCommandBridge
 
     public boolean isEnabled() {
         return enabledValue != null
-                && enabledValue.getValue() != null
-                && enabledValue.getValue().getFirstValue() != null
-                && Boolean.parseBoolean(enabledValue.getValue().getFirstValue());
+                && enabledValue.getValues() != null
+                && enabledValue.getValues().getFirstValue() != null
+                && Boolean.parseBoolean(enabledValue.getValues().getFirstValue());
     }
 
     @Override

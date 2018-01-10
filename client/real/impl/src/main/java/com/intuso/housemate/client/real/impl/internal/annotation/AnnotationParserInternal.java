@@ -203,7 +203,7 @@ public class AnnotationParserInternal implements AnnotationParser {
             Id id = propertyMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
-            Iterable<Object> initialValues = getInitialValues(logger, object, clazz, propertyMethod.getKey().getName());
+            List<Object> initialValues = getInitialValues(logger, object, clazz, propertyMethod.getKey().getName());
             RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
                     ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
@@ -219,14 +219,14 @@ public class AnnotationParserInternal implements AnnotationParser {
         return properties;
     }
 
-    private Iterable<Object> getInitialValues(Logger logger, Object object, Class<?> clazz, String methodName) {
+    private List<Object> getInitialValues(Logger logger, Object object, Class<?> clazz, String methodName) {
         if(methodName.startsWith("set")) {
             String fieldName = methodName.substring(3);
             String getterName = "get" + fieldName;
             try {
                 Method getter = clazz.getMethod(getterName);
                 Object result = getter.invoke(object);
-                return result instanceof Iterable ? (Iterable<Object>) result : Lists.newArrayList(result);
+                return result instanceof List ? (List<Object>) result : Lists.newArrayList(result);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
                 logger.error("Problem getting property initial value using getter {} of {}", getterName, clazz.getName());
@@ -235,7 +235,7 @@ public class AnnotationParserInternal implements AnnotationParser {
             try {
                 Method isGetter = clazz.getMethod(isGetterName);
                 Object result = isGetter.invoke(object);
-                return result instanceof Iterable ? (Iterable<Object>) result : Lists.newArrayList(result);
+                return result instanceof List ? (List<Object>) result : Lists.newArrayList(result);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
                 logger.error("Problem getting property initial value using isGetter {} of {}", isGetterName, clazz.getName());

@@ -15,6 +15,7 @@ import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -145,7 +146,10 @@ public abstract class ProxyServer<
     }
 
     @Override
-    public Tree getTree(ServerView view, ValueBase.Listener listener) {
+    public Tree getTree(ServerView view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+
+        // register the listener
+        addTreeListener(view, listener, listenerRegistrations);
 
         // make sure what they want is loaded
         load(view);
@@ -159,45 +163,45 @@ public abstract class ProxyServer<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener));
-                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), listener));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener));
-                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener));
-                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getAutomations() != null)
-                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener));
+                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
                     if(view.getAddAutomationCommand() != null)
-                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener));
+                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
                     if(view.getDevices() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener));
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
                     if(view.getDeviceGroups() != null)
-                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener));
+                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
                     if(view.getAddDeviceGroupCommand() != null)
-                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener));
+                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
                     if(view.getUsers() != null)
-                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener));
+                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
                     if(view.getAddUserCommand() != null)
-                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener));
+                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
                     if(view.getNodes() != null)
-                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener));
+                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
                     break;
             }
 
@@ -433,9 +437,9 @@ public abstract class ProxyServer<
             else if(object instanceof List) {
                 List<? extends Object<?, ?, ?>, ?> list = (List<? extends Object<?, ?, ?>, ?>) object;
                 if(!missingReferences.containsKey(list))
-                    missingReferences.put(list, new HashMap<String, Map<ObjectReferenceImpl, Integer>>());
+                    missingReferences.put(list, new HashMap<>());
                 if(!missingReferences.get(list).containsKey(id))
-                    missingReferences.get(list).put(id, new HashMap<ObjectReferenceImpl, Integer>());
+                    missingReferences.get(list).put(id, new HashMap<>());
                 missingReferences.get(list).get(id).put(reference, pathIndex);
                 list.addObjectListener(missingReferenceLoader);
             }
@@ -504,9 +508,9 @@ public abstract class ProxyServer<
 
         @Override
         public OBJECT apply(ProxyValue<?, ?> element) {
-            if(element == null || element.getValue() == null || element.getValue().getFirstValue() == null)
+            if(element == null || element.getValues() == null || element.getValues().getFirstValue() == null)
                 return null;
-            return find(element.getValue().getFirstValue().split("/"));
+            return find(element.getValues().getFirstValue().split("/"));
         }
     }
 }

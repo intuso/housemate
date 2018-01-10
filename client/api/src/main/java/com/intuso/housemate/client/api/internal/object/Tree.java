@@ -29,4 +29,8 @@ public class Tree {
     public void setChildren(Map<String, Tree> children) {
         this.children = children;
     }
+
+    public interface Listener {
+        void updated(String path, Object.Data data);
+    }
 }

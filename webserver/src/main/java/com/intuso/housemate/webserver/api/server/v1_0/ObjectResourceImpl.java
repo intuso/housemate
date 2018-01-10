@@ -14,6 +14,7 @@ import com.intuso.housemate.webserver.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -26,7 +27,14 @@ public class ObjectResourceImpl implements ObjectResource {
 
     private final static Logger logger = LoggerFactory.getLogger(ObjectResourceImpl.class);
 
+    private final Listeners listeners;
+
     @Context private HttpServletRequest request;
+
+    @Inject
+    public ObjectResourceImpl(Listeners listeners) {
+        this.listeners = listeners;
+    }
 
     @Override
     public Object.Data get(String path) {
@@ -52,17 +60,17 @@ public class ObjectResourceImpl implements ObjectResource {
                 throw new BadRequestException("Failed to wait for remove command to complete", e);
             }
         } else
-            throw new BadRequestException("Object is not renameable");
+            throw new BadRequestException(path + " does not represent a removeable object");
     }
 
     @Override
     public Tree view(String path, View view) {
         if(path == null)
             throw new BadRequestException("No path specified");
-        Object<?, ?, ?> object = SessionUtils.getServer(request.getSession()).find(path.split("/"), false);
+        Object object = SessionUtils.getServer(request.getSession()).find(path.split("/"), false);
         if(object == null)
             throw new NotFoundException();
-        return ((Object)object).getTree(view, /* todo add a listener that writes events to a websocket */ null);
+        return object.getTree(view, listeners.getListener(request.getSession(true).getId()), listeners.getListenerRegistrations(request.getSession().getId()));
     }
 
     @Override
@@ -81,7 +89,7 @@ public class ObjectResourceImpl implements ObjectResource {
                 throw new BadRequestException("Failed to wait for rename command to complete", e);
             }
         } else
-            throw new BadRequestException("Object is not renameable");
+            throw new BadRequestException(path + " does not represent a renameable object");
     }
 
     @Override
@@ -98,7 +106,7 @@ public class ObjectResourceImpl implements ObjectResource {
                 throw new BadRequestException("Failed to wait for start command to complete", e);
             }
         } else
-            throw new BadRequestException("Object is not runnable");
+            throw new BadRequestException(path + " does not represent a runnable object");
     }
 
     @Override
@@ -115,7 +123,7 @@ public class ObjectResourceImpl implements ObjectResource {
                 throw new BadRequestException("Failed to wait for start command to complete", e);
             }
         } else
-            throw new BadRequestException("Object is not runnable");
+            throw new BadRequestException(path + " does not represent a runnable object");
     }
 
     @Override
@@ -131,6 +139,6 @@ public class ObjectResourceImpl implements ObjectResource {
                 throw new BadRequestException("Failed to wait for start command to complete", e);
             }
         } else
-            throw new BadRequestException("Object is not runnable");
+            throw new BadRequestException(path + " does not represent a command");
     }
 }

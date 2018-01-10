@@ -79,7 +79,7 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(device == null)
             throw new NotFoundException();
-        return BooleanPrimitiveSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValue().getElements().get(0));
+        return BooleanPrimitiveSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValues().getElements().get(0));
     }
 
     @Override
