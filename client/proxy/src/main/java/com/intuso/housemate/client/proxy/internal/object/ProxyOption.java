@@ -31,12 +31,13 @@ public abstract class ProxyOption<
      * @param logger {@inheritDoc}
      */
     public ProxyOption(Logger logger,
+                       String path,
                        String name,
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        ProxyObject.Factory<SUB_TYPES> subTypesFactory) {
-        super(logger, name, Option.Data.class, managedCollectionFactory, receiverFactory);
-        subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID), ChildUtil.name(name, SUB_TYPES_ID));
+        super(logger, path, name, Option.Data.class, managedCollectionFactory, receiverFactory);
+        subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID), ChildUtil.path(path, SUB_TYPES_ID), ChildUtil.name(name, SUB_TYPES_ID));
         subTypes.load(new ListView(View.Mode.ANCESTORS));
     }
 
@@ -46,7 +47,7 @@ public abstract class ProxyOption<
     }
 
     @Override
-    public Tree getTree(NoView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(NoView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -83,11 +84,12 @@ public abstract class ProxyOption<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyList.Simple<ProxySubType.Simple>> subTypesFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, subTypesFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, subTypesFactory);
         }
     }
 }

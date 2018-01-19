@@ -51,13 +51,14 @@ public abstract class ProxyCommand<
      * @param logger {@inheritDoc}
      */
     protected ProxyCommand(Logger logger,
+                           String path,
                            String name,
                            ManagedCollectionFactory managedCollectionFactory,
                            Receiver.Factory receiverFactory,
                            Sender.Factory senderFactory,
                            ProxyObject.Factory<VALUE> valueFactory,
                            ProxyObject.Factory<PARAMETERS> parametersFactory) {
-        super(logger, name, Command.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Command.Data.class, managedCollectionFactory, receiverFactory);
         this.valueFactory = valueFactory;
         this.parametersFactory = parametersFactory;
 
@@ -86,7 +87,7 @@ public abstract class ProxyCommand<
     }
 
     @Override
-    public Tree getTree(CommandView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(CommandView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -103,21 +104,21 @@ public abstract class ProxyCommand<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
-                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getEnabledValue() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getParameters() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -131,20 +132,23 @@ public abstract class ProxyCommand<
 
         super.load(view);
 
+        if(view == null || view.getMode() == null)
+            return;
+
         // create things according to the view's mode, sub-views, and what's already created
         switch (view.getMode()) {
             case ANCESTORS:
             case CHILDREN:
                 if (enabledValue == null)
-                    enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
+                    enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.path(path, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
                 if (parameters == null)
-                    parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
+                    parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.path(path, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
                 break;
             case SELECTION:
                 if (enabledValue == null && view.getEnabledValue() != null)
-                    enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
+                    enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.path(path, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
                 if (parameters == null && view.getParameters() != null)
-                    parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
+                    parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.path(path, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
                 break;
         }
 
@@ -250,11 +254,11 @@ public abstract class ProxyCommand<
     public ProxyObject<?, ?, ?> getChild(String id) {
         if(ENABLED_ID.equals(id)) {
             if (enabledValue == null)
-                enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
+                enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID), ChildUtil.path(path, ENABLED_ID), ChildUtil.name(name, ENABLED_ID));
             return enabledValue;
         } else if(PARAMETERS_ID.equals(id)) {
             if (parameters == null)
-                parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
+                parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID), ChildUtil.path(path, PARAMETERS_ID), ChildUtil.name(name, PARAMETERS_ID));
             return parameters;
         }
         return null;
@@ -274,13 +278,14 @@ public abstract class ProxyCommand<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Sender.Factory senderFactory,
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyParameter.Simple>> parametersFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, senderFactory, valueFactory, parametersFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, senderFactory, valueFactory, parametersFactory);
         }
     }
 
@@ -344,3 +349,4 @@ public abstract class ProxyCommand<
         }
     }
 }
+

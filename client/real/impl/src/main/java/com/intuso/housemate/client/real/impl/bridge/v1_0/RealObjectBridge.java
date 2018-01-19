@@ -41,7 +41,7 @@ public abstract class RealObjectBridge<
         this.logger = logger;
         this.versionDataClass = versionDataClass;
         this.dataMapper = dataMapper;
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     @Override
@@ -50,7 +50,7 @@ public abstract class RealObjectBridge<
     }
 
     @Override
-    public Tree getTree(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(VIEW view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
         throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 

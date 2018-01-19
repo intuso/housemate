@@ -192,7 +192,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public Tree getTree(ConditionView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ConditionView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -206,49 +206,49 @@ public final class RealConditionImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverProperty() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverLoadedValue() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getProperties() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
                     if(view.getConditions() != null)
-                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener, listenerRegistrations));
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddConditionCommand() != null)
-                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getSatisfiedValue() != null)
-                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener, listenerRegistrations));
+                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 

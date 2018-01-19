@@ -4,8 +4,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceGroupMapper;
 import com.intuso.housemate.client.api.internal.object.Device;
-import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -29,21 +29,21 @@ public class ProxyDeviceGroupBridge
         ProxyValueBridge,
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
-        List<Device<?, ?, ?, ?, ?, ?, ?>, ?>,
+        ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>,
         ProxyDeviceGroupBridge> {
 
     private final ProxyCommandBridge renameCommand;
     private final ProxyCommandBridge removeCommand;
     private final ProxyValueBridge errorValue;
-    private final ProxyListBridge<ProxyPropertyBridge> playbackDevices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> playbackDevices;
     private final ProxyCommandBridge addPlaybackDeviceCommand;
-    private final ProxyListBridge<ProxyPropertyBridge> powerDevices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> powerDevices;
     private final ProxyCommandBridge addPowerDeviceCommand;
-    private final ProxyListBridge<ProxyPropertyBridge> runDevices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> runDevices;
     private final ProxyCommandBridge addRunDeviceCommand;
-    private final ProxyListBridge<ProxyPropertyBridge> temperatureSensorDevices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> temperatureSensorDevices;
     private final ProxyCommandBridge addTemperatureSensorDeviceCommand;
-    private final ProxyListBridge<ProxyPropertyBridge> volumeDevices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> volumeDevices;
     private final ProxyCommandBridge addVolumeDeviceCommand;
 
     @Inject
@@ -56,7 +56,7 @@ public class ProxyDeviceGroupBridge
                                      Factory<ProxyValueBridge> valueFactory,
                                      Factory<ProxyListBridge<ProxyCommandBridge>> commandsFactory,
                                      Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
-                                     Factory<ProxyListBridge<ProxyPropertyBridge>> devicesFactory) {
+                                     Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory) {
         super(logger, Group.Data.class, deviceGroupMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, commandsFactory, valuesFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
@@ -174,8 +174,8 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getPlaybackDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getPlaybackDevices() {
+        return playbackDevices;
     }
 
     @Override
@@ -184,8 +184,8 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getPowerDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getPowerDevices() {
+        return powerDevices;
     }
 
     @Override
@@ -194,8 +194,8 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getRunDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getRunDevices() {
+        return runDevices;
     }
 
     @Override
@@ -204,8 +204,8 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getTemperatureSensorDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getTemperatureSensorDevices() {
+        return temperatureSensorDevices;
     }
 
     @Override
@@ -214,8 +214,8 @@ public class ProxyDeviceGroupBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getVolumeDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getVolumeDevices() {
+        return volumeDevices;
     }
 
     @Override

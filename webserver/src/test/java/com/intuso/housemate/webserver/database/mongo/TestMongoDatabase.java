@@ -1,6 +1,5 @@
 package com.intuso.housemate.webserver.database.mongo;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.webserver.database.model.User;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -13,6 +12,10 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -24,8 +27,13 @@ public class TestMongoDatabase {
     private final ManagedCollectionFactory managedCollectionFactory = new ManagedCollectionFactory() {
 
         @Override
-        public <LISTENER> ManagedCollection<LISTENER> create() {
-            return new ManagedCollection<>(Lists.newArrayList());
+        public <LISTENER> ManagedCollection<LISTENER> createSet() {
+            return new ManagedCollection<>(Collections.synchronizedSet(new HashSet<>()));
+        }
+
+        @Override
+        public <LISTENER> ManagedCollection<LISTENER> createList() {
+            return new ManagedCollection<>(Collections.synchronizedList(new LinkedList<>()));
         }
     };
     private final MongoDatabaseImpl mongoDatabase = new MongoDatabaseImpl(new WriteableMapPropertyRepository(managedCollectionFactory, Maps.newHashMap()), managedCollectionFactory);

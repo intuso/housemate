@@ -33,8 +33,8 @@ public abstract class RealObject<DATA extends Object.Data,
         logger.debug("Creating");
         this.logger = logger;
         this.data = data;
-        this.listeners = managedCollectionFactory.create();
-        this.treeListeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
+        this.treeListeners = managedCollectionFactory.createSet();
     }
 
     public final void init(String name) {
@@ -93,7 +93,7 @@ public abstract class RealObject<DATA extends Object.Data,
 
     protected final void dataUpdated() {
         for(Tree.Listener treeListener : treeListeners)
-            treeListener.updated("path" /* todo give the actual path */, data);
+            treeListener.updated("path" /* todo give the actual path */, new Tree(data));
         if(sender != null) {
             try {
                 sender.send(data, true);

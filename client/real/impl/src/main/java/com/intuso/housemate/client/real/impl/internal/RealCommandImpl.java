@@ -80,7 +80,7 @@ public final class RealCommandImpl
     }
 
     @Override
-    public Tree getTree(CommandView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(CommandView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -94,21 +94,21 @@ public final class RealCommandImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
-                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
+                    result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getEnabledValue() != null)
-                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ENABLED_ID, enabledValue.getTree(view.getEnabledValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getParameters() != null)
-                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), listener, listenerRegistrations));
+                        result.getChildren().put(PARAMETERS_ID, parameters.getTree(view.getParameters(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 

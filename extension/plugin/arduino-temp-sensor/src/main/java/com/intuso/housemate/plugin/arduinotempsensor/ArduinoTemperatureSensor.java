@@ -34,7 +34,7 @@ public class ArduinoTemperatureSensor implements TemperatureSensor {
     @Inject
     protected ArduinoTemperatureSensor(Logger logger, ManagedCollectionFactory managedCollectionFactory, SerialPortWrapper serialPort) {
         this.logger = logger;
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
         this.serialPort = serialPort;
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);

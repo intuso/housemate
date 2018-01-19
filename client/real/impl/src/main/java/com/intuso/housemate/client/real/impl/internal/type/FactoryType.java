@@ -69,7 +69,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
         private final ManagedCollection<Listener<FACTORY>> listeners;
 
         public Entry(ManagedCollectionFactory managedCollectionFactory) {
-            this.listeners = managedCollectionFactory.create();
+            this.listeners = managedCollectionFactory.createSet();
         }
 
         @Override

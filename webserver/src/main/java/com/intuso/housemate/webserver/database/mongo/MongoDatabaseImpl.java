@@ -72,7 +72,7 @@ public class MongoDatabaseImpl implements Database {
     @Inject
     public MongoDatabaseImpl(PropertyRepository properties, ManagedCollectionFactory managedCollectionFactory) {
 
-        listeners = managedCollectionFactory.create();
+        listeners = managedCollectionFactory.createSet();
 
         MongoClient mongoClient = new MongoClient(properties.get(HOST), Integer.parseInt(properties.get(PORT)));
 

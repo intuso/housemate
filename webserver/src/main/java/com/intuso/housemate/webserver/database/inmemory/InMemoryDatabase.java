@@ -31,7 +31,7 @@ public  class InMemoryDatabase implements Database {
 
     @Inject
     public InMemoryDatabase(ManagedCollectionFactory managedCollectionFactory) {
-        listeners = managedCollectionFactory.create();
+        listeners = managedCollectionFactory.createSet();
     }
 
     @Override

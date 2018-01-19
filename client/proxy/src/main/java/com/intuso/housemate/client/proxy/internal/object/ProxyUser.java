@@ -42,12 +42,13 @@ public abstract class ProxyUser<
      * @param logger {@inheritDoc}
      */
     public ProxyUser(Logger logger,
+                     String path,
                      String name,
                      ManagedCollectionFactory managedCollectionFactory,
                      Receiver.Factory receiverFactory,
                      ProxyObject.Factory<COMMAND> commandFactory,
                      ProxyObject.Factory<PROPERTY> propertyFactory) {
-        super(logger, name, User.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, User.Data.class, managedCollectionFactory, receiverFactory);
         this.commandFactory = commandFactory;
         this.propertyFactory = propertyFactory;
     }
@@ -58,7 +59,7 @@ public abstract class ProxyUser<
     }
 
     @Override
-    public Tree getTree(UserView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(UserView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -75,25 +76,25 @@ public abstract class ProxyUser<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(new PropertyView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getEmailProperty() != null)
-                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), listener, listenerRegistrations));
+                        result.getChildren().put(EMAIL_ID, emailProperty.getTree(view.getEmailProperty(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -115,19 +116,19 @@ public abstract class ProxyUser<
             case ANCESTORS:
             case CHILDREN:
                 if(renameCommand == null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(emailProperty == null)
-                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
+                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.path(path, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
                 break;
             case SELECTION:
                 if(renameCommand == null && view.getRenameCommand() != null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null && view.getRemoveCommand() != null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(emailProperty == null && view.getEmailProperty() != null)
-                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
+                    emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.path(path, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
                 break;
         }
 
@@ -153,14 +154,14 @@ public abstract class ProxyUser<
     @Override
     public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
-            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
         removeCommand.load(commandView);
     }
 
     @Override
     public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
-            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
         renameCommand.load(commandView);
     }
 
@@ -194,15 +195,15 @@ public abstract class ProxyUser<
     public ProxyObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id)) {
             if(renameCommand == null)
-                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
         } else if(REMOVE_ID.equals(id)) {
             if(removeCommand == null)
-                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
         } else if(EMAIL_ID.equals(id)) {
             if(emailProperty == null)
-                emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
+                emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID), ChildUtil.path(path, EMAIL_ID), ChildUtil.name(name, EMAIL_ID));
             return emailProperty;
         }
         return null;
@@ -222,12 +223,13 @@ public abstract class ProxyUser<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyProperty.Simple> propertyFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, propertyFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, propertyFactory);
         }
     }
 }

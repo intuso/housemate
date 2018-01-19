@@ -31,7 +31,7 @@ public class ArduinoIndicator implements Power {
     protected ArduinoIndicator(Logger logger, ManagedCollectionFactory managedCollectionFactory, SerialPortWrapper serialPort) {
         this.logger = logger;
         this.serialPort = serialPort;
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     @Override

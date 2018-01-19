@@ -28,10 +28,11 @@ public abstract class ProxyValue<
      * @param logger {@inheritDoc}
      */
     public ProxyValue(Logger logger,
+                      String path,
                       String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-        super(logger, name, Value.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Value.Data.class, managedCollectionFactory, receiverFactory);
     }
 
     @Override
@@ -40,7 +41,7 @@ public abstract class ProxyValue<
     }
 
     @Override
-    public Tree getTree(ValueView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ValueView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -64,10 +65,11 @@ public abstract class ProxyValue<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory);
         }
     }
 }

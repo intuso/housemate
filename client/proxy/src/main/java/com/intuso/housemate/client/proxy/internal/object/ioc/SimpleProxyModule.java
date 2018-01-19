@@ -3,6 +3,7 @@ package com.intuso.housemate.client.proxy.internal.object.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.proxy.internal.object.*;
 
 /**
@@ -32,6 +33,7 @@ public class SimpleProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyOption.Simple>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyParameter.Simple>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyProperty.Simple>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyServer.Simple>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxySubType.Simple>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyList.Simple<ProxyTask.Simple>>>() {}));
@@ -42,6 +44,7 @@ public class SimpleProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyOption.Simple>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyParameter.Simple>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyProperty.Simple>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyServer.Simple>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxySubType.Simple>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<ProxyTask.Simple>>() {}));

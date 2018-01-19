@@ -28,7 +28,7 @@ public class ObjectReferenceImpl<O extends Object<?, ?, ?>> implements ObjectRef
      * @param object the object
      */
     public ObjectReferenceImpl(ManagedCollectionFactory managedCollectionFactory, String[] path, O object) {
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
         this.path = path;
         this.object = object;
     }

@@ -6,12 +6,11 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.object.view.CommandView;
-import com.intuso.housemate.client.api.internal.object.view.ListView;
-import com.intuso.housemate.client.api.internal.object.view.ServerView;
-import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.api.internal.object.Server;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -31,33 +30,29 @@ import java.util.Map;
  */
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
-        VALUE extends ProxyValue<?, ?>,
-        VALUES extends ProxyList<VALUE, ?>,
-        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
         DEVICE_GROUPS extends ProxyList<? extends ProxyDeviceGroup<?, ?, ?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
-        SERVER extends ProxyServer<COMMAND, VALUE, VALUES, DEVICE, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER>>
+        SERVER extends ProxyServer<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER>>
         extends ProxyObject<Server.Data, Server.Listener<? super SERVER>, ServerView>
-        implements Server<COMMAND, ConvertingList<VALUE, DEVICE>, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER> {
+        implements Server<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER> {
 
     private final ManagedCollectionFactory managedCollectionFactory;
     private final Map<List<?, ?>, Map<String, Map<ObjectReferenceImpl, Integer>>> missingReferences = new HashMap<>();
     private final Map<Object<?, ?, ?>, java.util.List<ObjectReferenceImpl>> references = Maps.newHashMap();
 
     private ProxyObject.Factory<COMMAND> commandFactory;
-    private ProxyObject.Factory<VALUES> valuesFactory;
     private ProxyObject.Factory<AUTOMATIONS> automationsFactory;
+    private ProxyObject.Factory<DEVICES> devicesFactory;
     private ProxyObject.Factory<DEVICE_GROUPS> deviceGroupsFactory;
     private ProxyObject.Factory<USERS> usersFactory;
     private ProxyObject.Factory<NODES> nodesFactory;
 
-    private final VALUES deviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> devices;
-
     private AUTOMATIONS automations;
     private COMMAND addAutomationCommand;
+    private DEVICES devices;
     private DEVICE_GROUPS deviceGroups;
     private COMMAND addDeviceGroupCommand;
     private USERS users;
@@ -79,41 +74,35 @@ public abstract class ProxyServer<
     public ProxyServer(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory) {
-        super(logger, ChildUtil.name(null, PROXY, VERSION), Server.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, null, ChildUtil.name("server"), Server.Data.class, managedCollectionFactory, receiverFactory);
         this.managedCollectionFactory = managedCollectionFactory;
-        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
-        devices = new ProxyConvertingList<>(deviceReferences, new ReferenceLoaderConverter<DEVICE>());
-        deviceReferences.load(new ListView(View.Mode.ANCESTORS));
     }
 
     public ProxyServer(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        Factory<COMMAND> commandFactory,
-                       Factory<VALUES> valuesFactory,
                        Factory<AUTOMATIONS> automationsFactory,
+                       Factory<DEVICES> devicesFactory,
                        Factory<DEVICE_GROUPS> deviceGroupsFactory,
                        Factory<USERS> usersFactory,
                        Factory<NODES> nodesFactory) {
-        super(logger, ChildUtil.name(null, PROXY, VERSION), Server.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, null, ChildUtil.name("server"), Server.Data.class, managedCollectionFactory, receiverFactory);
         this.managedCollectionFactory = managedCollectionFactory;
         this.commandFactory = commandFactory;
-        this.valuesFactory = valuesFactory;
         this.automationsFactory = automationsFactory;
+        this.devicesFactory = devicesFactory;
         this.deviceGroupsFactory = deviceGroupsFactory;
         this.usersFactory = usersFactory;
         this.nodesFactory = nodesFactory;
-        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
-        devices = new ProxyConvertingList<>(deviceReferences, new ReferenceLoaderConverter<DEVICE>());
-        deviceReferences.load(new ListView(View.Mode.ANCESTORS));
     }
 
     public void setCommandFactory(Factory<COMMAND> commandFactory) {
         this.commandFactory = commandFactory;
     }
 
-    public void setValuesFactory(Factory<VALUES> valuesFactory) {
-        this.valuesFactory = valuesFactory;
+    public void setDevicesFactory(Factory<DEVICES> devicesFactory) {
+        this.devicesFactory = devicesFactory;
     }
 
     public void setAutomationsFactory(Factory<AUTOMATIONS> automationsFactory) {
@@ -146,7 +135,7 @@ public abstract class ProxyServer<
     }
 
     @Override
-    public Tree getTree(ServerView view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ServerView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -163,45 +152,45 @@ public abstract class ProxyServer<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
-                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getAutomations() != null)
-                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
+                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddAutomationCommand() != null)
-                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDevices() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDeviceGroups() != null)
-                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
+                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddDeviceGroupCommand() != null)
-                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getUsers() != null)
-                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
+                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddUserCommand() != null)
-                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getNodes() != null)
-                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
+                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -223,35 +212,39 @@ public abstract class ProxyServer<
             case ANCESTORS:
             case CHILDREN:
                 if(automations == null)
-                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
+                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.path(path, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
                 if(addAutomationCommand == null)
-                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.path(path, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                if(devices == null)
+                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
                 if(deviceGroups == null)
-                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
+                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.path(path, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
                 if(addDeviceGroupCommand == null)
-                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
+                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.path(path, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
                 if(users == null)
-                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
+                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.path(path, USERS_ID), ChildUtil.name(name, USERS_ID));
                 if(addUserCommand == null)
-                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
+                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.path(path, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
                 if(nodes == null)
-                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
+                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.path(path, NODES_ID), ChildUtil.name(name, NODES_ID));
                 break;
             case SELECTION:
                 if(automations == null && view.getAutomations() != null)
-                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
+                    automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.path(path, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
                 if(addAutomationCommand == null && view.getAddAutomationCommand() != null)
-                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                    addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.path(path, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+                if(devices == null && view.getDevices() != null)
+                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
                 if(deviceGroups == null && view.getDeviceGroups() != null)
-                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
+                    deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.path(path, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
                 if(addDeviceGroupCommand == null && view.getAddDeviceGroupCommand() != null)
-                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
+                    addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.path(path, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
                 if(users == null && view.getUsers() != null)
-                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
+                    users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.path(path, USERS_ID), ChildUtil.name(name, USERS_ID));
                 if(addUserCommand == null && view.getAddUserCommand() != null)
-                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
+                    addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.path(path, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
                 if(nodes == null && view.getNodes() != null)
-                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
+                    nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.path(path, NODES_ID), ChildUtil.name(name, NODES_ID));
                 break;
         }
 
@@ -260,8 +253,7 @@ public abstract class ProxyServer<
             case ANCESTORS:
                 automations.load(new ListView(View.Mode.ANCESTORS));
                 addAutomationCommand.load(new CommandView(View.Mode.ANCESTORS));
-                for(DEVICE device : devices)
-                    ((ProxyObject) device).load(device.createView(View.Mode.ANCESTORS));
+                devices.load(devices.createView(View.Mode.ANCESTORS));
                 deviceGroups.load(new ListView(View.Mode.ANCESTORS));
                 addDeviceGroupCommand.load(new CommandView(View.Mode.ANCESTORS));
                 users.load(new ListView(View.Mode.ANCESTORS));
@@ -293,11 +285,12 @@ public abstract class ProxyServer<
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        deviceReferences.uninit();
         if(automations != null)
             automations.uninit();
         if(addAutomationCommand != null)
             addAutomationCommand.uninit();
+        if(devices != null)
+            devices.uninit();
         if(deviceGroups != null)
             deviceGroups.uninit();
         if(addDeviceGroupCommand != null)
@@ -310,15 +303,6 @@ public abstract class ProxyServer<
             nodes.uninit();
     }
 
-    public VALUES getDeviceReferences() {
-        return deviceReferences;
-    }
-
-    @Override
-    public ConvertingList<VALUE, DEVICE> getDevices() {
-        return devices;
-    }
-
     @Override
     public AUTOMATIONS getAutomations() {
         return automations;
@@ -327,6 +311,11 @@ public abstract class ProxyServer<
     @Override
     public COMMAND getAddAutomationCommand() {
         return addAutomationCommand;
+    }
+
+    @Override
+    public DEVICES getDevices() {
+        return devices;
     }
 
     @Override
@@ -355,60 +344,65 @@ public abstract class ProxyServer<
 
     @Override
     public Object<?, ?, ?> getChild(String id) {
-        if(ADD_AUTOMATION_ID.equals(id)) {
-            if(addAutomationCommand == null)
-                addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
+        if (ADD_AUTOMATION_ID.equals(id)) {
+            if (addAutomationCommand == null)
+                addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID), ChildUtil.path(path, ADD_AUTOMATION_ID), ChildUtil.name(name, ADD_AUTOMATION_ID));
             return addAutomationCommand;
-        } else if(ADD_DEVICE_GROUP_ID.equals(id)) {
-            if(addDeviceGroupCommand == null)
-                addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
+        } else if (ADD_DEVICE_GROUP_ID.equals(id)) {
+            if (addDeviceGroupCommand == null)
+                addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_GROUP_ID), ChildUtil.path(path, ADD_DEVICE_GROUP_ID), ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
             return addDeviceGroupCommand;
-        } else if(ADD_USER_ID.equals(id)) {
-            if(addUserCommand == null)
-                addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
+        } else if (ADD_USER_ID.equals(id)) {
+            if (addUserCommand == null)
+                addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID), ChildUtil.path(path, ADD_USER_ID), ChildUtil.name(name, ADD_USER_ID));
             return addUserCommand;
-        } else if(DEVICES_ID.equals(id))
+        } else if (DEVICES_ID.equals(id)) {
+            if (devices == null)
+                devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
             return devices; // NB not an object that is loaded
-        else if(AUTOMATIONS_ID.equals(id)) {
+        } else if(AUTOMATIONS_ID.equals(id)) {
             if(automations == null)
-                automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
+                automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID), ChildUtil.path(path, AUTOMATIONS_ID), ChildUtil.name(name, AUTOMATIONS_ID));
             return automations;
         } else if(DEVICE_GROUPS_ID.equals(id)) {
             if(deviceGroups == null)
-                deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
+                deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID), ChildUtil.path(path, DEVICE_GROUPS_ID), ChildUtil.name(name, DEVICE_GROUPS_ID));
             return deviceGroups;
         } else if(NODES_ID.equals(id)) {
             if(nodes == null)
-                nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.name(name, NODES_ID));
+                nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID), ChildUtil.path(path, NODES_ID), ChildUtil.name(name, NODES_ID));
             return nodes;
         } else if(USERS_ID.equals(id)) {
             if(users == null)
-                users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.name(name, USERS_ID));
+                users = usersFactory.create(ChildUtil.logger(logger, USERS_ID), ChildUtil.path(path, USERS_ID), ChildUtil.name(name, USERS_ID));
             return users;
         }
         return null;
     }
 
-    public <OBJECT extends Object<?, ?, ?>> ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> findConverter() {
-        return new ReferenceLoaderConverter<>();
-    }
-
-    public <T extends Object<?, ?, ?>> T find(String[] path) {
+    public <T extends Object<?, ?, ?>> T find(String path) {
         return find(path, true);
     }
 
-    public <T extends Object<?, ?, ?>> T find(String[] path, boolean fail) {
+    public <T extends Object<?, ?, ?>> T find(String path, boolean fail) {
+
+        // if there's no path, return this
+        if(path == null || path.length() == 0)
+            return (T) this;
+
+        // otherwise recurse through each named element
         Object<?, ?, ?> current = this;
-        for(int i = 0; i < path.length; i++) {
-            current = current.getChild(path[i]);
+        String[] pathElements = path.split("\\.");
+        for(int i = 0; i < pathElements.length; i++) {
+            current = current.getChild(pathElements[i]);
             if(current == null) {
                 if(fail) {
                     if (i == 0)
-                        throw new HousemateException("Could not find " + path[i] + " for server");
+                        throw new HousemateException("Could not find " + pathElements[i] + " for server");
                     else {
                         String[] subPath = new String[i];
                         System.arraycopy(path, 0, subPath, 0, i);
-                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on("/").join(subPath));
+                        throw new HousemateException("Could not find " + pathElements[i] + " at " + Joiner.on(".").join(subPath));
                     }
                 } else
                     return null;
@@ -417,8 +411,8 @@ public abstract class ProxyServer<
         return (T) current;
     }
 
-    public <O extends Object<?, ?, ?>> ObjectReference<O> reference(String[] path) {
-        ObjectReferenceImpl<O> reference = new ObjectReferenceImpl<>(managedCollectionFactory, path);
+    public <O extends Object<?, ?, ?>> ObjectReference<O> reference(String path) {
+        ObjectReferenceImpl<O> reference = new ObjectReferenceImpl<>(managedCollectionFactory, path.split("\\."));
         reference(this, reference, 0);
         return reference;
     }
@@ -428,7 +422,7 @@ public abstract class ProxyServer<
             if(!references.containsKey(object))
                 references.put(object, Lists.<ObjectReferenceImpl>newArrayList());
             references.get(object).add(reference);
-            reference.setObject(this);
+            reference.setObject(object);
         } else {
             String id = reference.getPath()[pathIndex];
             Object<?, ?, ?> child = object.getChild(id);
@@ -437,9 +431,9 @@ public abstract class ProxyServer<
             else if(object instanceof List) {
                 List<? extends Object<?, ?, ?>, ?> list = (List<? extends Object<?, ?, ?>, ?>) object;
                 if(!missingReferences.containsKey(list))
-                    missingReferences.put(list, new HashMap<>());
+                    missingReferences.put(list, new HashMap<String, Map<ObjectReferenceImpl, Integer>>());
                 if(!missingReferences.get(list).containsKey(id))
-                    missingReferences.get(list).put(id, new HashMap<>());
+                    missingReferences.get(list).put(id, new HashMap<ObjectReferenceImpl, Integer>());
                 missingReferences.get(list).get(id).put(reference, pathIndex);
                 list.addObjectListener(missingReferenceLoader);
             }
@@ -481,36 +475,24 @@ public abstract class ProxyServer<
      */
     public static final class Simple extends ProxyServer<
             ProxyCommand.Simple,
-            ProxyValue.Simple,
-            ProxyList.Simple<ProxyValue.Simple>,
-            ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
             ProxyList.Simple<ProxyAutomation.Simple>,
+            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
             ProxyList.Simple<ProxyDeviceGroup.Simple>,
             ProxyList.Simple<ProxyUser.Simple>,
             ProxyList.Simple<ProxyNode.Simple>,
             Simple> {
 
         @Inject
-        public Simple(@com.intuso.housemate.client.v1_0.proxy.object.ioc.Server Logger logger,
+        public Simple(@com.intuso.housemate.client.proxy.internal.object.ioc.Server Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
-                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
                       Factory<ProxyList.Simple<ProxyAutomation.Simple>> automationsFactory,
+                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>> devicesFactory,
                       Factory<ProxyList.Simple<ProxyDeviceGroup.Simple>> deviceGroupsFactory,
                       Factory<ProxyList.Simple<ProxyUser.Simple>> usersFactory,
                       Factory<ProxyList.Simple<ProxyNode.Simple>> nodesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valuesFactory, automationsFactory, deviceGroupsFactory, usersFactory, nodesFactory);
-        }
-    }
-
-    private class ReferenceLoaderConverter<OBJECT extends Object<?, ?, ?>> implements ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> {
-
-        @Override
-        public OBJECT apply(ProxyValue<?, ?> element) {
-            if(element == null || element.getValues() == null || element.getValues().getFirstValue() == null)
-                return null;
-            return find(element.getValues().getFirstValue().split("/"));
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, automationsFactory, devicesFactory, deviceGroupsFactory, usersFactory, nodesFactory);
         }
     }
 }

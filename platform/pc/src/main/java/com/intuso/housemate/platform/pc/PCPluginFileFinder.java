@@ -33,7 +33,7 @@ public class PCPluginFileFinder implements PluginFileFinder {
 
     @Inject
     public PCPluginFileFinder(ManagedCollectionFactory managedCollectionFactory, PropertyRepository properties) {
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
         File pluginDirectory = new File(properties.get(PLUGINS_DIR));
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();

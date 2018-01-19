@@ -12,7 +12,7 @@ public abstract class PowerBase implements Power {
     private final ManagedCollection<Listener> listeners;
 
     protected PowerBase(ManagedCollectionFactory managedCollectionFactory) {
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     @Override

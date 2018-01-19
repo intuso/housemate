@@ -59,6 +59,7 @@ public abstract class ProxyHardware<
      * @param logger {@inheritDoc}
      */
     public ProxyHardware(Logger logger,
+                         String path,
                          String name,
                          ManagedCollectionFactory managedCollectionFactory,
                          Receiver.Factory receiverFactory,
@@ -69,7 +70,7 @@ public abstract class ProxyHardware<
                          ProxyObject.Factory<PROPERTY> propertyFactory,
                          ProxyObject.Factory<PROPERTIES> propertiesFactory,
                          ProxyObject.Factory<DEVICES> devicesFactory) {
-        super(logger, name, Hardware.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Hardware.Data.class, managedCollectionFactory, receiverFactory);
         this.commandFactory = commandFactory;
         this.commandsFactory = commandsFactory;
         this.valueFactory = valueFactory;
@@ -85,7 +86,7 @@ public abstract class ProxyHardware<
     }
 
     @Override
-    public Tree getTree(HardwareView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(HardwareView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -102,61 +103,61 @@ public abstract class ProxyHardware<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(START_ID, startCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), listener, listenerRegistrations));
-                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getRunningValue() != null)
-                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), listener, listenerRegistrations));
+                        result.getChildren().put(RUNNING_ID, runningValue.getTree(view.getRunningValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getStartCommand() != null)
-                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(START_ID, startCommand.getTree(view.getStartCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getStopCommand() != null)
-                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(STOP_ID, stopCommand.getTree(view.getStopCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverProperty() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverLoadedValue() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getCommands() != null)
-                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), listener, listenerRegistrations));
+                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
                     if(view.getValues() != null)
-                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), listener, listenerRegistrations));
+                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
                     if(view.getProperties() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDevices() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -178,55 +179,55 @@ public abstract class ProxyHardware<
             case ANCESTORS:
             case CHILDREN:
                 if(renameCommand == null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-                if(startCommand == null)
-                    startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
-                if(stopCommand == null)
-                    stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(runningValue == null)
-                    runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
+                    runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.path(path, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
+                if(startCommand == null)
+                    startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.path(path, START_ID), ChildUtil.name(name, START_ID));
+                if(stopCommand == null)
+                    stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.path(path, STOP_ID), ChildUtil.name(name, STOP_ID));
                 if(errorValue == null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 if(driverProperty == null)
-                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
                 if(driverLoadedValue == null)
-                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
                 if(commands == null)
-                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
+                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
                 if(values == null)
-                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
+                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
                 if(properties == null)
-                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
                 if(devices == null)
-                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
+                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
                 break;
             case SELECTION:
                 if(renameCommand == null && view.getRenameCommand() != null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null && view.getRemoveCommand() != null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
-                if(startCommand == null && view.getStartCommand() != null)
-                    startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
-                if(stopCommand == null && view.getStopCommand() != null)
-                    stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(runningValue == null && view.getRunningValue() != null)
-                    runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
+                    runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.path(path, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
+                if(startCommand == null && view.getStartCommand() != null)
+                    startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.path(path, START_ID), ChildUtil.name(name, START_ID));
+                if(stopCommand == null && view.getStopCommand() != null)
+                    stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.path(path, STOP_ID), ChildUtil.name(name, STOP_ID));
                 if(errorValue == null && view.getErrorValue() != null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 if(driverProperty == null && view.getDriverProperty() != null)
-                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
                 if(driverLoadedValue == null && view.getDriverLoadedValue() != null)
-                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
                 if(commands == null && view.getCommands() != null)
-                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
+                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
                 if(values == null && view.getValues() != null)
-                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
+                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
                 if(properties == null && view.getProperties() != null)
-                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
                 if(devices == null && view.getDevices() != null)
-                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
+                    devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
                 break;
         }
 
@@ -279,28 +280,28 @@ public abstract class ProxyHardware<
     @Override
     public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
-            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
         removeCommand.load(commandView);
     }
 
     @Override
     public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
-            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
         renameCommand.load(commandView);
     }
 
     @Override
     public void loadStartCommand(CommandView commandView) {
         if(startCommand == null)
-            startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
+            startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.path(path, START_ID), ChildUtil.name(name, START_ID));
         startCommand.load(commandView);
     }
 
     @Override
     public void loadStopCommand(CommandView commandView) {
         if(stopCommand == null)
-            stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
+            stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.path(path, STOP_ID), ChildUtil.name(name, STOP_ID));
         stopCommand.load(commandView);
     }
 
@@ -415,51 +416,51 @@ public abstract class ProxyHardware<
     public ProxyObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id)) {
             if(renameCommand == null)
-                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
         } else if(REMOVE_ID.equals(id)) {
             if(removeCommand == null)
-                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
         } else if(RUNNING_ID.equals(id)) {
             if(runningValue == null)
-                runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
+                runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID), ChildUtil.path(path, RUNNING_ID), ChildUtil.name(name, RUNNING_ID));
             return runningValue;
         } else if(START_ID.equals(id)) {
             if(startCommand == null)
-                startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.name(name, START_ID));
+                startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID), ChildUtil.path(path, START_ID), ChildUtil.name(name, START_ID));
             return startCommand;
         } else if(STOP_ID.equals(id)) {
             if(stopCommand == null)
-                stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.name(name, STOP_ID));
+                stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID), ChildUtil.path(path, STOP_ID), ChildUtil.name(name, STOP_ID));
             return stopCommand;
         } else if(ERROR_ID.equals(id)) {
             if(errorValue == null)
-                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
         } else if(DRIVER_ID.equals(id)) {
             if(driverProperty == null)
-                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
             return driverProperty;
         } else if(DRIVER_LOADED_ID.equals(id)) {
             if(driverLoadedValue == null)
-                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
             return driverLoadedValue;
         } else if(COMMANDS_ID.equals(id)) {
             if(commands == null)
-                commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
+                commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID),  ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
             return commands;
         } else if(PROPERTIES_ID.equals(id)) {
             if(properties == null)
-                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID),  ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
             return properties;
         } else if(VALUES_ID.equals(id)) {
             if(values == null)
-                values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.name(name, VALUES_ID));
+                values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID),  ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
             return values;
         } else if(DEVICES_ID.equals(id)) {
             if (devices == null)
-                devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
+                devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),  ChildUtil.path(path, DEVICES_ID), ChildUtil.name(name, DEVICES_ID));
             return devices;
         }
         return null;
@@ -484,7 +485,8 @@ public abstract class ProxyHardware<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
@@ -494,7 +496,7 @@ public abstract class ProxyHardware<
                       Factory<ProxyProperty.Simple> propertyFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory,
                       Factory<ProxyList.Simple<ProxyDeviceConnected.Simple>> devicesFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory, devicesFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory, devicesFactory);
         }
     }
 }

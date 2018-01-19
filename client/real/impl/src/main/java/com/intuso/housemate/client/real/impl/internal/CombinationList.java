@@ -1,5 +1,8 @@
-package com.intuso.housemate.client.api.internal.object;
+package com.intuso.housemate.client.real.impl.internal;
 
+import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -21,15 +24,12 @@ public class CombinationList<T extends Object<?, ?, ?>>
 
     public CombinationList(List.Data data, ManagedCollectionFactory managedCollectionFactory) {
         this.data = data;
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     public void addList(List<? extends T, ?> list) {
         lists.add(list);
         ((List<T, ?>)list).addObjectListener(this, true);
-        for(Listener<? super T, ? super CombinationList<T>> listener : listeners)
-            for(T element : list)
-                listener.elementAdded(this, element);
     }
 
     @Override
@@ -103,23 +103,23 @@ public class CombinationList<T extends Object<?, ?, ?>>
     }
 
     @Override
-    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ListView<?> view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
         Tree result = new Tree(getData());
         switch (view.getMode()) {
             case ANCESTORS:
                 for(T t : this)
-                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(t.createView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                 break;
             case CHILDREN:
                 for(T t : this)
-                    result.getChildren().put(t.getId(), ((Object) t).getTree(view.getView(), listener, listenerRegistrations));
+                    result.getChildren().put(t.getId(), ((Object) t).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                 break;
             case SELECTION:
                 if (view.getElements() != null) {
                     for (String id : view.getElements()) {
                         T t = get(id);
                         if (t != null)
-                            result.getChildren().put(id, ((Object) t).getTree(view.getView(), listener, listenerRegistrations));
+                            result.getChildren().put(id, ((Object) t).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     }
                 }
                 break;

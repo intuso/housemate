@@ -123,7 +123,7 @@ public abstract class RealValueBaseImpl<O,
         if(valueSender != null) {
             try {
                 valueSender.send(serialisedValues, true);
-                logger.trace("Set to {}", serialisedValues);
+                logger.debug("Set to {}", serialisedValues);
             } catch (Throwable t) {
                 logger.error("Failed to send value update", t);
             }

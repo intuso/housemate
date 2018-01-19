@@ -6,6 +6,7 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.proxy.bridge.v1_0.*;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.api.object.Object;
@@ -40,6 +41,7 @@ public class ProxyBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyOptionBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyParameterBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyPropertyBridge>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxySubTypeBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyTaskBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyTypeBridge>>>() {}));
@@ -49,6 +51,7 @@ public class ProxyBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyOptionBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyParameterBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyPropertyBridge>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxySubTypeBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyTaskBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyTypeBridge>>() {}));

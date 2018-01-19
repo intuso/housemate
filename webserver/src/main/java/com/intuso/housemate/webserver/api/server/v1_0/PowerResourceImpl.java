@@ -4,15 +4,9 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Device;
 import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.api.object.view.*;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.BooleanPrimitiveSerialiser;
-import com.intuso.housemate.client.v1_0.proxy.object.ProxyDevice;
-import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceConnected;
-import com.intuso.housemate.client.v1_0.proxy.object.ProxyDeviceGroup;
-import com.intuso.housemate.client.v1_0.proxy.object.ProxyServer;
-import com.intuso.housemate.client.v1_0.api.object.view.CommandView;
-import com.intuso.housemate.client.v1_0.api.object.view.DeviceConnectedView;
-import com.intuso.housemate.client.v1_0.api.object.view.DeviceGroupView;
-import com.intuso.housemate.client.v1_0.api.object.view.ListView;
+import com.intuso.housemate.client.v1_0.proxy.object.*;
 import com.intuso.housemate.client.v1_0.rest.PowerResource;
 import com.intuso.housemate.client.v1_0.rest.model.Page;
 import com.intuso.housemate.webserver.SessionUtils;
@@ -63,7 +57,10 @@ public class PowerResourceImpl implements PowerResource {
             throw new BadRequestException("No server for user");
 
         List<Device.Data> devices = Lists.newArrayList();
-        server.getDevices().forEach(device -> devices.add(device.getData()));
+        server.getDevices().forEach(device -> {
+            if(device.get() != null)
+                devices.add(device.get().getData());
+        });
 
         Stream<Device.Data> stream  = devices.stream();
         if(offset > 0)
@@ -76,16 +73,20 @@ public class PowerResourceImpl implements PowerResource {
     @Override
     public boolean isOn(String id) {
         logger.debug("Is on {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
-        if(device == null)
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        if(deviceReference == null || deviceReference.get() == null)
             throw new NotFoundException();
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
         return BooleanPrimitiveSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValues().getElements().get(0));
     }
 
     @Override
     public void turnOn(String id) {
         logger.debug("Turning on {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        if(deviceReference == null || deviceReference.get() == null)
+            throw new NotFoundException();
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
         if(device instanceof ProxyDeviceConnected) {
             ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
             deviceConnected.load(new DeviceConnectedView().setCommands(new ListView<>(new CommandView(),"on")));
@@ -94,14 +95,17 @@ public class PowerResourceImpl implements PowerResource {
             ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
             deviceConnected.load(new DeviceGroupView().setCommands(new ListView<>(new CommandView(),"on")));
             deviceConnected.getCommands().get("on").perform(loggerListener);
-        } else
-            throw new NotFoundException();
+        }
     }
 
     @Override
     public void turnOff(String id) {
         logger.debug("Turning off {}", id);
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);if(device instanceof ProxyDeviceConnected) {
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        if(deviceReference == null || deviceReference.get() == null)
+            throw new NotFoundException();
+        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
+        if(device instanceof ProxyDeviceConnected) {
             ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
             deviceConnected.load(new DeviceConnectedView().setCommands(new ListView<>(new CommandView(),"off")));
             deviceConnected.getCommands().get("off").perform(loggerListener);
@@ -109,7 +113,6 @@ public class PowerResourceImpl implements PowerResource {
             ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
             deviceConnected.load(new DeviceGroupView().setCommands(new ListView<>(new CommandView(),"off")));
             deviceConnected.getCommands().get("off").perform(loggerListener);
-        } else
-            throw new NotFoundException();
+        }
     }
 }

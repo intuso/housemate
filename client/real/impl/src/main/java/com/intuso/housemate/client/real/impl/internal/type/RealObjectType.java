@@ -2,7 +2,6 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
@@ -15,7 +14,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,8 +22,8 @@ import java.util.Set;
 public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
         extends RealTypeImpl<ObjectReference<O>> {
 
-    private final static Joiner JOINER = Joiner.on("/");
-    private final static Splitter SPLITTER = Splitter.on("/");
+    private final static Joiner JOINER = Joiner.on(".");
+    private final static Splitter SPLITTER = Splitter.on(".");
 
     private final Serialiser<O> serialiser;
 
@@ -41,7 +39,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
                           @Assisted Set<String> allowedTypes,
                           ManagedCollectionFactory managedCollectionFactory,
                           Sender.Factory senderFactory,
-                          ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server) {
+                          ProxyServer<?, ?, ?, ?, ?, ?, ?> server) {
         super(logger, new ObjectData(id, name, description), managedCollectionFactory, senderFactory);
         serialiser = new Serialiser<>(managedCollectionFactory, server, allowedTypes);
     }
@@ -63,7 +61,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
     public static class Serialiser<O extends ProxyObject<?, ?, ?>> implements TypeSerialiser<ObjectReference<O>> {
 
         private final ManagedCollectionFactory managedCollectionFactory;
-        private final ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server;
+        private final ProxyServer<?, ?, ?, ?, ?, ?, ?> server;
         private final Set<String> allowedClasses;
 
         /**
@@ -72,7 +70,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
          * @param allowedClasses
          */
         @Inject
-        public Serialiser(ManagedCollectionFactory managedCollectionFactory, ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server, Set<String> allowedClasses) {
+        public Serialiser(ManagedCollectionFactory managedCollectionFactory, ProxyServer<?, ?, ?, ?, ?, ?, ?> server, Set<String> allowedClasses) {
             this.managedCollectionFactory = managedCollectionFactory;
             this.server = server;
             this.allowedClasses = allowedClasses;
@@ -89,9 +87,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
         public ObjectReference<O> deserialise(Instance value) {
             if(value == null || value.getValue() == null)
                 return null;
-            List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
-            String[] path = pathList.toArray(new String[pathList.size()]);
-            return new RestrictedTypeObjectReference<>(managedCollectionFactory, server.<O>reference(path), allowedClasses);
+            return new RestrictedTypeObjectReference<>(managedCollectionFactory, server.<O>reference(value.getValue()), allowedClasses);
         }
     }
 
@@ -105,7 +101,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?, ?>>
         private RestrictedTypeObjectReference(ManagedCollectionFactory managedCollectionFactory,
                                               ObjectReference<O> original,
                                               Set<String> allowedClasses) {
-            this.listeners = managedCollectionFactory.create();
+            this.listeners = managedCollectionFactory.createSet();
             this.original = original;
             this.allowedClasses = allowedClasses;
             original.addListener(this);

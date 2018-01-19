@@ -74,7 +74,7 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    public Tree getTree(PropertyView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(PropertyView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -88,17 +88,17 @@ public class RealPropertyImpl<O>
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getSetCommand() != null)
-                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(SET_COMMAND_ID, setCommand.getTree(view.getSetCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 

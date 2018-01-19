@@ -41,7 +41,7 @@ public abstract class ProxyObjectBridge<
         this.dataMapper = dataMapper;
         this.internalReceiverFactory = internalReceiverFactory;
         this.v1_0SenderFactory = v1_0SenderFactory;
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     public final void init(String versionName, String internalName) {
@@ -84,7 +84,7 @@ public abstract class ProxyObjectBridge<
     }
 
     @Override
-    public Tree getTree(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(VIEW view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
         throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 

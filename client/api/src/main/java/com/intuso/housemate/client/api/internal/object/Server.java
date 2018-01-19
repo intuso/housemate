@@ -4,21 +4,20 @@ import com.intuso.housemate.client.api.internal.object.view.ServerView;
 
 public interface Server<
         COMMAND extends Command<?, ?, ?, ?>,
-        DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        DEVICES extends List<? extends Reference<?, ? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
         DEVICE_GROUPS extends List<? extends Device.Group<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
         NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
-        SERVER extends Server<COMMAND, DEVICES, AUTOMATIONS, DEVICE_GROUPS, USERS, NODES, SERVER>>
+        SERVER extends Server<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER>>
         extends Object<Server.Data, Server.Listener<? super SERVER>, ServerView>,
-        Device.Container<DEVICES>,
         Device.Group.Container<DEVICE_GROUPS>,
         Automation.Container<AUTOMATIONS>,
         User.Container<USERS>,
         Node.Container<NODES> {
 
-    String DEVICES_ID = "devices";
     String AUTOMATIONS_ID = "automations";
+    String DEVICES_ID = "devices";
     String DEVICE_GROUPS_ID = "deviceGroups";
     String USERS_ID = "users";
     String NODES_ID = "nodes";
@@ -27,6 +26,7 @@ public interface Server<
     String ADD_USER_ID = "addUser";
 
     COMMAND getAddAutomationCommand();
+    DEVICES getDevices();
     COMMAND getAddDeviceGroupCommand();
     COMMAND getAddUserCommand();
 

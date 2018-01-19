@@ -15,7 +15,9 @@ import jssc.SerialPortList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * Created by tomc on 30/12/16.
@@ -31,9 +33,15 @@ public class Main {
     public Main(String args[]) {
 
         ManagedCollectionFactory managedCollectionFactory = new ManagedCollectionFactory() {
+
             @Override
-            public <LISTENER> ManagedCollection<LISTENER> create() {
-                return new ManagedCollection<>(new CopyOnWriteArrayList<LISTENER>());
+            public <LISTENER> ManagedCollection<LISTENER> createSet() {
+                return new ManagedCollection<>(Collections.synchronizedSet(new HashSet<>()));
+            }
+
+            @Override
+            public <LISTENER> ManagedCollection<LISTENER> createList() {
+                return new ManagedCollection<>(Collections.synchronizedList(new LinkedList<>()));
             }
         };
 

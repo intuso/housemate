@@ -24,10 +24,11 @@ public abstract class ProxyType<TYPE extends ProxyType<TYPE>>
      * @param logger {@inheritDoc}
      */
     public ProxyType(Logger logger,
+                     String path,
                      String name,
                      ManagedCollectionFactory managedCollectionFactory,
                      Receiver.Factory receiverFactory) {
-        super(logger, name, Type.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Type.Data.class, managedCollectionFactory, receiverFactory);
     }
 
     @Override
@@ -36,7 +37,7 @@ public abstract class ProxyType<TYPE extends ProxyType<TYPE>>
     }
 
     @Override
-    public Tree getTree(TypeView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(TypeView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -60,10 +61,11 @@ public abstract class ProxyType<TYPE extends ProxyType<TYPE>>
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory);
         }
     }
 }

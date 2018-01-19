@@ -40,10 +40,10 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
                       Set<PluginListener> internalListeners,
                       Set<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners) {
         this.pluginFileFinder = pluginFileFinder;
-        this.internalListeners = managedCollectionFactory.create();
+        this.internalListeners = managedCollectionFactory.createSet();
         for(PluginListener listener : internalListeners)
             this.internalListeners.add(listener);
-        this.v1_0Listeners = managedCollectionFactory.create();
+        this.v1_0Listeners = managedCollectionFactory.createSet();
         for(com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : v1_0Listeners)
             this.v1_0Listeners.add(listener);
     }

@@ -9,15 +9,15 @@ import java.util.Iterator;
 /**
  * Created by tomc on 02/05/17.
  */
-public class ConvertingList<
+public class ReferenceList<
         FROM extends Object<?, ?, ?>,
         TO extends Object<?, ?, ?>>
-        implements List<TO, ConvertingList<FROM, TO>> {
+        implements List<TO, ReferenceList<FROM, TO>> {
 
     private final List<? extends FROM, ?> list;
     private final Converter<? super FROM, ? extends TO> converter;
 
-    public ConvertingList(List<? extends FROM, ?> list, Converter<? super FROM, ? extends TO> converter) {
+    public ReferenceList(List<? extends FROM, ?> list, Converter<? super FROM, ? extends TO> converter) {
         this.list = list;
         this.converter = converter;
     }
@@ -48,8 +48,8 @@ public class ConvertingList<
     }
 
     @Override
-    public ManagedCollection.Registration addObjectListener(Listener<? super TO, ? super ConvertingList<FROM, TO>> listener) {
-        return list.addObjectListener(new ConvertingListener(listener));
+    public ManagedCollection.Registration addObjectListener(Listener<? super TO, ? super ReferenceList<FROM, TO>> listener) {
+        return list.addObjectListener(new ReferenceListener(listener));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ConvertingList<
     }
 
     @Override
-    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ListView<?> view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         Tree result = new Tree(getData());
 
@@ -83,18 +83,18 @@ public class ConvertingList<
             switch (view.getMode()) {
                 case ANCESTORS:
                     for (TO to : this)
-                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(to.createView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
                 case CHILDREN:
                     for (TO to : this)
-                        result.getChildren().put(to.getId(), ((Object) to).getTree(view.getView(), listener, listenerRegistrations));
+                        result.getChildren().put(to.getId(), ((Object) to).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
                 case SELECTION:
                     if (view.getElements() != null) {
                         for (String id : view.getElements()) {
                             TO to = get(id);
                             if (to != null)
-                                result.getChildren().put(id, ((Object) to).getTree(view.getView(), listener, listenerRegistrations));
+                                result.getChildren().put(id, ((Object) to).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                         }
                     }
                     break;
@@ -109,35 +109,35 @@ public class ConvertingList<
     }
 
     @Override
-    public ManagedCollection.Registration addObjectListener(Listener<? super TO, ? super ConvertingList<FROM, TO>> listener, boolean callForExistingElements) {
-        return list.addObjectListener(new ConvertingListener(listener), callForExistingElements);
+    public ManagedCollection.Registration addObjectListener(Listener<? super TO, ? super ReferenceList<FROM, TO>> listener, boolean callForExistingElements) {
+        return list.addObjectListener(new ReferenceListener(listener), callForExistingElements);
     }
 
     @Override
     public Iterator<TO> iterator() {
-        return new ConvertingIterator();
+        return new ReferenceIterator();
     }
 
-    private class ConvertingListener implements Listener<FROM, List<? extends FROM, ?>> {
+    private class ReferenceListener implements Listener<FROM, List<? extends FROM, ?>> {
 
-        private final Listener<? super TO, ? super ConvertingList<FROM, TO>> listener;
+        private final Listener<? super TO, ? super ReferenceList<FROM, TO>> listener;
 
-        private ConvertingListener(Listener<? super TO, ? super ConvertingList<FROM, TO>> listener) {
+        private ReferenceListener(Listener<? super TO, ? super ReferenceList<FROM, TO>> listener) {
             this.listener = listener;
         }
 
         @Override
         public void elementAdded(List<? extends FROM, ?> list, FROM element) {
-            listener.elementAdded(ConvertingList.this, converter.apply(element));
+            listener.elementAdded(ReferenceList.this, converter.apply(element));
         }
 
         @Override
         public void elementRemoved(List<? extends FROM, ?> list, FROM element) {
-            listener.elementRemoved(ConvertingList.this, converter.apply(element));
+            listener.elementRemoved(ReferenceList.this, converter.apply(element));
         }
     }
 
-    private class ConvertingIterator implements Iterator<TO> {
+    private class ReferenceIterator implements Iterator<TO> {
 
         private final Iterator<? extends FROM> iter = list.iterator();
 

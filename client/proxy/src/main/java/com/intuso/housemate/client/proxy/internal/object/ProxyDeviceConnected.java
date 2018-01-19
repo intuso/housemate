@@ -26,13 +26,14 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
      * @param logger {@inheritDoc}
      */
     public ProxyDeviceConnected(Logger logger,
+                                String path,
                                 String name,
                                 ManagedCollectionFactory managedCollectionFactory,
                                 Receiver.Factory receiverFactory,
                                 Factory<COMMAND> commandFactory,
                                 Factory<COMMANDS> commandsFactory,
                                 Factory<VALUES> valuesFactory) {
-        super(logger, name, Device.Connected.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+        super(logger, path, name, Device.Connected.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
     }
 
     @Override
@@ -64,14 +65,15 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
         }
     }
 }

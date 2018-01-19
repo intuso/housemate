@@ -48,7 +48,7 @@ public final class RealParameterImpl<O>
     }
 
     @Override
-    public Tree getTree(ParameterView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ParameterView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);

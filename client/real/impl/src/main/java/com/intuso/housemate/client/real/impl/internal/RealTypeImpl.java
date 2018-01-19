@@ -40,7 +40,7 @@ public abstract class RealTypeImpl<O>
     }
 
     @Override
-    public Tree getTree(TypeView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(TypeView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);

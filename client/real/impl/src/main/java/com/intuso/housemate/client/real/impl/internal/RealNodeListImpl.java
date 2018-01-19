@@ -34,6 +34,7 @@ public final class RealNodeListImpl
 
     private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements = Maps.newHashMap();
 
+    private boolean initialised = false;
     private String name;
     private com.intuso.housemate.client.v1_0.messaging.api.Receiver<Node.Data> nodeV1_0Receiver;
 
@@ -62,7 +63,7 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ListView<?> view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -77,20 +78,20 @@ public final class RealNodeListImpl
                 // get recursively
                 case ANCESTORS:
                     for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), element.getValue().getTree(new NodeView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), element.getValue().getTree(new NodeView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ServerBaseNode<?, ?, ?, ?>> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getView(), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), element.getValue().getTree((NodeView) view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getView(), listener, listenerRegistrations));
+                                result.getChildren().put(elementId, elements.get(elementId).getTree((NodeView) view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -132,6 +133,7 @@ public final class RealNodeListImpl
         // init any elements that were added before we init'd
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
             element.init(ChildUtil.name(name, element.getId()));
+        this.initialised = true;
     }
 
     @Override
@@ -151,7 +153,8 @@ public final class RealNodeListImpl
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        element.init(ChildUtil.name(name, element.getId()));
+        if(initialised)
+            element.init(ChildUtil.name(name, element.getId()));
         for(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
             listener.elementAdded(this, element);
     }

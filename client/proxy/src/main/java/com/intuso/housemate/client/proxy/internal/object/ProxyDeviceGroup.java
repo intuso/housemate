@@ -2,12 +2,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.object.view.CommandView;
-import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
-import com.intuso.housemate.client.api.internal.object.view.ValueView;
-import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.api.internal.object.Tree;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyFailable;
@@ -22,72 +20,53 @@ import java.util.Set;
 /**
  * @param <COMMAND> the type of the commands
  * @param <VALUE> the type of the values
- * @param <DEVICE> the type of the device
  */
 public abstract class ProxyDeviceGroup<
         COMMAND extends ProxyCommand<?, ?, ?>,
         COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
         VALUE extends ProxyValue<?, ?>,
         VALUES extends ProxyList<VALUE, ?>,
-        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
-        DEVICE_GROUP extends ProxyDeviceGroup<COMMAND, COMMANDS, VALUE, VALUES, DEVICE, DEVICE_GROUP>>
+        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
+        DEVICE_GROUP extends ProxyDeviceGroup<COMMAND, COMMANDS, VALUE, VALUES, DEVICES, DEVICE_GROUP>>
         extends ProxyDevice<Device.Group.Data, Device.Group.Listener<? super DEVICE_GROUP>, DeviceGroupView, COMMAND, COMMANDS, VALUES, DEVICE_GROUP>
-        implements Device.Group<COMMAND, COMMAND, COMMAND, VALUE, COMMANDS, VALUES, ConvertingList<VALUE, DEVICE>, DEVICE_GROUP>,
+        implements Device.Group<COMMAND, COMMAND, COMMAND, VALUE, COMMANDS, VALUES, DEVICES, DEVICE_GROUP>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND> {
 
     private final Factory<COMMAND> commandFactory;
     private final Factory<VALUE> valueFactory;
-
-    private final VALUES playbackDeviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> playbackDevices;
-    private final COMMAND addPlaybackDeviceCommand;
-    private final VALUES powerDeviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> powerDevices;
-    private final COMMAND addPowerDeviceCommand;
-    private final VALUES runDeviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> runDevices;
-    private final COMMAND addRunDeviceCommand;
-    private final VALUES temperatureSensorDeviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> temperatureSensorDevices;
-    private final COMMAND addTemperatureSensorDeviceCommand;
-    private final VALUES volumeDeviceReferences;
-    private final ProxyConvertingList<VALUE, DEVICE> volumeDevices;
-    private final COMMAND addVolumeDeviceCommand;
+    private final Factory<DEVICES> devicesFactory;
 
     private COMMAND removeCommand;
     private VALUE errorValue;
+    private DEVICES playbackDevices;
+    private COMMAND addPlaybackDeviceCommand;
+    private DEVICES powerDevices;
+    private COMMAND addPowerDeviceCommand;
+    private DEVICES runDevices;
+    private COMMAND addRunDeviceCommand;
+    private DEVICES temperatureSensorDevices;
+    private COMMAND addTemperatureSensorDeviceCommand;
+    private DEVICES volumeDevices;
+    private COMMAND addVolumeDeviceCommand;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyDeviceGroup(Logger logger,
+                            String path,
                             String name,
                             ManagedCollectionFactory managedCollectionFactory,
                             Receiver.Factory receiverFactory,
-                            ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?> server,
                             Factory<COMMAND> commandFactory,
                             Factory<COMMANDS> commandsFactory,
                             Factory<VALUE> valueFactory,
-                            Factory<VALUES> valuesFactory) {
-        super(logger, name, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+                            Factory<VALUES> valuesFactory,
+                            Factory<DEVICES> devicesFactory) {
+        super(logger, path, name, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
         this.commandFactory = commandFactory;
         this.valueFactory = valueFactory;
-        playbackDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, PLAYBACK), ChildUtil.name(name, PLAYBACK));
-        playbackDevices = new ProxyConvertingList<>(playbackDeviceReferences, server.<DEVICE>findConverter());
-        addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK), ChildUtil.name(name, ADD_PLAYBACK));
-        powerDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, POWER), ChildUtil.name(name, POWER));
-        powerDevices = new ProxyConvertingList<>(powerDeviceReferences, server.<DEVICE>findConverter());
-        addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER), ChildUtil.name(name, ADD_POWER));
-        runDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, RUN), ChildUtil.name(name, RUN));
-        runDevices = new ProxyConvertingList<>(runDeviceReferences, server.<DEVICE>findConverter());
-        addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN), ChildUtil.name(name, ADD_RUN));
-        temperatureSensorDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR), ChildUtil.name(name, TEMPERATURE_SENSOR));
-        temperatureSensorDevices = new ProxyConvertingList<>(temperatureSensorDeviceReferences, server.<DEVICE>findConverter());
-        addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR), ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
-        volumeDeviceReferences = valuesFactory.create(ChildUtil.logger(logger, VOLUME), ChildUtil.name(name, VOLUME));
-        volumeDevices = new ProxyConvertingList<>(volumeDeviceReferences, server.<DEVICE>findConverter());
-        addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME), ChildUtil.name(name, ADD_VOLUME));
+        this.devicesFactory = devicesFactory;
     }
 
     @Override
@@ -96,13 +75,13 @@ public abstract class ProxyDeviceGroup<
     }
 
     @Override
-    public Tree getTree(DeviceGroupView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(DeviceGroupView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // make sure what they want is loaded
         load(view);
 
         // create a result even for a null view
-        Tree result = super.getTree(view, listener, listenerRegistrations);
+        Tree result = super.getTree(view, referenceHandler, listener, listenerRegistrations);
 
         // get anything else the view wants
         if(view != null && view.getMode() != null) {
@@ -110,21 +89,61 @@ public abstract class ProxyDeviceGroup<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PLAYBACK, playbackDevices.getTree(new ListView<DeviceView<?>>(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_PLAYBACK, addPlaybackDeviceCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(POWER, powerDevices.getTree(new ListView<DeviceView<?>>(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_POWER, addPowerDeviceCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(RUN, runDevices.getTree(new ListView<DeviceView<?>>(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_RUN, addRunDeviceCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(TEMPERATURE_SENSOR, temperatureSensorDevices.getTree(new ListView<DeviceView<?>>(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_TEMPERATURE_SENSOR, addTemperatureSensorDeviceCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(VOLUME, volumeDevices.getTree(new ListView<DeviceView<?>>(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_VOLUME, addVolumeDeviceCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
-                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PLAYBACK, playbackDevices.getTree(view.getPlaybackDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_PLAYBACK, addPlaybackDeviceCommand.getTree(view.getAddPlaybackDevice(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(POWER, powerDevices.getTree(view.getPowerDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_POWER, addPowerDeviceCommand.getTree(view.getAddPowerDevice(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(RUN, runDevices.getTree(view.getRunDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_RUN, addRunDeviceCommand.getTree(view.getAddRunDevice(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(TEMPERATURE_SENSOR, temperatureSensorDevices.getTree(view.getTemperatureSensorDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_TEMPERATURE_SENSOR, addTemperatureSensorDeviceCommand.getTree(view.getAddTemperatureSensorDevice(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(VOLUME, volumeDevices.getTree(view.getVolumeDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_VOLUME, addVolumeDeviceCommand.getTree(view.getAddVolumeDevice(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getPlaybackDevices() != null)
+                        result.getChildren().put(PLAYBACK, playbackDevices.getTree(view.getPlaybackDevices(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getAddPlaybackDevice() != null)
+                        result.getChildren().put(ADD_PLAYBACK, addPlaybackDeviceCommand.getTree(view.getAddPlaybackDevice(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getPowerDevices() != null)
+                        result.getChildren().put(POWER, powerDevices.getTree(view.getPowerDevices(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getAddPowerDevice() != null)
+                        result.getChildren().put(ADD_POWER, addPowerDeviceCommand.getTree(view.getAddPowerDevice(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getRunDevices() != null)
+                        result.getChildren().put(RUN, runDevices.getTree(view.getRunDevices(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getAddRunDevice() != null)
+                        result.getChildren().put(ADD_RUN, addRunDeviceCommand.getTree(view.getAddRunDevice(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getTemperatureSensorDevices() != null)
+                        result.getChildren().put(TEMPERATURE_SENSOR, temperatureSensorDevices.getTree(view.getTemperatureSensorDevices(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getAddTemperatureSensorDevice() != null)
+                        result.getChildren().put(ADD_TEMPERATURE_SENSOR, addTemperatureSensorDeviceCommand.getTree(view.getAddTemperatureSensorDevice(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getVolumeDevices() != null)
+                        result.getChildren().put(VOLUME, volumeDevices.getTree(view.getVolumeDevices(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getAddVolumeDevice() != null)
+                        result.getChildren().put(ADD_VOLUME, addVolumeDeviceCommand.getTree(view.getAddVolumeDevice(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
         }
@@ -145,15 +164,55 @@ public abstract class ProxyDeviceGroup<
             case ANCESTORS:
             case CHILDREN:
                 if(removeCommand == null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if (errorValue == null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                if(playbackDevices == null)
+                    playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK), ChildUtil.path(path, PLAYBACK), ChildUtil.name(name, PLAYBACK));
+                if(addPlaybackDeviceCommand == null)
+                    addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK), ChildUtil.path(path, ADD_PLAYBACK), ChildUtil.name(name, ADD_PLAYBACK));
+                if(powerDevices == null)
+                    powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER), ChildUtil.path(path, POWER), ChildUtil.name(name, POWER));
+                if(addPowerDeviceCommand == null)
+                    addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER), ChildUtil.path(path, ADD_POWER), ChildUtil.name(name, ADD_POWER));
+                if(runDevices == null)
+                    runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN), ChildUtil.path(path, RUN), ChildUtil.name(name, RUN));
+                if(addRunDeviceCommand == null)
+                    addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN), ChildUtil.path(path, ADD_RUN), ChildUtil.name(name, ADD_RUN));
+                if(temperatureSensorDevices == null)
+                    temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR), ChildUtil.path(path, TEMPERATURE_SENSOR), ChildUtil.name(name, TEMPERATURE_SENSOR));
+                if(addTemperatureSensorDeviceCommand == null)
+                    addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR), ChildUtil.path(path, ADD_TEMPERATURE_SENSOR), ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
+                if(volumeDevices == null)
+                    volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME), ChildUtil.path(path, VOLUME), ChildUtil.name(name, VOLUME));
+                if(addVolumeDeviceCommand == null)
+                    addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME), ChildUtil.path(path, ADD_VOLUME), ChildUtil.name(name, ADD_VOLUME));
                 break;
             case SELECTION:
                 if(removeCommand == null && view.getRemoveCommand() != null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if (errorValue == null && view.getErrorValue() != null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                if(playbackDevices == null && view.getPlaybackDevices() == null)
+                    playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK), ChildUtil.path(path, PLAYBACK), ChildUtil.name(name, PLAYBACK));
+                if(addPlaybackDeviceCommand == null && view.getAddPlaybackDevice() == null)
+                    addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK), ChildUtil.path(path, ADD_PLAYBACK), ChildUtil.name(name, ADD_PLAYBACK));
+                if(powerDevices == null && view.getPowerDevices() == null)
+                    powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER), ChildUtil.path(path, POWER), ChildUtil.name(name, POWER));
+                if(addPowerDeviceCommand == null && view.getAddPowerDevice() == null)
+                    addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER), ChildUtil.path(path, ADD_POWER), ChildUtil.name(name, ADD_POWER));
+                if(runDevices == null && view.getRunDevices() == null)
+                    runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN), ChildUtil.path(path, RUN), ChildUtil.name(name, RUN));
+                if(addRunDeviceCommand == null && view.getAddRunDevice() == null)
+                    addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN), ChildUtil.path(path, ADD_RUN), ChildUtil.name(name, ADD_RUN));
+                if(temperatureSensorDevices == null && view.getTemperatureSensorDevices() == null)
+                    temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR), ChildUtil.path(path, TEMPERATURE_SENSOR), ChildUtil.name(name, TEMPERATURE_SENSOR));
+                if(addTemperatureSensorDeviceCommand == null && view.getAddTemperatureSensorDevice() == null)
+                    addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR), ChildUtil.path(path, ADD_TEMPERATURE_SENSOR), ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
+                if(volumeDevices == null && view.getVolumeDevices() == null)
+                    volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME), ChildUtil.path(path, VOLUME), ChildUtil.name(name, VOLUME));
+                if(addVolumeDeviceCommand == null && view.getAddVolumeDevice() == null)
+                    addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME), ChildUtil.path(path, ADD_VOLUME), ChildUtil.name(name, ADD_VOLUME));
                 break;
         }
 
@@ -162,6 +221,16 @@ public abstract class ProxyDeviceGroup<
             case ANCESTORS:
                 removeCommand.load(new CommandView(View.Mode.ANCESTORS));
                 errorValue.load(new ValueView(View.Mode.ANCESTORS));
+                playbackDevices.load(new ListView<DeviceView<?>>(View.Mode.ANCESTORS));
+                addPlaybackDeviceCommand.load(new CommandView(View.Mode.ANCESTORS));
+                powerDevices.load(new ListView<DeviceView<?>>(View.Mode.ANCESTORS));
+                addPowerDeviceCommand.load(new CommandView(View.Mode.ANCESTORS));
+                runDevices.load(new ListView<DeviceView<?>>(View.Mode.ANCESTORS));
+                addRunDeviceCommand.load(new CommandView(View.Mode.ANCESTORS));
+                temperatureSensorDevices.load(new ListView<DeviceView<?>>(View.Mode.ANCESTORS));
+                addTemperatureSensorDeviceCommand.load(new CommandView(View.Mode.ANCESTORS));
+                volumeDevices.load(new ListView<DeviceView<?>>(View.Mode.ANCESTORS));
+                addVolumeDeviceCommand.load(new CommandView(View.Mode.ANCESTORS));
                 break;
             case CHILDREN:
             case SELECTION:
@@ -169,6 +238,26 @@ public abstract class ProxyDeviceGroup<
                     removeCommand.load(view.getRemoveCommand());
                 if (view.getErrorValue() != null)
                     errorValue.load(view.getErrorValue());
+                if(view.getPlaybackDevices() != null)
+                    playbackDevices.load(view.getPlaybackDevices());
+                if(view.getAddPlaybackDevice() != null)
+                    addPlaybackDeviceCommand.load(view.getAddPlaybackDevice());
+                if(view.getPowerDevices() != null)
+                    powerDevices.load(view.getPowerDevices());
+                if(view.getAddPowerDevice() != null)
+                    addPowerDeviceCommand.load(view.getAddPowerDevice());
+                if(view.getRunDevices() != null)
+                    runDevices.load(view.getRunDevices());
+                if(view.getAddRunDevice() != null)
+                    addRunDeviceCommand.load(view.getAddRunDevice());
+                if(view.getTemperatureSensorDevices() != null)
+                    temperatureSensorDevices.load(view.getTemperatureSensorDevices());
+                if(view.getAddTemperatureSensorDevice() != null)
+                    addTemperatureSensorDeviceCommand.load(view.getAddTemperatureSensorDevice());
+                if(view.getVolumeDevices() != null)
+                    volumeDevices.load(view.getVolumeDevices());
+                if(view.getAddVolumeDevice() != null)
+                    addVolumeDeviceCommand.load(view.getAddVolumeDevice());
                 break;
         }
     }
@@ -176,7 +265,7 @@ public abstract class ProxyDeviceGroup<
     @Override
     public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
-            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
         removeCommand.load(commandView);
     }
 
@@ -187,16 +276,26 @@ public abstract class ProxyDeviceGroup<
             removeCommand.uninit();
         if(errorValue != null)
             errorValue.uninit();
-        playbackDeviceReferences.uninit();
-        addPlaybackDeviceCommand.uninit();
-        powerDeviceReferences.uninit();
-        addPowerDeviceCommand.uninit();
-        runDeviceReferences.uninit();
-        addRunDeviceCommand.uninit();
-        temperatureSensorDeviceReferences.uninit();
-        addTemperatureSensorDeviceCommand.uninit();
-        volumeDeviceReferences.uninit();
-        addVolumeDeviceCommand.uninit();
+        if(playbackDevices != null)
+            playbackDevices.uninit();
+        if(addPlaybackDeviceCommand != null)
+            addPlaybackDeviceCommand.uninit();
+        if(powerDevices != null)
+            powerDevices.uninit();
+        if(addPowerDeviceCommand != null)
+            addPowerDeviceCommand.uninit();
+        if(runDevices != null)
+            runDevices.uninit();
+        if(addRunDeviceCommand != null)
+            addRunDeviceCommand.uninit();
+        if(temperatureSensorDevices != null)
+            temperatureSensorDevices.uninit();
+        if(addTemperatureSensorDeviceCommand != null)
+            addTemperatureSensorDeviceCommand.uninit();
+        if(volumeDevices != null)
+            volumeDevices.uninit();
+        if(addVolumeDeviceCommand != null)
+            addVolumeDeviceCommand.uninit();
     }
 
     @Override
@@ -224,12 +323,8 @@ public abstract class ProxyDeviceGroup<
         return errorValue;
     }
 
-    public VALUES getPlaybackDeviceReferences() {
-        return playbackDeviceReferences;
-    }
-
     @Override
-    public ConvertingList<VALUE, DEVICE> getPlaybackDevices() {
+    public DEVICES getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -238,12 +333,8 @@ public abstract class ProxyDeviceGroup<
         return addPlaybackDeviceCommand;
     }
 
-    public VALUES getPowerDeviceReferences() {
-        return powerDeviceReferences;
-    }
-
     @Override
-    public ConvertingList<VALUE, DEVICE> getPowerDevices() {
+    public DEVICES getPowerDevices() {
         return powerDevices;
     }
 
@@ -252,12 +343,8 @@ public abstract class ProxyDeviceGroup<
         return addPowerDeviceCommand;
     }
 
-    public VALUES getRunDeviceReferences() {
-        return runDeviceReferences;
-    }
-
     @Override
-    public ConvertingList<VALUE, DEVICE> getRunDevices() {
+    public DEVICES getRunDevices() {
         return runDevices;
     }
 
@@ -266,12 +353,8 @@ public abstract class ProxyDeviceGroup<
         return addRunDeviceCommand;
     }
 
-    public VALUES getTemperatureSensorDeviceReferences() {
-        return temperatureSensorDeviceReferences;
-    }
-
     @Override
-    public ConvertingList<VALUE, DEVICE> getTemperatureSensorDevices() {
+    public DEVICES getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -280,12 +363,8 @@ public abstract class ProxyDeviceGroup<
         return addTemperatureSensorDeviceCommand;
     }
 
-    public VALUES getVolumeDeviceReferences() {
-        return volumeDeviceReferences;
-    }
-
     @Override
-    public ConvertingList<VALUE, DEVICE> getVolumeDevices() {
+    public DEVICES getVolumeDevices() {
         return volumeDevices;
     }
 
@@ -298,34 +377,55 @@ public abstract class ProxyDeviceGroup<
     public Object<?, ?, ?> getChild(String id) {
         if(REMOVE_ID.equals(id)) {
             if(removeCommand == null)
-                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
         }
         else if(ERROR_ID.equals(id)) {
             if (errorValue == null)
-                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
         }
-        else if(PLAYBACK.equals(id))
+        else if(PLAYBACK.equals(id)) {
+            if(playbackDevices == null)
+                playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK), ChildUtil.path(path, PLAYBACK), ChildUtil.name(name, PLAYBACK));
             return playbackDevices;
-        else if(ADD_PLAYBACK.equals(id))
+        } else if(ADD_PLAYBACK.equals(id)) {
+            if(addPlaybackDeviceCommand == null)
+                addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK), ChildUtil.path(path, ADD_PLAYBACK), ChildUtil.name(name, ADD_PLAYBACK));
             return addPlaybackDeviceCommand;
-        else if(POWER.equals(id))
+        } else if(POWER.equals(id)) {
+            if(powerDevices == null)
+                powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER), ChildUtil.path(path, POWER), ChildUtil.name(name, POWER));
             return powerDevices;
-        else if(ADD_POWER.equals(id))
+        } else if(ADD_POWER.equals(id)) {
+            if(addPowerDeviceCommand == null)
+                addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER), ChildUtil.path(path, ADD_POWER), ChildUtil.name(name, ADD_POWER));
             return addPowerDeviceCommand;
-        else if(RUN.equals(id))
+        } else if(RUN.equals(id)) {
+            if(runDevices == null)
+                runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN), ChildUtil.path(path, RUN), ChildUtil.name(name, RUN));
             return runDevices;
-        else if(ADD_RUN.equals(id))
+        } else if(ADD_RUN.equals(id)) {
+            if(addRunDeviceCommand == null)
+                addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN), ChildUtil.path(path, ADD_RUN), ChildUtil.name(name, ADD_RUN));
             return addRunDeviceCommand;
-        else if(TEMPERATURE_SENSOR.equals(id))
+        } else if(TEMPERATURE_SENSOR.equals(id)) {
+            if(temperatureSensorDevices == null)
+                temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR), ChildUtil.path(path, TEMPERATURE_SENSOR), ChildUtil.name(name, TEMPERATURE_SENSOR));
             return temperatureSensorDevices;
-        else if(ADD_TEMPERATURE_SENSOR.equals(id))
+        } else if(ADD_TEMPERATURE_SENSOR.equals(id)) {
+            if(addTemperatureSensorDeviceCommand == null)
+                addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR), ChildUtil.path(path, ADD_TEMPERATURE_SENSOR), ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
             return addTemperatureSensorDeviceCommand;
-        else if(VOLUME.equals(id))
+        } else if(VOLUME.equals(id)) {
+            if(volumeDevices == null)
+                volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME), ChildUtil.path(path, VOLUME), ChildUtil.name(name, VOLUME));
             return volumeDevices;
-        else if(ADD_VOLUME.equals(id))
+        } else if(ADD_VOLUME.equals(id)) {
+            if(addVolumeDeviceCommand == null)
+                addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME), ChildUtil.path(path, ADD_VOLUME), ChildUtil.name(name, ADD_VOLUME));
             return addVolumeDeviceCommand;
+        }
         return super.getChild(id);
     }
 
@@ -341,20 +441,21 @@ public abstract class ProxyDeviceGroup<
             ProxyList.Simple<ProxyCommand.Simple>,
             ProxyValue.Simple,
             ProxyList.Simple<ProxyValue.Simple>,
-            ProxyDevice<?, ?, ?, ?, ?, ?, ?>,
+            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
             Simple> {
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
-                      ProxyServer.Simple server,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyValue.Simple> valueFactory,
-                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, server, commandFactory, commandsFactory, valueFactory, valuesFactory);
+                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
+                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>> devicesFactory) {
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, devicesFactory);
         }
     }
 }

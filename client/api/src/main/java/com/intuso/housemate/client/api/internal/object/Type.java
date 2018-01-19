@@ -289,11 +289,11 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
         public void append(String indent, StringBuilder stringBuilder) {
             stringBuilder.append("{");
             if(children != null && children.size() > 0) {
-                stringBuilder.append("\n").append(indent);
+                stringBuilder.append("\n").append(indent).append("\t");
                 for (Map.Entry<String, Instances> entry : children.entrySet()) {
                     stringBuilder.append("\"").append(entry.getKey()).append("\": ");
                     entry.getValue().append(indent + "\t", stringBuilder);
-                    stringBuilder.append("\n").append(indent);
+                    stringBuilder.append("\n").append(indent).append("\t");
                 }
             }
             stringBuilder.append("}");
@@ -346,7 +346,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
         }
 
         public void append(String indent, StringBuilder stringBuilder) {
-            stringBuilder.append("]");
+            stringBuilder.append("[");
             if(elements != null && elements.size() > 0) {
                 for (Instance element : elements) {
                     if (element == null)

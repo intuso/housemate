@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.impl.internal.*;
@@ -50,6 +51,8 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealPropertyImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>>() {}));
+        install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealSubTypeImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealDeviceGroupImpl>>() {}));
@@ -73,7 +76,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Hardware.Data, RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListPersistedImpl.Factory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>>>() {}));
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -87,6 +90,7 @@ public class RealObjectsModule extends AbstractModule {
         bind(new TypeLiteral<Class<Hardware.Data>>() {}).toInstance(Hardware.Data.class);
         bind(new TypeLiteral<Class<Property.Data>>() {}).toInstance(Property.Data.class);
         bind(new TypeLiteral<Class<Device.Group.Data>>() {}).toInstance(Device.Group.Data.class);
+        bind(new TypeLiteral<Class<Reference.Data>>() {}).toInstance(Reference.Data.class);
         bind(new TypeLiteral<Class<Task.Data>>() {}).toInstance(Task.Data.class);
         bind(new TypeLiteral<Class<User.Data>>() {}).toInstance(User.Data.class);
         bind(new TypeLiteral<Class<Value.Data>>() {}).toInstance(Value.Data.class);
@@ -95,7 +99,7 @@ public class RealObjectsModule extends AbstractModule {
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Condition.Data, RealConditionImpl>>() {}).to(RealConditionImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Device.Connected.Data, RealDeviceConnectedImpl>>() {}).to(RealDeviceConnectedImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Hardware.Data, RealHardwareImpl>>() {}).to(RealHardwareImpl.LoadPersisted.class);
-        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Value.Data, RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>>>() {}).to(RealValueImpl.LoadPersistedDeviceObjectReference.class);
+        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>>() {}).to(RealReferenceImpl.LoadPersistedDeviceReference.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Device.Group.Data, RealDeviceGroupImpl>>() {}).to(RealDeviceGroupImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Task.Data, RealTaskImpl>>() {}).to(RealTaskImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<User.Data, RealUserImpl>>() {}).to(RealUserImpl.LoadPersisted.class);
@@ -121,6 +125,10 @@ public class RealObjectsModule extends AbstractModule {
         // property
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealPropertyImpl.Factory>() {}));
+
+        // reference
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealReferenceImpl.Factory>() {}));
 
         // subtype
         install(new FactoryModuleBuilder()

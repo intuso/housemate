@@ -33,6 +33,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     private final Map<String, ELEMENT> elements = Maps.newHashMap();
 
     private String name;
+    private boolean initialised = false;
     private Receiver<CHILD_DATA> existingObjectReceiver;
 
     /**
@@ -67,7 +68,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     }
 
     @Override
-    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ListView<?> view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -82,20 +83,20 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
                 // get recursively
                 case ANCESTORS:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getView(), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), ((RealObject) element.getValue()).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getView(), listener, listenerRegistrations));
+                                result.getChildren().put(elementId, ((RealObject) elements.get(elementId)).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -121,6 +122,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     protected void initChildren(String name) {
         super.initChildren(name);
         this.name = name;
+        this.initialised = true;
 
         // init any existing elements
         for(ELEMENT element : elements.values())
@@ -157,6 +159,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
     protected void uninitChildren() {
         super.uninitChildren();
         this.name = null;
+        this.initialised = true;
         for(ELEMENT element : elements.values())
             element.uninit();
         if(existingObjectReceiver != null) {
@@ -170,7 +173,8 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        element.init(ChildUtil.name(name, element.getId()));
+        if(initialised)
+            element.init(ChildUtil.name(name, element.getId()));
         for(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>> listener : listeners)
             listener.elementAdded(this, element);
     }

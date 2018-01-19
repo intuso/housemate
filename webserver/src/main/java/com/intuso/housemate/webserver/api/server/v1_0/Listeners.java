@@ -3,9 +3,8 @@ package com.intuso.housemate.webserver.api.server.v1_0;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Tree;
-import com.intuso.housemate.webserver.api.server.v1_0.model.DataUpdate;
+import com.intuso.housemate.webserver.api.server.v1_0.model.TreeUpdate;
 import com.intuso.utilities.collection.ManagedCollection;
 import org.atmosphere.cpr.AtmosphereServlet;
 import org.atmosphere.cpr.Broadcaster;
@@ -57,8 +56,8 @@ public class Listeners {
         }
 
         @Override
-        public void updated(String path, Object.Data data) {
-            broadcaster.broadcast(new DataUpdate(path, data));
+        public void updated(String path, Tree tree) {
+            broadcaster.broadcast(new TreeUpdate(path, tree));
         }
     }
 }

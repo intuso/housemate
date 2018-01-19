@@ -39,13 +39,14 @@ public abstract class ProxyNode<
     private COMMAND addHardwareCommand;
 
     public ProxyNode(Logger logger,
+                     String path,
                      String name,
                      ManagedCollectionFactory managedCollectionFactory,
                      Receiver.Factory receiverFactory,
                      Factory<COMMAND> commandFactory,
                      Factory<TYPES> typesFactory,
                      Factory<HARDWARES> hardwaresFactory) {
-        super(logger, name, Node.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Node.Data.class, managedCollectionFactory, receiverFactory);
         this.typesFactory = typesFactory;
         this.hardwaresFactory = hardwaresFactory;
         this.commandFactory = commandFactory;
@@ -57,7 +58,7 @@ public abstract class ProxyNode<
     }
 
     @Override
-    public Tree getTree(NodeView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(NodeView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -74,25 +75,25 @@ public abstract class ProxyNode<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(TYPES_ID, types.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(TYPES_ID, types.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), listener, listenerRegistrations));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getTypes() != null)
-                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), listener, listenerRegistrations));
+                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), referenceHandler, listener, listenerRegistrations));
                     if(view.getHardwares() != null)
-                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), listener, listenerRegistrations));
+                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddHardwareCommand() != null)
-                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -114,19 +115,19 @@ public abstract class ProxyNode<
             case ANCESTORS:
             case CHILDREN:
                 if(types == null)
-                    types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.name(name, TYPES_ID));
+                    types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.path(path, TYPES_ID), ChildUtil.name(name, TYPES_ID));
                 if(hardwares == null)
-                    hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
+                    hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.path(path, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
                 if(addHardwareCommand == null)
-                    addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
+                    addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.path(path, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
                 break;
             case SELECTION:
                 if(types == null && view.getTypes() != null)
-                    types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.name(name, TYPES_ID));
+                    types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.path(path, TYPES_ID), ChildUtil.name(name, TYPES_ID));
                 if(hardwares == null && view.getHardwares() != null)
-                    hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
+                    hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.path(path, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
                 if(addHardwareCommand == null && view.getAddHardwareCommand() != null)
-                    addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
+                    addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.path(path, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
                 break;
         }
 
@@ -179,15 +180,15 @@ public abstract class ProxyNode<
     public ProxyObject<?, ?, ?> getChild(String id) {
         if(ADD_HARDWARE_ID.equals(id)) {
             if(addHardwareCommand == null)
-                addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
+                addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID), ChildUtil.path(path, ADD_HARDWARE_ID), ChildUtil.name(name, ADD_HARDWARE_ID));
             return addHardwareCommand;
         } else if(HARDWARES_ID.equals(id)) {
             if(hardwares == null)
-                hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
+                hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID), ChildUtil.path(path, HARDWARES_ID), ChildUtil.name(name, HARDWARES_ID));
             return hardwares;
         } else if(TYPES_ID.equals(id)) {
             if(types == null)
-                types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.name(name, TYPES_ID));
+                types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID), ChildUtil.path(path, TYPES_ID), ChildUtil.name(name, TYPES_ID));
             return types;
         }
         return null;
@@ -208,13 +209,14 @@ public abstract class ProxyNode<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyType.Simple>> typesFactory,
                       Factory<ProxyList.Simple<ProxyHardware.Simple>> hardwaresFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, typesFactory, hardwaresFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, typesFactory, hardwaresFactory);
         }
     }
 }

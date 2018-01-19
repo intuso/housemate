@@ -67,7 +67,7 @@ public class RealNodeImpl
     }
 
     @Override
-    public Tree getTree(NodeView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(NodeView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -81,25 +81,25 @@ public class RealNodeImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(TYPES_ID, types.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(TYPES_ID, types.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), listener, listenerRegistrations));
-                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), listener, listenerRegistrations));
+                    result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getTypes() != null)
-                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), listener, listenerRegistrations));
+                        result.getChildren().put(TYPES_ID, types.getTree(view.getTypes(), referenceHandler, listener, listenerRegistrations));
                     if(view.getHardwares() != null)
-                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), listener, listenerRegistrations));
+                        result.getChildren().put(HARDWARES_ID, hardwares.getTree(view.getHardwares(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddHardwareCommand() != null)
-                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_HARDWARE_ID, addHardwareCommand.getTree(view.getAddHardwareCommand(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 

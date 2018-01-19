@@ -1,6 +1,10 @@
 package com.intuso.housemate.client.api.internal.object;
 
+import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.utilities.collection.ManagedCollection;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Tree {
@@ -30,7 +34,11 @@ public class Tree {
         this.children = children;
     }
 
+    public interface ReferenceHandler {
+        void handle(String path, View view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations);
+    }
+
     public interface Listener {
-        void updated(String path, Object.Data data);
+        void updated(String path, Tree tree);
     }
 }

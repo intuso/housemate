@@ -4,21 +4,13 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
-import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.object.view.CommandView;
-import com.intuso.housemate.client.api.internal.object.view.ListView;
-import com.intuso.housemate.client.api.internal.object.view.ServerView;
-import com.intuso.housemate.client.api.internal.object.view.View;
-import com.intuso.housemate.client.api.internal.type.ObjectReference;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
-import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
-import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
+import com.intuso.housemate.client.proxy.internal.object.*;
 import com.intuso.housemate.client.real.api.internal.RealServer;
-import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceGroupCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
@@ -30,6 +22,7 @@ public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>, ServerView>
         implements RealServer<RealCommandImpl,
         RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
+        RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
         RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl>,
         RealListPersistedImpl<User.Data, RealUserImpl>,
         RealNodeListImpl,
@@ -38,14 +31,11 @@ public class RealServerImpl
         AddDeviceGroupCommand.Callback,
         AddUserCommand.Callback {
 
-    private final ProxyServer.Simple proxyServer;
-    private final RealValueImpl.Factory valueFactory;
-    private final RealTypeImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>> deviceReferenceType;
+    private final RealReferenceImpl.Factory referenceFactory;
 
-    private final CombinationList<Device<?, ?, ?, ?, ?, ?, ?>> devices;
-    private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
+    private final RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devices;
     private final RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> deviceGroups;
     private final RealCommandImpl addDeviceGroupCommand;
     private final RealNodeListImpl nodes;
@@ -56,11 +46,10 @@ public class RealServerImpl
     public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
                           ProxyServer.Simple proxyServer,
-                          TypeRepository typeRepository,
                           Sender.Factory senderFactory,
-                          RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> devicesFactory,
-                          RealValueImpl.Factory valueFactory,
+                          RealReferenceImpl.Factory referenceFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
+                          RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,
                           RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl> deviceGroupsFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
@@ -69,14 +58,7 @@ public class RealServerImpl
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
-        this.proxyServer = proxyServer;
-        this.valueFactory = valueFactory;
-        this.deviceReferenceType = typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.class)));
-        this.deviceReferences = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),
-                DEVICES_ID,
-                "Devices",
-                "Devices",
-                Lists.newArrayList());
+        this.referenceFactory = referenceFactory;
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
@@ -88,6 +70,11 @@ public class RealServerImpl
                 "Add automation",
                 this,
                 automations.getRemoveCallback());
+        this.devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),
+                DEVICES_ID,
+                "Devices",
+                "Devices",
+                Lists.newArrayList());
         this.deviceGroups = deviceGroupsFactory.create(ChildUtil.logger(logger, DEVICE_GROUPS_ID),
                 DEVICE_GROUPS_ID,
                 "Device Groups",
@@ -114,9 +101,15 @@ public class RealServerImpl
                 NODES_ID,
                 "Nodes",
                 "Nodes");
-        this.devices = new CombinationList<>(new List.Data("device", "Devices", "Devices"), managedCollectionFactory);
-        this.devices.addList(deviceGroups);
-        nodes.addObjectListener(new NodeListListener(), true);
+        proxyServer.load(new ServerView(View.Mode.SELECTION)
+                .setDeviceGroups(new ListView<>(View.Mode.CHILDREN))
+                .setNodes(new ListView<NodeView>(View.Mode.CHILDREN)
+                        .setView(new NodeView(View.Mode.SELECTION)
+                                .setHardwares(new ListView<HardwareView>(View.Mode.CHILDREN)
+                                        .setView(new HardwareView(View.Mode.SELECTION)
+                                                .setDevices(new ListView<>(View.Mode.CHILDREN)))))));
+        addDeviceList("groups", proxyServer.getDeviceGroups());
+        proxyServer.getNodes().addObjectListener(new NodeListListener(), true);
         nodes.add(node);
     }
 
@@ -126,7 +119,7 @@ public class RealServerImpl
     }
 
     @Override
-    public Tree getTree(ServerView view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ServerView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -140,45 +133,45 @@ public class RealServerImpl
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
-                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
+                    result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getAutomations() != null)
-                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), listener, listenerRegistrations));
+                        result.getChildren().put(AUTOMATIONS_ID, automations.getTree(view.getAutomations(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddAutomationCommand() != null)
-                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_AUTOMATION_ID, addAutomationCommand.getTree(view.getAddAutomationCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDevices() != null)
-                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), listener, listenerRegistrations));
+                        result.getChildren().put(DEVICES_ID, devices.getTree(view.getDevices(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDeviceGroups() != null)
-                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), listener, listenerRegistrations));
+                        result.getChildren().put(DEVICE_GROUPS_ID, deviceGroups.getTree(view.getDeviceGroups(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddDeviceGroupCommand() != null)
-                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_DEVICE_GROUP_ID, addDeviceGroupCommand.getTree(view.getAddDeviceGroupCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getUsers() != null)
-                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), listener, listenerRegistrations));
+                        result.getChildren().put(USERS_ID, users.getTree(view.getUsers(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddUserCommand() != null)
-                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_USER_ID, addUserCommand.getTree(view.getAddUserCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getNodes() != null)
-                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), listener, listenerRegistrations));
+                        result.getChildren().put(NODES_ID, nodes.getTree(view.getNodes(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -190,9 +183,9 @@ public class RealServerImpl
     @Override
     protected void initChildren(String name) {
         super.initChildren(name);
-        deviceReferences.init(ChildUtil.name(name, DEVICES_ID));
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
+        devices.init(ChildUtil.name(name, DEVICES_ID));
         deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID));
         addDeviceGroupCommand.init(ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
         users.init(ChildUtil.name(name, USERS_ID));
@@ -203,23 +196,14 @@ public class RealServerImpl
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        deviceReferences.uninit();
         automations.uninit();
         addAutomationCommand.uninit();
+        devices.uninit();
         deviceGroups.uninit();
         addDeviceGroupCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
         nodes.uninit();
-    }
-
-    public RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>> getDeviceReferences() {
-        return deviceReferences;
-    }
-
-    @Override
-    public CombinationList<Device<?, ?, ?, ?, ?, ?, ?>> getDevices() {
-        return devices;
     }
 
     @Override
@@ -235,6 +219,11 @@ public class RealServerImpl
     @Override
     public final void addAutomation(RealAutomationImpl automation) {
         automations.add(automation);
+    }
+
+    @Override
+    public RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getDevices() {
+        return devices;
     }
 
     public RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> getDeviceGroups() {
@@ -287,10 +276,10 @@ public class RealServerImpl
             return addDeviceGroupCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
-        else if(DEVICES_ID.equals(id))
-            return deviceReferences;
         else if(AUTOMATIONS_ID.equals(id))
             return automations;
+        else if(DEVICES_ID.equals(id))
+            return devices;
         else if(DEVICE_GROUPS_ID.equals(id))
             return deviceGroups;
         else if(NODES_ID.equals(id))
@@ -311,7 +300,7 @@ public class RealServerImpl
                     else {
                         String[] subPath = new String[i];
                         System.arraycopy(path, 0, subPath, 0, i);
-                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on("/").join(subPath));
+                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on(".").join(subPath));
                     }
                 } else
                     return null;
@@ -320,21 +309,25 @@ public class RealServerImpl
         return (T) current;
     }
 
-    private class NodeListListener implements List.Listener<Node<?, ?, ?, ?>, RealNodeListImpl> {
+    private void addDeviceList(String idPrefix, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list) {
+        list.addObjectListener(new DeviceListListener(idPrefix), true);
+    }
+
+    private class NodeListListener implements List.Listener<ProxyNode<?, ?, ?, ?>, ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>> {
 
         @Override
-        public void elementAdded(RealNodeListImpl list, Node<?, ?, ?, ?> node) {
+        public void elementAdded(ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?> list, ProxyNode<?, ?, ?, ?> node) {
             node.getHardwares().addObjectListener(new HardwareListListener(node.getId()), true);
         }
 
         @Override
-        public void elementRemoved(RealNodeListImpl list, Node<?, ?, ?, ?> node) {
+        public void elementRemoved(ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?> list, ProxyNode<?, ?, ?, ?> node) {
             // todo remove the hardwares listener
             // todo remove all devices from the references list
         }
     }
 
-    private class HardwareListListener implements List.Listener<Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    private class HardwareListListener implements List.Listener<ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?>, ProxyList<? extends ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
 
         private final String nodeId;
 
@@ -343,45 +336,39 @@ public class RealServerImpl
         }
 
         @Override
-        public void elementAdded(List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?> list, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
-            RealServerImpl.this.devices.addList(hardware.getDeviceConnecteds());
-            hardware.getDeviceConnecteds().addObjectListener(new DeviceListListener(nodeId, hardware.getId()), true);
+        public void elementAdded(ProxyList<? extends ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?> hardware) {
+            addDeviceList(nodeId + "-" + hardware.getId(), hardware.getDeviceConnecteds());
         }
 
         @Override
-        public void elementRemoved(List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?> list, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
+        public void elementRemoved(ProxyList<? extends ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?> hardware) {
             // todo remove hardware devices list from the server devices combination list.
             // todo remove the devices listener
             // todo remove all devices from the references list
         }
     }
 
-    private class DeviceListListener implements List.Listener<Device<?, ?, ?, ?, ?, ?, ?>, List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>> {
+    private class DeviceListListener implements List.Listener<ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>> {
 
-        private final String nodeId;
-        private final String hardwareId;
+        private final String idPrefix;
 
-        private DeviceListListener(String nodeId, String hardwareId) {
-            this.nodeId = nodeId;
-            this.hardwareId = hardwareId;
+        private DeviceListListener(String idPrefix) {
+            this.idPrefix = idPrefix + "-";
         }
 
         @Override
-        public void elementAdded(List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?> list, Device<?, ?, ?, ?, ?, ?, ?> device) {
-            deviceReferences.add((RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?, ?>>>) valueFactory.create(
+        public void elementAdded(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?, ?> device) {
+            devices.add(referenceFactory.create(
                     ChildUtil.logger(logger, DEVICES_ID, device.getId()),
-                    device.getId(),
+                    idPrefix + device.getId(),
                     device.getName(),
                     device.getDescription(),
-                    deviceReferenceType,
-                    1,
-                    1,
-                    Lists.newArrayList(proxyServer.reference(new String[] {NODES_ID, nodeId, Node.HARDWARES_ID, hardwareId, Hardware.DEVICES_ID, device.getId()}))));
+                    device.getPath()));
         }
 
         @Override
-        public void elementRemoved(List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?> list, Device<?, ?, ?, ?, ?, ?, ?> device) {
-            deviceReferences.remove(device.getId());
+        public void elementRemoved(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?, ?> device) {
+            devices.remove(idPrefix + device.getId());
         }
     }
 

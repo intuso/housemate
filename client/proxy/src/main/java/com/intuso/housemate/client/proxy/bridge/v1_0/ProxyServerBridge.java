@@ -3,10 +3,9 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ServerMapper;
-import com.intuso.housemate.client.api.internal.object.Device;
-import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
+import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.api.internal.object.view.ServerView;
 import com.intuso.housemate.client.proxy.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -20,14 +19,13 @@ import org.slf4j.Logger;
 public class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>, ServerView>
         implements Server<ProxyCommandBridge,
-        List<Device<?, ?, ?, ?, ?, ?, ?>, ?>,
-        ProxyListBridge<ProxyAutomationBridge>,
+        ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>,
         ProxyListBridge<ProxyDeviceGroupBridge>,
         ProxyListBridge<ProxyUserBridge>,
         ProxyListBridge<ProxyNodeBridge>,
         ProxyServerBridge> {
 
-    private final ProxyListBridge<ProxyValueBridge> devices;
+    private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> devices;
     private final ProxyCommandBridge addAutomationCommand;
     private final ProxyListBridge<ProxyAutomationBridge> automations;
     private final ProxyCommandBridge addDeviceGroupCommand;
@@ -43,13 +41,13 @@ public class ProxyServerBridge
                                 com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
                                 Sender.Factory v1_0SenderFactory,
                                 Factory<ProxyCommandBridge> commandFactory,
-                                Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
+                                Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
                                 Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
                                 Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
         super(logger, Server.Data.class, serverMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
-        devices = valuesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
+        devices = devicesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
         addDeviceGroupCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_DEVICE_GROUP_ID));
@@ -121,11 +119,7 @@ public class ProxyServerBridge
     }
 
     @Override
-    public List<Device<?, ?, ?, ?, ?, ?, ?>, ?> getDevices() {
-        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
-    }
-
-    public ProxyListBridge<ProxyValueBridge> getDeviceReferences() {
+    public ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> getDevices() {
         return devices;
     }
 

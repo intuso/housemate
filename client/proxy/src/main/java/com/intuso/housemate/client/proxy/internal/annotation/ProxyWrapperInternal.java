@@ -187,7 +187,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return new Problem(clazz.getName() + " has an add listener method " + method.toString() + " but the object being wrapped is not a " + ProxyValue.Container.class.getName());
 
             // find all the value methods, and listen to those values
-            ManagedCollection listeners = managedCollectionFactory.create();
+            ManagedCollection listeners = managedCollectionFactory.createSet();
             findValuesIn(method.getParameterTypes()[0], listeners, ((ProxyValue.Container<ProxyList<ProxyValue<?, ?>, ?>>) object).getValues());
 
             return new AddListener(listeners);

@@ -23,29 +23,30 @@ public abstract class ProxyValueBase<
         implements ValueBase<DATA, Type.Instances, TYPE, LISTENER, VIEW, VALUE> {
 
     private Receiver<Type.Instances> valueReceiver;
-    private Type.Instances value;
+    private Type.Instances values;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyValueBase(final Logger logger,
+                          String path,
                           String name,
                           Class<DATA> dataClass,
                           ManagedCollectionFactory managedCollectionFactory,
                           Receiver.Factory receiverFactory) {
-        super(logger, name, dataClass, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, dataClass, managedCollectionFactory, receiverFactory);
         valueReceiver = receiverFactory.create(logger, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
-        value = valueReceiver.getMessage();
-        logger.trace("Got initial value {}", value);
+        values = valueReceiver.getMessage();
+        logger.trace("Got initial value {}", values);
         valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
             @Override
             public void onMessage(Type.Instances values, boolean wasPersisted) {
+                logger.debug("Values updated: {}", values);
                 for(LISTENER listener : listeners)
                     listener.valueChanging((VALUE) ProxyValueBase.this);
-                value = values;
+                ProxyValueBase.this.values = values;
                 getData().setValues(values);
                 dataUpdated();
-                logger.trace("Got new value {}", value);
                 for(LISTENER listener : listeners)
                     listener.valueChanged((VALUE) ProxyValueBase.this);
             }
@@ -68,6 +69,6 @@ public abstract class ProxyValueBase<
 
     @Override
     public Type.Instances getValues() {
-        return value;
+        return values;
     }
 }

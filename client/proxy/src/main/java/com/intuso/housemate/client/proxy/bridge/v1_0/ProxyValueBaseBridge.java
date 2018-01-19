@@ -46,12 +46,13 @@ public abstract class ProxyValueBaseBridge<
         super.initChildren(versionName, internalName);
         valueSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
         valueReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class);
-        valueReceiver.listen((instances, wasPersisted) -> {
+        valueReceiver.listen((values, wasPersisted) -> {
+            logger.debug("Values updated: {}", values);
             for(ValueBase.Listener<? super VALUE> listener : listeners)
                 listener.valueChanging((VALUE) ProxyValueBaseBridge.this);
-            value = instances;
+            value = values;
             try {
-                valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
+                valueSender.send(typeInstancesMapper.map(values), wasPersisted);
             } catch (Throwable t) {
                 logger.error("Failed to send new values onto proxy versioned topic", t);
             }

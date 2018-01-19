@@ -54,7 +54,7 @@ public interface Object<
 
     VIEW createView(View.Mode mode);
 
-    Tree getTree(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations);
+    Tree getTree(VIEW view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations);
 
     /**
      *

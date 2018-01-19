@@ -14,6 +14,10 @@ public class ChildUtil {
 
     private ChildUtil() {}
 
+    public static String path(String parent, String... childNames) {
+        return name(DOT_JOINER, parent, childNames);
+    }
+
     public static String name(String parent, String... childNames) {
         return name(SLASH_JOINER, parent, childNames);
     }

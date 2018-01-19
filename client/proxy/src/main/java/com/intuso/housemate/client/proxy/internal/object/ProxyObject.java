@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.proxy.internal.object;
 
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.View;
@@ -23,6 +24,7 @@ public abstract class ProxyObject<
     public final static String PROXY = "proxy";
 
     protected final Logger logger;
+    protected final String path;
     protected final String name;
     protected final Receiver.Factory receiverFactory;
 
@@ -36,13 +38,14 @@ public abstract class ProxyObject<
      * @param logger the log
      * @param receiverFactory
      */
-    protected ProxyObject(Logger logger, String name, Class<DATA> dataClass, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
-        logger.debug("Creating {}", name);
+    protected ProxyObject(Logger logger, String path, String name, Class<DATA> dataClass, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
+        logger.debug("Creating {}", path);
         this.logger = logger;
+        this.path = path;
         this.name = name;
         this.receiverFactory = receiverFactory;
-        this.listeners = managedCollectionFactory.create();
-        this.treeListeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
+        this.treeListeners = managedCollectionFactory.createSet();
         receiver = receiverFactory.create(logger, name, dataClass);
         receiver.listen(new Receiver.Listener<DATA>() {
             @Override
@@ -82,6 +85,10 @@ public abstract class ProxyObject<
         return listeners.add(listener);
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public void load(VIEW view) {}
 
     public void addTreeListener(VIEW view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
@@ -102,7 +109,7 @@ public abstract class ProxyObject<
 
     protected final void dataUpdated() {
         for(Tree.Listener treeListener : treeListeners)
-            treeListener.updated("path" /* todo give the actual path */, data);
+            treeListener.updated(path, new Tree(data));
     }
 
     public boolean isLoaded() {
@@ -110,6 +117,6 @@ public abstract class ProxyObject<
     }
 
     public interface Factory<OBJECT extends ProxyObject<?, ?, ?>> {
-        OBJECT create(Logger logger, String name);
+        OBJECT create(Logger logger, @Assisted("path") String path, @Assisted("name") String name);
     }
 }

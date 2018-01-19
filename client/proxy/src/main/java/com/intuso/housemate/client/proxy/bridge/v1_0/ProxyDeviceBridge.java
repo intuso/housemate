@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 public abstract class ProxyDeviceBridge<VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Device.Data,
         INTERNAL_DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
-        VIEW extends DeviceView<VIEW>,
+        VIEW extends DeviceView<?>,
         DEVICE extends ProxyDeviceBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW, DEVICE>>
         extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, VIEW>
         implements Device<INTERNAL_DATA,

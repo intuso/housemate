@@ -12,7 +12,7 @@ public class TemperatureSensorImpl implements TemperatureSensor {
     private final ManagedCollection<Listener> listeners;
 
     protected TemperatureSensorImpl(ManagedCollectionFactory managedCollectionFactory) {
-        this.listeners = managedCollectionFactory.create();
+        this.listeners = managedCollectionFactory.createSet();
     }
 
     @Override

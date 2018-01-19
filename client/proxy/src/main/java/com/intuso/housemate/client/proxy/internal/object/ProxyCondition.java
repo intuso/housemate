@@ -55,6 +55,7 @@ public abstract class ProxyCondition<
      * @param logger {@inheritDoc}
      */
     public ProxyCondition(Logger logger,
+                          String path,
                           String name,
                           ManagedCollectionFactory managedCollectionFactory,
                           Receiver.Factory receiverFactory,
@@ -63,7 +64,7 @@ public abstract class ProxyCondition<
                           ProxyObject.Factory<PROPERTY> propertyFactory,
                           ProxyObject.Factory<PROPERTIES> propertiesFactory,
                           ProxyObject.Factory<CONDITIONS> conditionsFactory) {
-        super(logger, name, Condition.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, Condition.Data.class, managedCollectionFactory, receiverFactory);
         this.commandFactory = commandFactory;
         this.valueFactory = valueFactory;
         this.propertyFactory = propertyFactory;
@@ -77,7 +78,7 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    public Tree getTree(ConditionView view, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ConditionView view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -94,49 +95,49 @@ public abstract class ProxyCondition<
 
                 // get recursively
                 case ANCESTORS:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), listener, listenerRegistrations));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(new PropertyView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(new ValueView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
-                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
-                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
-                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
-                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener, listenerRegistrations));
-                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener, listenerRegistrations));
-                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener, listenerRegistrations));
+                    result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
-                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getRemoveCommand() != null)
-                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(REMOVE_ID, removeCommand.getTree(view.getRemoveCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getErrorValue() != null)
-                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), listener, listenerRegistrations));
+                        result.getChildren().put(ERROR_ID, errorValue.getTree(view.getErrorValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverProperty() != null)
-                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_ID, driverProperty.getTree(view.getDriverProperty(), referenceHandler, listener, listenerRegistrations));
                     if(view.getDriverLoadedValue() != null)
-                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), listener, listenerRegistrations));
+                        result.getChildren().put(DRIVER_LOADED_ID, driverLoadedValue.getTree(view.getDriverLoadedValue(), referenceHandler, listener, listenerRegistrations));
                     if(view.getProperties() != null)
-                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), listener, listenerRegistrations));
+                        result.getChildren().put(PROPERTIES_ID, properties.getTree(view.getProperties(), referenceHandler, listener, listenerRegistrations));
                     if(view.getConditions() != null)
-                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), listener, listenerRegistrations));
+                        result.getChildren().put(CONDITIONS_ID, conditions.getTree(view.getConditions(), referenceHandler, listener, listenerRegistrations));
                     if(view.getAddConditionCommand() != null)
-                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), listener, listenerRegistrations));
+                        result.getChildren().put(ADD_CONDITION_ID, addConditionCommand.getTree(view.getAddConditionCommand(), referenceHandler, listener, listenerRegistrations));
                     if(view.getSatisfiedValue() != null)
-                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), listener, listenerRegistrations));
+                        result.getChildren().put(SATISFIED_ID, satisfiedValue.getTree(view.getSatisfiedValue(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -158,43 +159,43 @@ public abstract class ProxyCondition<
             case ANCESTORS:
             case CHILDREN:
                 if(renameCommand == null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(errorValue == null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 if(driverProperty == null)
-                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
                 if(driverLoadedValue == null)
-                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
                 if(properties == null)
-                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
                 if(conditions == null)
-                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
+                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.path(path, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
                 if(addConditionCommand == null)
-                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
+                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.path(path, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
                 if(satisfiedValue == null)
-                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
+                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.path(path, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
                 break;
             case SELECTION:
                 if(renameCommand == null && view.getRenameCommand() != null)
-                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                    renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
                 if(removeCommand == null && view.getRemoveCommand() != null)
-                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                    removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
                 if(errorValue == null && view.getErrorValue() != null)
-                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                    errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
                 if(driverProperty == null && view.getDriverProperty() != null)
-                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                    driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
                 if(driverLoadedValue == null && view.getDriverLoadedValue() != null)
-                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                    driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
                 if(properties == null && view.getProperties() != null)
-                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                    properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
                 if(conditions == null && view.getConditions() != null)
-                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
+                    conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.path(path, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
                 if(addConditionCommand == null && view.getAddConditionCommand() != null)
-                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
+                    addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.path(path, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
                 if(satisfiedValue == null && view.getSatisfiedValue() != null)
-                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
+                    satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.path(path, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
                 break;
         }
 
@@ -238,14 +239,14 @@ public abstract class ProxyCondition<
     @Override
     public void loadRemoveCommand(CommandView commandView) {
         if(removeCommand == null)
-            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+            removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
         removeCommand.load(commandView);
     }
 
     @Override
     public void loadRenameCommand(CommandView commandView) {
         if(renameCommand == null)
-            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+            renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
         renameCommand.load(commandView);
     }
 
@@ -339,39 +340,39 @@ public abstract class ProxyCondition<
     public ProxyObject<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id)) {
             if(renameCommand == null)
-                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.name(name, RENAME_ID));
+                renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
         } else if(REMOVE_ID.equals(id)) {
             if(removeCommand == null)
-                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
+                removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID), ChildUtil.path(path, REMOVE_ID), ChildUtil.name(name, REMOVE_ID));
             return removeCommand;
         } else if(ERROR_ID.equals(id)) {
             if(errorValue == null)
-                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.name(name, ERROR_ID));
+                errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID), ChildUtil.path(path, ERROR_ID), ChildUtil.name(name, ERROR_ID));
             return errorValue;
         } else if(DRIVER_ID.equals(id)) {
             if(driverProperty == null)
-                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
+                driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID), ChildUtil.path(path, DRIVER_ID), ChildUtil.name(name, DRIVER_ID));
             return driverProperty;
         } else if(DRIVER_LOADED_ID.equals(id)) {
             if(driverLoadedValue == null)
-                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
+                driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID), ChildUtil.path(path, DRIVER_LOADED_ID), ChildUtil.name(name, DRIVER_LOADED_ID));
             return driverLoadedValue;
         } else if(PROPERTIES_ID.equals(id)) {
             if(properties == null)
-                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
+                properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID), ChildUtil.path(path, PROPERTIES_ID), ChildUtil.name(name, PROPERTIES_ID));
             return properties;
         } else if(CONDITIONS_ID.equals(id)) {
             if(conditions == null)
-                conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
+                conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID), ChildUtil.path(path, CONDITIONS_ID), ChildUtil.name(name, CONDITIONS_ID));
             return conditions;
         } else if(ADD_CONDITION_ID.equals(id)) {
             if(addConditionCommand == null)
-                addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
+                addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID), ChildUtil.path(path, ADD_CONDITION_ID), ChildUtil.name(name, ADD_CONDITION_ID));
             return addConditionCommand;
         } else if(SATISFIED_ID.equals(id)) {
             if(satisfiedValue == null)
-                satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
+                satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID), ChildUtil.path(path, SATISFIED_ID), ChildUtil.name(name, SATISFIED_ID));
             return satisfiedValue;
         }
         return null;
@@ -394,7 +395,8 @@ public abstract class ProxyCondition<
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Sender.Factory senderFactory,
@@ -403,7 +405,7 @@ public abstract class ProxyCondition<
                       Factory<ProxyProperty.Simple> propertyFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory,
                       Factory<ProxyList.Simple<Simple>> conditionsFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory, conditionsFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory, conditionsFactory);
         }
     }
 }

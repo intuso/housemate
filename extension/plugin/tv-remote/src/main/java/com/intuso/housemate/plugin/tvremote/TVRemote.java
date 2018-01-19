@@ -21,9 +21,9 @@ public class TVRemote implements Power, Playback, Volume {
     private final ManagedCollection<Volume.Listener> volumeListeners;
 
     public TVRemote(ManagedCollectionFactory managedCollectionFactory) {
-        this.powerListeners = managedCollectionFactory.create();
-        this.playbackListeners = managedCollectionFactory.create();
-        this.volumeListeners = managedCollectionFactory.create();
+        this.powerListeners = managedCollectionFactory.createSet();
+        this.playbackListeners = managedCollectionFactory.createSet();
+        this.volumeListeners = managedCollectionFactory.createSet();
     }
 
     @Property

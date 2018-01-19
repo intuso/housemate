@@ -41,17 +41,18 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
      * @param elementFactory
      */
     public ProxyList(Logger logger,
+                     String path,
                      String name,
                      ManagedCollectionFactory managedCollectionFactory,
                      Receiver.Factory receiverFactory,
                      Factory<ELEMENT> elementFactory) {
-        super(logger, name, List.Data.class, managedCollectionFactory, receiverFactory);
+        super(logger, path, name, List.Data.class, managedCollectionFactory, receiverFactory);
         this.elementFactory = elementFactory;
     }
 
     private void loadElement(Object.Data data, boolean wasPersisted) {
         if (!elements.containsKey(data.getId())) {
-            ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()), ChildUtil.name(name, data.getId()));
+            ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()), ChildUtil.path(path, data.getId()), ChildUtil.name(name, data.getId()));
             if (element != null) {
                 // view the element according to views we've already been given
                 if(ancestors)
@@ -75,7 +76,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
     }
 
     @Override
-    public Tree getTree(ListView<?> view, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
+    public Tree getTree(ListView<?> view, Tree.ReferenceHandler referenceHandler, Tree.Listener listener, java.util.List<ManagedCollection.Registration> listenerRegistrations) {
 
         // register the listener
         addTreeListener(view, listener, listenerRegistrations);
@@ -93,20 +94,20 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
                 // get recursively
                 case ANCESTORS:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(element.getValue().createView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
                     // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     for(Map.Entry<String, ELEMENT> element : elements.entrySet())
-                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(view.getView(), listener, listenerRegistrations));
+                        result.getChildren().put(element.getKey(), ((ProxyObject) element.getValue()).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getElements() != null)
                         for (String elementId : view.getElements())
                             if (elements.containsKey(elementId))
-                                result.getChildren().put(elementId, ((ProxyObject) elements.get(elementId)).getTree(view.getView(), listener, listenerRegistrations));
+                                result.getChildren().put(elementId, ((ProxyObject) elements.get(elementId)).getTree(view.getView(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
 
@@ -259,11 +260,12 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?, ?>, LIST exten
 
         @Inject
         public Simple(@Assisted Logger logger,
-                      @Assisted String name,
+                      @Assisted("path") String path,
+                      @Assisted("name") String name,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ELEMENT> elementFactory) {
-            super(logger, name, managedCollectionFactory, receiverFactory, elementFactory);
+            super(logger, path, name, managedCollectionFactory, receiverFactory, elementFactory);
         }
     }
 }
