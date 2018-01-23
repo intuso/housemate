@@ -56,13 +56,17 @@ public class PowerResourceImpl implements PowerResource {
         if(server == null)
             throw new BadRequestException("No server for user");
 
-        List<Device.Data> devices = Lists.newArrayList();
+        List<Object.Data> devices = Lists.newArrayList();
         server.getDevices().forEach(device -> {
-            if(device.get() != null)
-                devices.add(device.get().getData());
+            if(device.get() != null) {
+                // need to change the id to that of the reference rather than the actual device, but also want to keep the rest of the device data
+                Device.Data data = clone(device.get().getData());
+                data.setId(device.getId());
+                devices.add(data);
+            }
         });
 
-        Stream<Device.Data> stream  = devices.stream();
+        Stream<Object.Data> stream  = devices.stream();
         if(offset > 0)
             stream = stream.skip(offset);
         if(limit >= 0)
@@ -114,5 +118,16 @@ public class PowerResourceImpl implements PowerResource {
             deviceConnected.load(new DeviceGroupView().setCommands(new ListView<>(new CommandView(),"off")));
             deviceConnected.getCommands().get("off").perform(loggerListener);
         }
+    }
+
+    public Device.Data clone(Device.Data data) {
+        if(data instanceof Device.Group.Data) {
+            Device.Group.Data groupData = (Device.Group.Data) data;
+            return new Device.Group.Data(groupData.getId(), groupData.getName(), groupData.getDescription());
+        } else if(data instanceof Device.Connected.Data) {
+            Device.Connected.Data connectedData = (Device.Connected.Data) data;
+            return new Device.Connected.Data(connectedData.getId(), connectedData.getName(), connectedData.getDescription(), connectedData.getClasses(), connectedData.getAbilities());
+        } else
+            return null;
     }
 }
