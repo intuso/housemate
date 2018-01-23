@@ -133,6 +133,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
         public void turnOn() {
             try {
                 lighting2.turnOn(houseId, unitCode);
+                setOn(true);
             } catch (IOException e) {
                 throw new HousemateException("Failed to turn device on");
             }
@@ -142,6 +143,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
         public void turnOff() {
             try {
                 lighting2.turnOff(houseId, unitCode);
+                setOn(false);
             } catch (IOException e) {
                 throw new HousemateException("Failed to turn device off");
             }

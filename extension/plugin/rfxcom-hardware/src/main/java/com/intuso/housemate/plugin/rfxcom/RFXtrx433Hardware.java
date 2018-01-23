@@ -36,6 +36,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private final Lighting2Handler.AC lighting2ACHandler;
 
     private String patterns = DEFAULT_PATTERNS;
+    private boolean autoCreate = true;
 
     @Inject
     public RFXtrx433Hardware(Injector injector) {
@@ -51,6 +52,10 @@ public class RFXtrx433Hardware implements HardwareDriver {
         CREATED_INSTANCES.remove(this);
     }
 
+    public String getPatterns() {
+        return patterns;
+    }
+
     @Property
     @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPatterns(String patterns) {
@@ -58,13 +63,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
         RFXTRX.setPatterns(asPatterns(patterns));
     }
 
-    public String getPatterns() {
-        return patterns;
+    public boolean isAutoCreate() {
+        return autoCreate;
     }
 
     @Property
     @Id(value = "autocreate", name = "Auto Create", description = "Automatically create devices as new messages are received")
     public void setAutoCreate(boolean autoCreate) {
+        this.autoCreate = autoCreate;
         for(Handler handler : handlers)
             handler.autoCreate(autoCreate);
     }
@@ -79,8 +85,10 @@ public class RFXtrx433Hardware implements HardwareDriver {
         // setup the connection to the USB device
         RFXTRX.setPatterns(asPatterns(patterns));
         RFXTRX.openPortSafe();
-        for (Handler handler : handlers)
+        for (Handler handler : handlers) {
+            handler.autoCreate(autoCreate);
             handler.init(callback);
+        }
     }
 
     @Override
