@@ -29,6 +29,8 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
     public final static String BROKER_TCP_PORT = "broker.tcp.port";
     public final static String BROKER_MQTT_HOST = "broker.mqtt.host";
     public final static String BROKER_MQTT_PORT = "broker.mqtt.port";
+    public final static String BROKER_STOMP_HOST = "broker.stomp.host";
+    public final static String BROKER_STOMP_PORT = "broker.stomp.port";
     public final static String BROKER_STORAGE_DIR = "broker.storage.dir";
 
     public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
@@ -36,6 +38,8 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
         defaultProperties.set(BROKER_TCP_PORT, "4600");
         defaultProperties.set(BROKER_MQTT_HOST, "0.0.0.0");
         defaultProperties.set(BROKER_MQTT_PORT, "1833");
+        defaultProperties.set(BROKER_STOMP_HOST, "0.0.0.0");
+        defaultProperties.set(BROKER_STOMP_PORT, "61613");
         defaultProperties.set(BROKER_STORAGE_DIR, "./broker/storage");
     }
 
@@ -90,12 +94,18 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
         try {
             brokerService.addConnector("tcp://" + properties.get(BROKER_TCP_HOST) + ":" + properties.get(BROKER_TCP_PORT));
         } catch(Exception e) {
-            logger.error("Failed to add the tcp connector to the broker. Some remote clients will be able to connect", e);
+            logger.error("Failed to add the tcp connector to the broker. Some remote clients might be unable to connect", e);
         }
         try {
             brokerService.addConnector("mqtt://" + properties.get(BROKER_MQTT_HOST) + ":" + properties.get(BROKER_MQTT_PORT));
         } catch(Exception e) {
-            logger.error("Failed to add the mqtt connector to the broker. Some remote clients will be able to connect", e);
+            logger.error("Failed to add the mqtt connector to the broker. Some remote clients might be unable to connect", e);
+        }
+        // this seems to be included by default
+        try {
+            brokerService.addConnector("stomp://" + properties.get(BROKER_STOMP_HOST) + ":" + properties.get(BROKER_STOMP_PORT));
+        } catch(Exception e) {
+            logger.error("Failed to add the stomp connector to the broker. Some remote clients might be unable to connect", e);
         }
 
         // start the broker
