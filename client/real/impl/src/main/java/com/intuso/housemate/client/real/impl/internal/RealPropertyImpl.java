@@ -42,11 +42,9 @@ public class RealPropertyImpl<O>
                             @Assisted("max") int maxValues,
                             @Assisted @Nullable List values,
                             ManagedCollectionFactory managedCollectionFactory,
-                            Receiver.Factory receiverFactory,
-                            Sender.Factory senderFactory,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory) {
-        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, receiverFactory, senderFactory, type, values);
+        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, type, values);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
                 Property.SET_COMMAND_ID,
                 Property.SET_COMMAND_ID,
@@ -108,9 +106,9 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID), senderFactory, receiverFactory);
     }
 
     @Override

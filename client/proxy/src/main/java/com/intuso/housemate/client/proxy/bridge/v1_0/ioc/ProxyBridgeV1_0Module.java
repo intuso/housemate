@@ -2,17 +2,11 @@ package com.intuso.housemate.client.proxy.bridge.v1_0.ioc;
 
 import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.proxy.bridge.v1_0.*;
-import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.v1_0.api.object.Object;
-import com.intuso.housemate.client.v1_0.proxy.object.ProxyObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,12 +52,8 @@ public class ProxyBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyUserBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyValueBridge>>() {}));
 
-        Multibinder.newSetBinder(binder(), Service.class).addBinding().to(ProxyServerBridge.Service.class);
-    }
-
-    @Provides
-    @ProxyV1_0
-    public Logger getServerLogger() {
-        return ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, Object.VERSION);
+        Multibinder<Service> services = Multibinder.newSetBinder(binder(), Service.class);
+        services.addBinding().to(ProxyServerBridge.Javabin.Service.class);
+        services.addBinding().to(ProxyServerBridge.Json.Service.class);
     }
 }

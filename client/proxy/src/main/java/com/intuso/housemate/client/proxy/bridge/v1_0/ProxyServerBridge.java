@@ -7,16 +7,20 @@ import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.api.internal.object.view.ServerView;
-import com.intuso.housemate.client.proxy.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
+import com.intuso.housemate.client.v1_0.messaging.api.ioc.Messaging;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.serialisation.javabin.JavabinSerialiser;
+import com.intuso.housemate.client.v1_0.serialisation.json.JsonSerialiser;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 28/11/16.
  */
-public class ProxyServerBridge
+public abstract class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>, ServerView>
         implements Server<ProxyCommandBridge,
         ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>,
@@ -24,6 +28,8 @@ public class ProxyServerBridge
         ProxyListBridge<ProxyUserBridge>,
         ProxyListBridge<ProxyNodeBridge>,
         ProxyServerBridge> {
+
+    private final String type;
 
     private final ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>> devices;
     private final ProxyCommandBridge addAutomationCommand;
@@ -34,19 +40,20 @@ public class ProxyServerBridge
     private final ProxyCommandBridge addUserCommand;
     private final ProxyListBridge<ProxyUserBridge> users;
 
-    @Inject
-    protected ProxyServerBridge(@ProxyV1_0 Logger logger,
-                                ServerMapper serverMapper,
-                                ManagedCollectionFactory managedCollectionFactory,
-                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
-                                Sender.Factory v1_0SenderFactory,
-                                Factory<ProxyCommandBridge> commandFactory,
-                                Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
-                                Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
-                                Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
-                                Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
-                                Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
+    ProxyServerBridge(Logger logger,
+                      ServerMapper serverMapper,
+                      ManagedCollectionFactory managedCollectionFactory,
+                      com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                      String type,
+                      Sender.Factory v1_0SenderFactory,
+                      Factory<ProxyCommandBridge> commandFactory,
+                      Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
+                      Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
+                      Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
+                      Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
+                      Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
         super(logger, Server.Data.class, serverMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
+        this.type = type;
         devices = devicesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
@@ -58,7 +65,7 @@ public class ProxyServerBridge
     }
 
     public void start() {
-        init(com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(null, com.intuso.housemate.client.v1_0.proxy.object.ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION),
+        init(com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(null, com.intuso.housemate.client.v1_0.proxy.object.ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, type),
                 // don't put "proxy" in the internal name - this way real and proxy link up together
                 ChildUtil.name("server")
         );
@@ -178,23 +185,99 @@ public class ProxyServerBridge
         return null;
     }
 
-    public static class Service extends AbstractIdleService {
-
-        private final ProxyServerBridge server;
+    public static class Javabin extends ProxyServerBridge {
 
         @Inject
-        public Service(ProxyServerBridge server) {
-            this.server = server;
+        protected Javabin(ServerMapper serverMapper,
+                          ManagedCollectionFactory managedCollectionFactory,
+                          com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                          @Messaging(transport = "jms", contentType = "application/javabin") Sender.Factory senderFactory,
+                          Factory<ProxyCommandBridge> commandFactory,
+                          Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
+                          Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
+                          Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
+                          Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
+                          Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
+            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JavabinSerialiser.TYPE),
+                  serverMapper,
+                  managedCollectionFactory,
+                  internalReceiverFactory,
+                  JavabinSerialiser.TYPE,
+                  senderFactory,
+                  commandFactory,
+                  devicesFactory,
+                  automationsFactory,
+                  deviceGroupsFactory,
+                  nodesFactory,
+                  usersFactory);
         }
 
-        @Override
-        protected void startUp() throws Exception {
-            server.start();
+        public static class Service extends AbstractIdleService {
+
+            private final ProxyServerBridge.Javabin server;
+
+            @Inject
+            public Service(ProxyServerBridge.Javabin server) {
+                this.server = server;
+            }
+
+            @Override
+            protected void startUp() throws Exception {
+                server.start();
+            }
+
+            @Override
+            protected void shutDown() throws Exception {
+                server.stop();
+            }
+        }
+    }
+
+    public static class Json extends ProxyServerBridge {
+
+        @Inject
+        protected Json(ServerMapper serverMapper,
+                       ManagedCollectionFactory managedCollectionFactory,
+                       com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                       @Messaging(transport = "jms", contentType = "application/json") Sender.Factory senderFactory,
+                       Factory<ProxyCommandBridge> commandFactory,
+                       Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
+                       Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
+                       Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
+                       Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
+Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
+            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JsonSerialiser.TYPE),
+                  serverMapper,
+                  managedCollectionFactory,
+                  internalReceiverFactory,
+                  JsonSerialiser.TYPE,
+                  senderFactory,
+                  commandFactory,
+                  devicesFactory,
+                  automationsFactory,
+                  deviceGroupsFactory,
+                  nodesFactory,
+                  usersFactory);
         }
 
-        @Override
-        protected void shutDown() throws Exception {
-            server.stop();
+        public static class Service extends AbstractIdleService {
+
+            private final ProxyServerBridge.Json server;
+
+            @Inject
+            public Service(ProxyServerBridge.Json server) {
+                this.server = server;
+            }
+
+            @Override
+            protected void startUp() throws Exception {
+                server.start();
+            }
+
+            @Override
+            protected void shutDown() throws Exception {
+                server.stop();
+            }
         }
     }
 }

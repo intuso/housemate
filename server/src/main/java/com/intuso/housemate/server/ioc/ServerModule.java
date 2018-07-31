@@ -33,8 +33,8 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
 
         // install messaging mechanisms
-        install(new JMSMessagingModule.Javabin());
-        install(new com.intuso.housemate.client.v1_0.messaging.jms.ioc.JMSMessagingModule.Javabin());
+        install(new JMSMessagingModule());
+        install(new com.intuso.housemate.client.v1_0.messaging.jms.ioc.JMSMessagingModule());
 
         // install real object stuff
         install(new ServerRootModule());

@@ -15,10 +15,15 @@
 
     <dependencies>
 
-        <!-- Versioned APIs -->
+        <!-- Versioned APIs and messaging -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>housemate-client-1-0-proxy</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-messaging-jms</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

@@ -8,6 +8,7 @@ import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -26,7 +27,8 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
     private final Map<String, ELEMENT> elements;
 
     private String name;
-    private boolean initialised = false;
+    private Sender.Factory senderFactory;
+    private Receiver.Factory receiverFactory;
 
     /**
      * @param logger {@inheritDoc}
@@ -39,9 +41,8 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
                                  @Assisted Iterable<? extends ELEMENT> elements,
-                                 ManagedCollectionFactory managedCollectionFactory,
-                                 Sender.Factory senderFactory) {
-        super(logger, new List.Data(id, name, description), managedCollectionFactory, senderFactory);
+                                 ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new List.Data(id, name, description), managedCollectionFactory);
         this.elements = Maps.newHashMap();
         for(ELEMENT element : elements)
             this.elements.put(element.getId(), element);
@@ -100,18 +101,21 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
         this.name = name;
-        this.initialised = true;
+        this.senderFactory = senderFactory;
+        this.receiverFactory = receiverFactory;
         for(ELEMENT element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()));
+            element.init(ChildUtil.name(name, element.getId()), senderFactory, receiverFactory);
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         this.name = null;
+        this.senderFactory = null;
+        this.receiverFactory = null;
         for(ELEMENT element : elements.values())
             element.uninit();
     }
@@ -121,8 +125,8 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?, ?>>
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        if(initialised)
-            element.init(ChildUtil.name(name, element.getId()));
+        if(senderFactory != null && receiverFactory != null)
+            element.init(ChildUtil.name(name, element.getId()), senderFactory, receiverFactory);
         for(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener : listeners)
             listener.elementAdded(this, element);
     }

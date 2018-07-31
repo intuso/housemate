@@ -29,10 +29,9 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
                           String name,
                           String description,
                           ManagedCollectionFactory managedCollectionFactory,
-                          Sender.Factory senderFactory,
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, Arrays.<RealOptionImpl>asList(), managedCollectionFactory, senderFactory, optionsFactory);
+        super(logger, id, name, description, Arrays.<RealOptionImpl>asList(), managedCollectionFactory, optionsFactory);
         this.managedCollectionFactory = managedCollectionFactory;
         this.optionFactory = optionFactory;
     }

@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.SubTypeMapper;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.api.internal.object.view.NoView;
-import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -19,10 +18,8 @@ public class RealSubTypeBridge
     @Inject
     protected RealSubTypeBridge(@Assisted Logger logger,
                                 SubTypeMapper subTypeMapper,
-                                ManagedCollectionFactory managedCollectionFactory,
-                                Receiver.Factory v1_0ReceiverFactory,
-                                com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.SubType.Data.class, subTypeMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+                                ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.SubType.Data.class, subTypeMapper, managedCollectionFactory);
     }
 
     @Override

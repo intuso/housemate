@@ -12,6 +12,7 @@ import org.apache.activemq.command.*;
 import org.apache.activemq.filter.DestinationFilter;
 import org.slf4j.Logger;
 
+import javax.jms.BytesMessage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
             ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
             if (activeMQMessage.getBooleanProperty(MessageConstants.STORE)) {
                 initFile(message.getDestination());
-                if (message.getContent().getLength() > 0) {
+                if (message.getContent() != null && message.getContent().getLength() > 0) {
                     // non zero length message content
                     storedMessage = message.copy();
                     store();
@@ -93,9 +94,9 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
                     storedMessage.setReadOnlyBody(true);
                     java.lang.Object messageObject = ((ActiveMQStreamMessage) storedMessage).readObject();
                     storedMessage.setReadOnlyBody(wasReadOnly);
-                    if(messageObject instanceof byte[]) {
+                    if (messageObject instanceof byte[]) {
                         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(messageFile));
-                        oos.writeObject(new PersistenceObject(topicName, storedMessage.getMessageId().toProducerKey(), (byte[]) messageObject));
+                        oos.writeObject(new PersistenceObject(topicName, storedMessage.getMessageId().toProducerKey(), MessageType.Stream, (byte[]) messageObject));
                         oos.close();
                     }
                 } catch (IOException e) {
@@ -103,8 +104,26 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
                 }
             } else
                 logger.warn("Can't persist message, file not configured");
+        } else if(storedMessage instanceof ActiveMQBytesMessage) {
+            initFile(storedMessage.getDestination());
+            if (messageFile != null) {
+                try {
+                    boolean wasReadOnly = storedMessage.isReadOnlyBody();
+                    storedMessage.setReadOnlyBody(true);
+                    BytesMessage bytesMessage = (ActiveMQBytesMessage) storedMessage;
+                    byte[] bytes = new byte[(int) bytesMessage.getBodyLength()];
+                    bytesMessage.readBytes(bytes);
+                    storedMessage.setReadOnlyBody(wasReadOnly);
+                    ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(messageFile));
+                    oos.writeObject(new PersistenceObject(topicName, storedMessage.getMessageId().toProducerKey(), MessageType.Bytes, bytes));
+                    oos.close();
+                } catch (IOException e) {
+                    logger.error("Failed to persist message to {}", messageFile.getAbsolutePath(), e);
+                }
+            } else
+                logger.warn("Can't persist message, file not configured");
         } else
-            logger.warn("Not persisting non-stream message type: " + storedMessage.getClass().getName());
+            logger.warn("Don't know how to persist message type: " + storedMessage.getClass().getName());
     }
 
     private void initFile(ActiveMQDestination destination) throws Exception {
@@ -120,13 +139,27 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
                                 Object object = ois.readObject();
                                 if(object instanceof PersistenceObject) {
                                     PersistenceObject persistenceObject = (PersistenceObject) object;
-                                    ActiveMQStreamMessage message = new ActiveMQStreamMessage();
-                                    message.setRegionDestination(brokerService.getDestination(new ActiveMQTopic(persistenceObject.topicName)));
-                                    message.setMessageId(new MessageId(persistenceObject.messageKey));
-                                    message.writeBytes(persistenceObject.data);
-                                    message.setReadOnlyBody(true);
-                                    message.storeContent();
-                                    storedMessage = message;
+                                    if(persistenceObject.messageType == null)
+                                        persistenceObject.messageType = MessageType.Stream;
+                                    switch (persistenceObject.messageType) {
+                                        case Stream:
+                                            ActiveMQStreamMessage streamMessage = new ActiveMQStreamMessage();
+                                            streamMessage.setRegionDestination(brokerService.getDestination(new ActiveMQTopic(persistenceObject.topicName)));
+                                            streamMessage.setMessageId(new MessageId(persistenceObject.messageKey));
+                                            streamMessage.writeBytes(persistenceObject.data);
+                                            streamMessage.setReadOnlyBody(true);
+                                            streamMessage.storeContent();
+                                            storedMessage = streamMessage;
+                                            break;
+                                        case Bytes:
+                                            ActiveMQBytesMessage bytesMessage = new ActiveMQBytesMessage();
+                                            bytesMessage.setRegionDestination(brokerService.getDestination(new ActiveMQTopic(persistenceObject.topicName)));
+                                            bytesMessage.setMessageId(new MessageId(persistenceObject.messageKey));
+                                            bytesMessage.writeBytes(persistenceObject.data);
+                                            bytesMessage.setReadOnlyBody(true);
+                                            bytesMessage.storeContent();
+                                            break;
+                                    }
                                 }
                             }
                         } catch(IOException e) {
@@ -139,17 +172,26 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
         }
     }
 
+    private enum MessageType {
+        Stream,
+        Bytes
+    }
+
     private static class PersistenceObject implements Serializable {
+
+        private static final long serialVersionUID = -1L;
 
         private String topicName;
         private String messageKey;
+        private MessageType messageType;
         private byte[] data;
 
         public PersistenceObject() {}
 
-        public PersistenceObject(String topicName, String messageKey, byte[] data) {
+        public PersistenceObject(String topicName, String messageKey, MessageType messageType, byte[] data) {
             this.topicName = topicName;
             this.messageKey = messageKey;
+            this.messageType = messageType;
             this.data = data;
         }
 
@@ -167,6 +209,14 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
 
         public void setMessageKey(String messageKey) {
             this.messageKey = messageKey;
+        }
+
+        public MessageType getMessageType() {
+            return messageType;
+        }
+
+        public void setMessageType(MessageType messageType) {
+            this.messageType = messageType;
         }
 
         public byte[] getData() {

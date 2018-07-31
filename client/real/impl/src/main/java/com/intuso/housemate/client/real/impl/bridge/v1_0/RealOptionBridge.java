@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.api.internal.object.view.NoView;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -23,20 +24,18 @@ public class RealOptionBridge
     protected RealOptionBridge(@Assisted Logger logger,
                                OptionMapper optionMapper,
                                ManagedCollectionFactory managedCollectionFactory,
-                               Receiver.Factory v1_0ReceiverFactory,
-                               com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
                                RealObjectBridge.Factory<RealListBridge<RealSubTypeBridge>> subTypesFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, managedCollectionFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName) {
-        super.initChildren(versionName, internalName);
+    protected void initChildren(String versionName, String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
+        super.initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         subTypes.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Option.SUB_TYPES_ID),
                 ChildUtil.name(internalName,
-                        Option.SUB_TYPES_ID));
+                        Option.SUB_TYPES_ID), internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
     }
 
     @Override

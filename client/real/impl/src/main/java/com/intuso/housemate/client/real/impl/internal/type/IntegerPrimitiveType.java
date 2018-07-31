@@ -2,7 +2,6 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.type.serialiser.IntegerPrimitiveSerialiser;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -15,12 +14,10 @@ public class IntegerPrimitiveType extends RealPrimitiveType<Integer> {
 
     @Inject
     public IntegerPrimitiveType(@Type Logger logger,
-                                ManagedCollectionFactory managedCollectionFactory,
-                                Sender.Factory senderFactory) {
+                                ManagedCollectionFactory managedCollectionFactory) {
         super(ChildUtil.logger(logger, int.class.getName()),
                 new PrimitiveData(int.class.getName(), "Integer", "A whole number"),
                 IntegerPrimitiveSerialiser.INSTANCE,
-                managedCollectionFactory,
-                senderFactory);
+                managedCollectionFactory);
     }
 }

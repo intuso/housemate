@@ -24,7 +24,7 @@ public class NodePackageJarModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new PCClientModule(properties)); // log and properties provider
-        install(new JMSMessagingModule.Javabin());
+        install(new JMSMessagingModule());
         install(new NodeModule()); // main server module
     }
 }

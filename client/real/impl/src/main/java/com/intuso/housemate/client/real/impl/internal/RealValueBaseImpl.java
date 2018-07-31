@@ -25,8 +25,6 @@ public abstract class RealValueBaseImpl<O,
         extends RealObject<DATA, LISTENER, VIEW>
         implements RealValueBase<DATA, O, RealTypeImpl<O>, LISTENER, VIEW, VALUE> {
 
-    private final Receiver.Factory receiverFactory;
-
     private final RealTypeImpl<O> type;
 
     private Sender valueSender;
@@ -42,19 +40,16 @@ public abstract class RealValueBaseImpl<O,
     public RealValueBaseImpl(Logger logger,
                              DATA data,
                              ManagedCollectionFactory managedCollectionFactory,
-                             Receiver.Factory receiverFactory,
-                             Sender.Factory senderFactory,
                              RealTypeImpl<O> type,
                              List<O> values) {
-        super(logger, data, managedCollectionFactory, senderFactory);
-        this.receiverFactory = receiverFactory;
+        super(logger, data, managedCollectionFactory);
         this.type = type;
         this.values = values;
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
 
         boolean gotPersisted = false;
 

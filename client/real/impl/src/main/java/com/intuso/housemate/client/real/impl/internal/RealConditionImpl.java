@@ -15,6 +15,7 @@ import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
@@ -69,7 +70,6 @@ public final class RealConditionImpl
                              @Assisted("description") String description,
                              @Assisted final RealListPersistedImpl.RemoveCallback<RealConditionImpl> removeCallback,
                              ManagedCollectionFactory managedCollectionFactory,
-                             Sender.Factory senderFactory,
                              AnnotationParser annotationParser,
                              RealCommandImpl.Factory commandFactory,
                              RealParameterImpl.Factory parameterFactory,
@@ -79,7 +79,7 @@ public final class RealConditionImpl
                              final RealListPersistedImpl.Factory<Condition.Data, RealConditionImpl> conditionsFactory,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              TypeRepository typeRepository) {
-        super(logger, new Condition.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new Condition.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -307,17 +307,17 @@ public final class RealConditionImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
-        properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
-        satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID));
-        conditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
-        addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), senderFactory, receiverFactory);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), senderFactory, receiverFactory);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), senderFactory, receiverFactory);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), senderFactory, receiverFactory);
+        properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), senderFactory, receiverFactory);
+        satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), senderFactory, receiverFactory);
+        conditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID), senderFactory, receiverFactory);
+        addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID), senderFactory, receiverFactory);
     }
 
     @Override

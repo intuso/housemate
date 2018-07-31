@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.view.DeviceConnectedView;
 import com.intuso.housemate.client.api.internal.object.view.View;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealDeviceConnected;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
@@ -29,14 +28,13 @@ public final class RealDeviceConnectedImpl
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
                                    ManagedCollectionFactory managedCollectionFactory,
-                                   Sender.Factory senderFactory,
                                    AnnotationParser annotationParser,
                                    RealCommandImpl.Factory commandFactory,
                                    RealParameterImpl.Factory parameterFactory,
                                    RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                                    RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                                    TypeRepository typeRepository) {
-        super(logger, new Device.Connected.Data(id, name, description), managedCollectionFactory, senderFactory,
+        super(logger, new Device.Connected.Data(id, name, description), managedCollectionFactory,
                 commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.annotationParser = annotationParser;
     }

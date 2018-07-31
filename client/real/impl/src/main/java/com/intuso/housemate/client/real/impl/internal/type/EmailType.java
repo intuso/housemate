@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -26,8 +25,7 @@ public class EmailType extends RealRegexType {
      */
     @Inject
     public EmailType(@Type Logger logger,
-                     ManagedCollectionFactory managedCollectionFactory,
-                     Sender.Factory senderFactory) {
-        super(ChildUtil.logger(logger, ID), ID, NAME, DESCRIPTION, REGEX, managedCollectionFactory, senderFactory);
+                     ManagedCollectionFactory managedCollectionFactory) {
+        super(ChildUtil.logger(logger, ID), ID, NAME, DESCRIPTION, REGEX, managedCollectionFactory);
     }
 }

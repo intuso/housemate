@@ -6,7 +6,6 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.view.TypeView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -29,9 +28,8 @@ public abstract class RealTypeImpl<O>
      */
     protected RealTypeImpl(Logger logger,
                            Type.Data data,
-                           ManagedCollectionFactory managedCollectionFactory,
-                           Sender.Factory senderFactory) {
-        super(logger, data, managedCollectionFactory, senderFactory);
+                           ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, data, managedCollectionFactory);
     }
 
     @Override

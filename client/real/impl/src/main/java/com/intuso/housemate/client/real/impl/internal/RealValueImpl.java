@@ -6,8 +6,6 @@ import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.view.ValueView;
 import com.intuso.housemate.client.api.internal.object.view.View;
-import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -37,10 +35,8 @@ public final class RealValueImpl<O>
                          @Assisted("min") int minValues,
                          @Assisted("max") int maxValues,
                          @Assisted @Nullable List values,
-                         ManagedCollectionFactory managedCollectionFactory,
-                         Receiver.Factory receiverFactory,
-                         Sender.Factory senderFactory) {
-        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, receiverFactory, senderFactory, type, values);
+                         ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues, RealTypeImpl.serialiseAll(type, values)), managedCollectionFactory, type, values);
     }
 
     @Override

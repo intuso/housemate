@@ -24,8 +24,6 @@ public class RealCommandBridge
         implements Command<Type.InstanceMap, RealValueBridge, RealListBridge<RealParameterBridge>, RealCommandBridge> {
 
     private final CommandMapper commandMapper;
-    private final com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory;
-    private final Sender.Factory v1_0SenderFactory;
 
     private final RealValueBridge enabledValue;
     private final RealListBridge<RealParameterBridge> parameters;
@@ -42,31 +40,25 @@ public class RealCommandBridge
     protected RealCommandBridge(@Assisted Logger logger,
                                 CommandMapper commandMapper,
                                 ManagedCollectionFactory managedCollectionFactory,
-                                Receiver.Factory v1_0ReceiverFactory,
-                                Sender.Factory v1_0SenderFactory,
-                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
-                                com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
                                 RealObjectBridge.Factory<RealValueBridge> valueFactory,
                                 RealObjectBridge.Factory<RealListBridge<RealParameterBridge>> parametersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, managedCollectionFactory);
         this.commandMapper = commandMapper;
-        this.internalReceiverFactory = internalReceiverFactory;
-        this.v1_0SenderFactory = v1_0SenderFactory;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName) {
-        super.initChildren(versionName, internalName);
+    protected void initChildren(String versionName, String internalName, com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
+        super.initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         enabledValue.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.ENABLED_ID),
-                ChildUtil.name(internalName, Command.ENABLED_ID)
-        );
+                ChildUtil.name(internalName, Command.ENABLED_ID),
+                internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         parameters.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
-                ChildUtil.name(internalName, Command.PARAMETERS_ID)
-        );
+                ChildUtil.name(internalName, Command.PARAMETERS_ID),
+                internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         performSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
         performReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class);
         performStatusSender = internalSenderFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));

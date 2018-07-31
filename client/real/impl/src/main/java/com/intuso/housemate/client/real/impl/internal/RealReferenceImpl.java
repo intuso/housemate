@@ -7,7 +7,6 @@ import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.proxy.internal.object.ProxyObject;
 import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
@@ -38,9 +37,8 @@ public final class RealReferenceImpl<OBJECT_VIEW extends View, OBJECT extends Pr
                              @Assisted("description") String description,
                              @Assisted("path") String path,
                              ProxyServer.Simple server,
-                             ManagedCollectionFactory managedCollectionFactory,
-                             Sender.Factory senderFactory) {
-        super(logger, new Reference.Data(id, name, description, path), managedCollectionFactory, senderFactory);
+                             ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new Reference.Data(id, name, description, path), managedCollectionFactory);
         this.reference = server.reference(path);
     }
 

@@ -6,7 +6,6 @@ import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.NoView;
 import com.intuso.housemate.client.api.internal.object.view.View;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealSubType;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -36,9 +35,8 @@ public final class RealSubTypeImpl<O>
                            @Assisted RealTypeImpl type,
                            @Assisted("min") int minValues,
                            @Assisted("max") int maxValues,
-                           ManagedCollectionFactory managedCollectionFactory,
-                           Sender.Factory senderFactory) {
-        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, senderFactory);
+                           ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory);
         this.type = type;
     }
 

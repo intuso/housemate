@@ -9,6 +9,7 @@ import com.intuso.housemate.client.api.internal.object.view.CommandView;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.NodeView;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
@@ -34,11 +35,10 @@ public class RealNodeImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         ManagedCollectionFactory managedCollectionFactory,
-                        Sender.Factory senderFactory,
                         RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory,
                         RealListPersistedImpl.Factory<Hardware.Data, RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
-        super(logger, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), managedCollectionFactory);
         this.types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID),
                 TYPES_ID,
                 "Types",
@@ -109,11 +109,11 @@ public class RealNodeImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        types.init(ChildUtil.name(name, TYPES_ID));
-        hardwares.init(ChildUtil.name(name, HARDWARES_ID));
-        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        types.init(ChildUtil.name(name, TYPES_ID), senderFactory, receiverFactory);
+        hardwares.init(ChildUtil.name(name, HARDWARES_ID), senderFactory, receiverFactory);
+        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID), senderFactory, receiverFactory);
     }
 
     @Override

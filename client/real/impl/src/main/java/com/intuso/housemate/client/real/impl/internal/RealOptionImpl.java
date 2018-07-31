@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.NoView;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealOption;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -32,9 +33,8 @@ public final class RealOptionImpl
                           @Assisted("description") String description,
                           @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                           ManagedCollectionFactory managedCollectionFactory,
-                          Sender.Factory senderFactory,
                           RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new Option.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new Option.Data(id, name, description), managedCollectionFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
                 Option.SUB_TYPES_ID,
                 "Sub Types",
@@ -57,9 +57,9 @@ public final class RealOptionImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID), senderFactory, receiverFactory);
     }
 
     @Override

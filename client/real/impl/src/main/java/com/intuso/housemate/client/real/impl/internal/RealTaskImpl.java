@@ -14,6 +14,7 @@ import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
@@ -61,7 +62,6 @@ public final class RealTaskImpl
                         @Assisted("description") String description,
                         @Assisted RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
-                        Sender.Factory senderFactory,
                         AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
@@ -69,7 +69,7 @@ public final class RealTaskImpl
                         RealValueImpl.Factory valueFactory,
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         TypeRepository typeRepository) {
-        super(logger, new Task.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new Task.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -272,15 +272,15 @@ public final class RealTaskImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
-        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID));
-        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), senderFactory, receiverFactory);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), senderFactory, receiverFactory);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), senderFactory, receiverFactory);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), senderFactory, receiverFactory);
+        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID), senderFactory, receiverFactory);
+        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID), senderFactory, receiverFactory);
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.type.serialiser.EnumSerialiser;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
@@ -38,10 +37,9 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                           @Assisted("description") String description,
                           @Assisted Class enumClass,
                           ManagedCollectionFactory managedCollectionFactory,
-                          Sender.Factory senderFactory,
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, convertValuesToOptions(logger, optionFactory, enumClass), managedCollectionFactory, senderFactory, optionsFactory);
+        super(logger, id, name, description, convertValuesToOptions(logger, optionFactory, enumClass), managedCollectionFactory, optionsFactory);
         this.serialiser = new EnumSerialiser<>(enumClass);
     }
 

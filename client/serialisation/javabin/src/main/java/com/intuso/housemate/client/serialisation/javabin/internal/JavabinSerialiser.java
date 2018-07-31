@@ -10,7 +10,7 @@ import java.io.*;
  */
 public class JavabinSerialiser implements Serialiser<byte[]> {
 
-    private static final String TYPE = "application/json";
+    public static final String TYPE = "application/javabin";
 
     @Override
     public String getType() {

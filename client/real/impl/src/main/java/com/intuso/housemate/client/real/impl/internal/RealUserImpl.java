@@ -13,6 +13,7 @@ import com.intuso.housemate.client.api.internal.object.view.PropertyView;
 import com.intuso.housemate.client.api.internal.object.view.UserView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealUser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
@@ -46,12 +47,11 @@ public final class RealUserImpl
                         @Assisted("description") String description,
                         @Assisted RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
-                        Sender.Factory senderFactory,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
                         RealPropertyImpl.Factory propertyFactory,
                         TypeRepository typeRepository) {
-        super(logger, new User.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new User.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -143,11 +143,11 @@ public final class RealUserImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
-        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), senderFactory, receiverFactory);
+        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID), senderFactory, receiverFactory);
     }
 
     @Override

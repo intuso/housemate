@@ -1,31 +1,53 @@
 package com.intuso.housemate.client.messaging.jms.internal.ioc;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
-import com.intuso.housemate.client.messaging.jms.internal.JMSReceiver;
-import com.intuso.housemate.client.messaging.jms.internal.JMSSender;
+import com.intuso.housemate.client.messaging.api.internal.ioc.Messaging;
+import com.intuso.housemate.client.messaging.jms.internal.JMS;
 import com.intuso.housemate.client.messaging.jms.internal.MessageConverter;
+import com.intuso.housemate.client.serialisation.javabin.internal.JavabinSerialiser;
+import com.intuso.housemate.client.serialisation.javabin.internal.ioc.JavabinSerialiserModule;
+
+import javax.jms.Connection;
 
 /**
  * Created by tomc on 02/03/17.
  */
-public abstract class JMSMessagingModule extends AbstractModule {
+public class JMSMessagingModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Sender.Factory.class).to(JMSSender.FactoryImpl.class);
-        bind(Receiver.Factory.class).to(JMSReceiver.FactoryImpl.class);
-        install(new FactoryModuleBuilder().build(JMSSender.Factory.class));
-        install(new FactoryModuleBuilder().build(JMSReceiver.Factory.class));
+        install(new JavabinSerialiserModule());
+        bind(MessageConverter.Javabin.class).in(Scopes.SINGLETON);
     }
 
-    public static class Javabin extends JMSMessagingModule {
-        @Override
-        protected void configure() {
-            super.configure();
-            bind(MessageConverter.class).to(MessageConverter.Javabin.class);
-        }
+    @Provides
+    @Singleton
+    public Receiver.Factory getDefaultReceiver(MessageConverter.Javabin messageConverter, Connection connection) {
+        return new JMS.Receiver.FactoryImpl(messageConverter, connection);
+    }
+
+    @Provides
+    @Singleton
+    public Sender.Factory getDefaultSender(MessageConverter.Javabin messageConverter, Connection connection) {
+        return new JMS.Sender.FactoryImpl(messageConverter, connection);
+    }
+
+    @Provides
+    @Singleton
+    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.TYPE)
+    public Receiver.Factory getJavabinReceiver(MessageConverter.Javabin messageConverter, Connection connection) {
+        return new JMS.Receiver.FactoryImpl(messageConverter, connection);
+    }
+
+    @Provides
+    @Singleton
+    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.TYPE)
+    public Sender.Factory getJavabinSender(MessageConverter.Javabin messageConverter, Connection connection) {
+        return new JMS.Sender.FactoryImpl(messageConverter, connection);
     }
 }

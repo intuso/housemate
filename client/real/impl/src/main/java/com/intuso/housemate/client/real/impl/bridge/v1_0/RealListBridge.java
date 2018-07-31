@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.real.impl.ChildUtil;
@@ -32,16 +33,14 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?, ?>>
     protected RealListBridge(@Assisted Logger logger,
                              ListMapper listMapper,
                              RealObjectBridge.Factory<ELEMENT> elementFactory,
-                             ManagedCollectionFactory managedCollectionFactory,
-                             Receiver.Factory v1_0ReceiverFactory,
-                             com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+                             ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, managedCollectionFactory);
         this.elementFactory = elementFactory;
     }
 
     @Override
-    protected void initChildren(final String versionName, final String internalName) {
-        super.initChildren(versionName, internalName);
+    protected void initChildren(final String versionName, final String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
+        super.initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         // subscribe to all child topics and create children as new topics are discovered
         existingObjectReceiver = v1_0ReceiverFactory.create(logger, ChildUtil.name(versionName, "*"), Object.Data.class);
         existingObjectReceiver.listen(new Receiver.Listener<Object.Data>() {
@@ -51,7 +50,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?, ?>>
                             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
-                                element.init(ChildUtil.name(versionName, data.getId()), com.intuso.housemate.client.real.impl.internal.ChildUtil.name(internalName, data.getId()));
+                                element.init(ChildUtil.name(versionName, data.getId()), com.intuso.housemate.client.real.impl.internal.ChildUtil.name(internalName, data.getId()), internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
                                 for(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener : listeners)
                                     listener.elementAdded(RealListBridge.this, element);
                             }

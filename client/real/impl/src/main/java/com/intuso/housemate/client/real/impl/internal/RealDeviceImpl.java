@@ -11,6 +11,7 @@ import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.View;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
@@ -36,13 +37,12 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
     public RealDeviceImpl(@Assisted final Logger logger,
                           DATA data,
                           ManagedCollectionFactory managedCollectionFactory,
-                          Sender.Factory senderFactory,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                           RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                           TypeRepository typeRepository) {
-        super(logger, data, managedCollectionFactory, senderFactory);
+        super(logger, data, managedCollectionFactory);
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
                 Renameable.RENAME_ID,
@@ -126,11 +126,11 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
-        commands.init(ChildUtil.name(name, COMMANDS_ID));
-        values.init(ChildUtil.name(name, VALUES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
+        commands.init(ChildUtil.name(name, COMMANDS_ID), senderFactory, receiverFactory);
+        values.init(ChildUtil.name(name, VALUES_ID), senderFactory, receiverFactory);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealDeviceGroup;
@@ -70,7 +71,6 @@ public final class RealDeviceGroupImpl
                                @Assisted("description") String description,
                                @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback,
                                ManagedCollectionFactory managedCollectionFactory,
-                               Sender.Factory senderFactory,
                                RealCommandImpl.Factory commandFactory,
                                RealParameterImpl.Factory parameterFactory,
                                RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
@@ -78,7 +78,7 @@ public final class RealDeviceGroupImpl
                                RealValueImpl.Factory valueFactory,
                                RealListPersistedImpl.Factory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,
                                final TypeRepository typeRepository) {
-        super(logger, new Group.Data(id, name, description), managedCollectionFactory, senderFactory, commandFactory,
+        super(logger, new Group.Data(id, name, description), managedCollectionFactory, commandFactory,
                 parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -188,21 +188,21 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
-        errorValue.init(ChildUtil.name(name, ERROR_ID));
-        playbackDevices.init(ChildUtil.name(name, PLAYBACK));
-        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK));
-        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION));
-        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER));
-        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION));
-        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN));
-        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
-        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
-        volumeDevices.init(ChildUtil.name(name, VOLUME));
-        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), senderFactory, receiverFactory);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), senderFactory, receiverFactory);
+        errorValue.init(ChildUtil.name(name, ERROR_ID), senderFactory, receiverFactory);
+        playbackDevices.init(ChildUtil.name(name, PLAYBACK), senderFactory, receiverFactory);
+        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK), senderFactory, receiverFactory);
+        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION), senderFactory, receiverFactory);
+        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER), senderFactory, receiverFactory);
+        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION), senderFactory, receiverFactory);
+        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN), senderFactory, receiverFactory);
+        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR), senderFactory, receiverFactory);
+        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR), senderFactory, receiverFactory);
+        volumeDevices.init(ChildUtil.name(name, VOLUME), senderFactory, receiverFactory);
+        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME), senderFactory, receiverFactory);
     }
 
     @Override

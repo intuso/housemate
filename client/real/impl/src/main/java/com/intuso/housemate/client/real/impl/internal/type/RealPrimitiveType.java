@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -22,9 +21,8 @@ public class RealPrimitiveType<O> extends RealTypeImpl<O> {
     protected RealPrimitiveType(Logger logger,
                                 PrimitiveData data,
                                 TypeSerialiser<O> serialiser,
-                                ManagedCollectionFactory managedCollectionFactory,
-                                Sender.Factory senderFactory) {
-        super(logger, data, managedCollectionFactory, senderFactory);
+                                ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, data, managedCollectionFactory);
         this.serialiser = serialiser;
     }
 

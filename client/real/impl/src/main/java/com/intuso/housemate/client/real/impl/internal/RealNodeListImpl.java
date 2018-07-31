@@ -9,12 +9,16 @@ import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.ListView;
 import com.intuso.housemate.client.api.internal.object.view.NodeView;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.impl.bridge.v1_0.RealNodeBridge;
 import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
+import com.intuso.housemate.client.v1_0.messaging.api.ioc.Messaging;
+import com.intuso.housemate.client.v1_0.serialisation.javabin.JavabinSerialiser;
+import com.intuso.housemate.client.v1_0.serialisation.json.JsonSerialiser;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -29,14 +33,19 @@ public final class RealNodeListImpl
         extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>, ListView<?>>
         implements RealList<ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl> {
 
-    private final com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0ReceiverFactory;
+    private final com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JavabinSenderFactory;
+    private final com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JsonReceiverFactory;
+    private final com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JsonSenderFactory;
+    private final com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JavabinReceiverFactory;
     private final RealNodeBridge.Factory nodeV1_0Factory;
 
     private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements = Maps.newHashMap();
 
-    private boolean initialised = false;
     private String name;
-    private com.intuso.housemate.client.v1_0.messaging.api.Receiver<Node.Data> nodeV1_0Receiver;
+    private Sender.Factory senderFactory;
+    private Receiver.Factory receiverFactory;
+    private com.intuso.housemate.client.v1_0.messaging.api.Receiver<Node.Data> nodesV1_0JavabinReceiver;
+    private com.intuso.housemate.client.v1_0.messaging.api.Receiver<Node.Data> nodesV1_0JsonReceiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -49,11 +58,16 @@ public final class RealNodeListImpl
                             @Assisted("name") String name,
                             @Assisted("description") String description,
                             ManagedCollectionFactory managedCollectionFactory,
-                            com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0ReceiverFactory,
-                            Sender.Factory senderFactory,
+                            @Messaging(transport = "jms", contentType = "application/javabin") com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JavabinSenderFactory,
+                            @Messaging(transport = "jms", contentType = "application/javabin") com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JavabinReceiverFactory,
+                            @Messaging(transport = "jms", contentType = "application/json") com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JsonSenderFactory,
+                            @Messaging(transport = "jms", contentType = "application/json") com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JsonReceiverFactory,
                             RealNodeBridge.Factory nodeV1_0Factory) {
-        super(logger, new List.Data(id, name, description), managedCollectionFactory, senderFactory);
-        this.v1_0ReceiverFactory = v1_0ReceiverFactory;
+        super(logger, new List.Data(id, name, description), managedCollectionFactory);
+        this.v1_0JavabinSenderFactory = v1_0JavabinSenderFactory;
+        this.v1_0JavabinReceiverFactory = v1_0JavabinReceiverFactory;
+        this.v1_0JsonSenderFactory = v1_0JsonSenderFactory;
+        this.v1_0JsonReceiverFactory = v1_0JsonReceiverFactory;
         this.nodeV1_0Factory = nodeV1_0Factory;
     }
 
@@ -110,17 +124,17 @@ public final class RealNodeListImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
         this.name = name;
-        final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID);
-        nodeV1_0Receiver = v1_0ReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class);
-        nodeV1_0Receiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
+        final String nodesV1_0JavabinPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TYPE, Server.NODES_ID);
+        nodesV1_0JavabinReceiver = v1_0JavabinReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TYPE, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JavabinPath, "*"), Node.Data.class);
+        nodesV1_0JavabinReceiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean persistent) {
                         if(!elements.containsKey(nodeData.getId())) {
                             try {
-                                ServerBaseNode<?, ?, ?, ?> node = nodeV1_0Factory.create(nodeData.getId(), ChildUtil.logger(logger, nodeData.getId()), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, nodeData.getId()));
+                                ServerBaseNode<?, ?, ?, ?> node = nodeV1_0Factory.create(nodeData.getId(), ChildUtil.logger(logger, nodeData.getId()), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JavabinPath, nodeData.getId()), v1_0JavabinSenderFactory, v1_0JavabinReceiverFactory);
                                 if(node != null)
                                     add(node);
                             } catch(Throwable t) {
@@ -130,20 +144,44 @@ public final class RealNodeListImpl
                     }
                 }
         );
+        final String nodesV1_0JsonPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TYPE, Server.NODES_ID);
+        nodesV1_0JsonReceiver = v1_0JsonReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TYPE, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JsonPath, "*"), Node.Data.class);
+        nodesV1_0JsonReceiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
+                   @Override
+                   public void onMessage(Node.Data nodeData, boolean persistent) {
+                       if(!elements.containsKey(nodeData.getId())) {
+                           try {
+                               ServerBaseNode<?, ?, ?, ?> node = nodeV1_0Factory.create(nodeData.getId(), ChildUtil.logger(logger, nodeData.getId()), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JsonPath, nodeData.getId()), v1_0JsonSenderFactory, v1_0JsonReceiverFactory);
+                               if(node != null)
+                                   add(node);
+                           } catch(Throwable t) {
+                               logger.error("Failed to add v1.0 node bridge", t);
+                           }
+                       }
+                   }
+               }
+        );
         // init any elements that were added before we init'd
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()));
-        this.initialised = true;
+            element.init(ChildUtil.name(name, element.getId()), senderFactory, receiverFactory);
+        this.senderFactory = senderFactory;
+        this.receiverFactory = receiverFactory;
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        if(nodeV1_0Receiver != null) {
-            nodeV1_0Receiver.close();
-            nodeV1_0Receiver = null;
+        if(nodesV1_0JavabinReceiver != null) {
+            nodesV1_0JavabinReceiver.close();
+            nodesV1_0JavabinReceiver = null;
+        }
+        if(nodesV1_0JsonReceiver != null) {
+            nodesV1_0JsonReceiver.close();
+            nodesV1_0JsonReceiver = null;
         }
         this.name = null;
+        this.senderFactory = null;
+        this.receiverFactory = null;
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
             element.uninit();
     }
@@ -153,8 +191,8 @@ public final class RealNodeListImpl
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        if(initialised)
-            element.init(ChildUtil.name(name, element.getId()));
+        if(senderFactory != null && receiverFactory != null)
+            element.init(ChildUtil.name(name, element.getId()), senderFactory, receiverFactory);
         for(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
             listener.elementAdded(this, element);
     }

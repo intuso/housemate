@@ -4,6 +4,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Tree;
 import com.intuso.housemate.client.api.internal.object.view.View;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -23,8 +24,6 @@ public abstract class RealObjectBridge<
     protected final Class<VERSION_DATA> versionDataClass;
     protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
     protected final ManagedCollection<LISTENER> listeners;
-    protected final Receiver.Factory v1_0ReceiverFactory;
-    protected final com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory;
 
     private com.intuso.housemate.client.messaging.api.internal.Sender sender;
     private Receiver<VERSION_DATA> receiver;
@@ -32,11 +31,7 @@ public abstract class RealObjectBridge<
     protected RealObjectBridge(Logger logger,
                                Class<VERSION_DATA> versionDataClass,
                                ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
-                               ManagedCollectionFactory managedCollectionFactory,
-                               Receiver.Factory v1_0ReceiverFactory,
-                               com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
-        this.v1_0ReceiverFactory = v1_0ReceiverFactory;
-        this.internalSenderFactory = internalSenderFactory;
+                               ManagedCollectionFactory managedCollectionFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.versionDataClass = versionDataClass;
@@ -54,7 +49,7 @@ public abstract class RealObjectBridge<
         throw new UnsupportedOperationException("This implementation should not be viewed");
     }
 
-    public final void init(String versionName, String internalName) {
+    public final void init(String versionName, String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
         logger.debug("Init {} -> {}", versionName, internalName);
         sender = internalSenderFactory.create(logger, internalName);
         receiver = v1_0ReceiverFactory.create(logger, versionName, versionDataClass);
@@ -68,10 +63,10 @@ public abstract class RealObjectBridge<
                         }
                     }
                 });
-        initChildren(versionName, internalName);
+        initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
     }
 
-    protected void initChildren(String versionName, String internalName) {}
+    protected void initChildren(String versionName, String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {}
 
     public final void uninit() {
         logger.debug("Uninit");

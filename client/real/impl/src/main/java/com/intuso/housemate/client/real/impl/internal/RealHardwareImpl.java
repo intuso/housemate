@@ -12,6 +12,7 @@ import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.view.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
@@ -72,7 +73,6 @@ public final class RealHardwareImpl
                             @Assisted("description") String description,
                             @Assisted RealListPersistedImpl.RemoveCallback<RealHardwareImpl> removeCallback,
                             ManagedCollectionFactory managedCollectionFactory,
-                            Sender.Factory senderFactory,
                             AnnotationParser annotationParser,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory,
@@ -84,7 +84,7 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             final RealDeviceConnectedImpl.Factory deviceFactory,
                             RealListPersistedImpl.Factory<Device.Connected.Data, RealDeviceConnectedImpl> devicesFactory) {
-        super(logger, new Hardware.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new Hardware.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.deviceFactory = deviceFactory;
         this.removeCallback = removeCallback;
@@ -360,21 +360,21 @@ public final class RealHardwareImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID));
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID));
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID));
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
-        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID));
-        values.init(ChildUtil.name(name, Hardware.VALUES_ID));
-        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID));
-        devices.init(ChildUtil.name(name, Hardware.DEVICES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), senderFactory, receiverFactory);
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), senderFactory, receiverFactory);
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), senderFactory, receiverFactory);
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID), senderFactory, receiverFactory);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), senderFactory, receiverFactory);
+        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), senderFactory, receiverFactory);
+        values.init(ChildUtil.name(name, Hardware.VALUES_ID), senderFactory, receiverFactory);
+        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), senderFactory, receiverFactory);
+        devices.init(ChildUtil.name(name, Hardware.DEVICES_ID), senderFactory, receiverFactory);
         // do driver last as it's better to have the devices loaded already
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), senderFactory, receiverFactory);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), senderFactory, receiverFactory);
     }
 
     @Override

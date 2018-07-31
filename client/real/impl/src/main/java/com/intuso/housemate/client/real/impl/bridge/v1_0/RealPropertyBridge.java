@@ -28,20 +28,18 @@ public class RealPropertyBridge
                               PropertyMapper propertyMapper,
                               TypeInstancesMapper typeInstancesMapper,
                               ManagedCollectionFactory managedCollectionFactory,
-                              Receiver.Factory v1_0ReceiverFactory,
-                              Sender.Factory internalSenderFactory,
                               RealObjectBridge.Factory<RealCommandBridge> commandFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName) {
-        super.initChildren(versionName, internalName);
+    protected void initChildren(String versionName, String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
+        super.initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         setCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Property.SET_COMMAND_ID),
-                ChildUtil.name(internalName, Property.SET_COMMAND_ID)
-        );
+                ChildUtil.name(internalName, Property.SET_COMMAND_ID),
+                internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
     }
 
     @Override

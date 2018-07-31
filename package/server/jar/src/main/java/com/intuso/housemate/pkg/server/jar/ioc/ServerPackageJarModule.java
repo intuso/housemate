@@ -39,8 +39,6 @@ public class ServerPackageJarModule extends AbstractModule {
         bind(PropertyRepository.class).toInstance(properties);
         // log and properties provider
         install(new PCModule());
-        // data serialisers
-        install(new SerialisersModule());
         // main server module
         install(new ServerModule());
         // web server

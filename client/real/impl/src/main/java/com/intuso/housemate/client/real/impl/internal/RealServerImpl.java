@@ -8,7 +8,9 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.view.*;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
+import com.intuso.housemate.client.messaging.api.internal.ioc.Messaging;
 import com.intuso.housemate.client.proxy.internal.object.*;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
@@ -31,6 +33,9 @@ public class RealServerImpl
         AddDeviceGroupCommand.Callback,
         AddUserCommand.Callback {
 
+    private final Sender.Factory senderFactory;
+    private final Receiver.Factory receiverFactory;
+
     private final RealReferenceImpl.Factory referenceFactory;
 
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
@@ -46,7 +51,8 @@ public class RealServerImpl
     public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
                           ProxyServer.Simple proxyServer,
-                          Sender.Factory senderFactory,
+                          @Messaging(transport = "jms", contentType = "application/javabin") Sender.Factory senderFactory,
+                          @Messaging(transport = "jms", contentType = "application/javabin") Receiver.Factory receiverFactory,
                           RealReferenceImpl.Factory referenceFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,
@@ -57,7 +63,9 @@ public class RealServerImpl
                           AddDeviceGroupCommand.Factory addDeviceGroupCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
-        super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
+        super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory);
+        this.senderFactory = senderFactory;
+        this.receiverFactory = receiverFactory;
         this.referenceFactory = referenceFactory;
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
@@ -181,16 +189,16 @@ public class RealServerImpl
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
-        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
-        devices.init(ChildUtil.name(name, DEVICES_ID));
-        deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID));
-        addDeviceGroupCommand.init(ChildUtil.name(name, ADD_DEVICE_GROUP_ID));
-        users.init(ChildUtil.name(name, USERS_ID));
-        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
-        nodes.init(ChildUtil.name(name, NODES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        automations.init(ChildUtil.name(name, AUTOMATIONS_ID), senderFactory, receiverFactory);
+        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), senderFactory, receiverFactory);
+        devices.init(ChildUtil.name(name, DEVICES_ID), senderFactory, receiverFactory);
+        deviceGroups.init(ChildUtil.name(name, DEVICE_GROUPS_ID), senderFactory, receiverFactory);
+        addDeviceGroupCommand.init(ChildUtil.name(name, ADD_DEVICE_GROUP_ID), senderFactory, receiverFactory);
+        users.init(ChildUtil.name(name, USERS_ID), senderFactory, receiverFactory);
+        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), senderFactory, receiverFactory);
+        nodes.init(ChildUtil.name(name, NODES_ID), senderFactory, receiverFactory);
     }
 
     @Override
@@ -261,7 +269,7 @@ public class RealServerImpl
 
     public void start() {
         // don't put "real" in the name - this way real and proxy link up together
-        init("server");
+        init("server", senderFactory, receiverFactory);
     }
 
     public void stop() {

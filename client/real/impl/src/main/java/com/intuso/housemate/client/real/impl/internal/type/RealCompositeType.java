@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
@@ -43,9 +44,8 @@ public final class RealCompositeType<O>
                                 @Assisted("description") String description,
                                 @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                                 ManagedCollectionFactory managedCollectionFactory,
-                                Sender.Factory senderFactory,
                                 RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new CompositeData(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new CompositeData(id, name, description), managedCollectionFactory);
         this.serialiser = new Serialiser<>();
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID),
                 SUB_TYPES_ID,
@@ -65,9 +65,9 @@ public final class RealCompositeType<O>
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID), senderFactory, receiverFactory);
     }
 
     @Override

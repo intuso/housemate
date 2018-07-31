@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.proxy.bridge.v1_0.ioc;
+package com.intuso.housemate.client.messaging.api.internal.ioc;
 
 import com.google.inject.BindingAnnotation;
 
@@ -13,4 +13,7 @@ import java.lang.annotation.Target;
 @BindingAnnotation
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.METHOD})
-public @interface ProxyV1_0 {}
+public @interface Messaging {
+    String transport();
+    String contentType();
+}

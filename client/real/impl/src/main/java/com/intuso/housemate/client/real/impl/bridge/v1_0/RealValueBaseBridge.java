@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.api.internal.object.view.ValueBaseView;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -34,16 +35,14 @@ public abstract class RealValueBaseBridge<
                                   Class<VERSION_DATA> versionDataClass,
                                   ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
                                   TypeInstancesMapper typeInstancesMapper,
-                                  ManagedCollectionFactory managedCollectionFactory,
-                                  Receiver.Factory v1_0ReceiverFactory,
-                                  com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
-        super(logger, versionDataClass, dataMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
+                                  ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, versionDataClass, dataMapper, managedCollectionFactory);
         this.typeInstancesMapper = typeInstancesMapper;
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName) {
-        super.initChildren(versionName, internalName);
+    protected void initChildren(String versionName, String internalName, Sender.Factory internalSenderFactory, com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory, com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0SenderFactory, Receiver.Factory v1_0ReceiverFactory) {
+        super.initChildren(versionName, internalName, internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
         valueSender = internalSenderFactory.create(logger, ChildUtil.name(internalName, Value.VALUE_ID));
         valueReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class);
         valueReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {

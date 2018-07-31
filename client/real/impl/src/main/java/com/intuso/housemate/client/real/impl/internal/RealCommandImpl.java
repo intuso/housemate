@@ -29,8 +29,6 @@ public final class RealCommandImpl
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
-    private final Receiver.Factory receiverFactory;
-
     private final Performer performer;
     private final RealValueImpl<Boolean> enabledValue;
     private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
@@ -51,13 +49,10 @@ public final class RealCommandImpl
                               @Assisted Performer performer,
                               @Assisted Iterable<? extends RealParameterImpl<?>> parameters,
                               ManagedCollectionFactory managedCollectionFactory,
-                              Receiver.Factory receiverFactory,
-                              Sender.Factory senderFactory,
                               RealValueImpl.Factory valueFactory,
                               RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory,
                               TypeRepository typeRepository) {
-        super(logger, new Command.Data(id, name, description), managedCollectionFactory, senderFactory);
-        this.receiverFactory = receiverFactory;
+        super(logger, new Command.Data(id, name, description), managedCollectionFactory);
         this.performer = performer;
         this.enabledValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
                 Command.ENABLED_ID,
@@ -118,10 +113,10 @@ public final class RealCommandImpl
     }
 
     @Override
-    protected final void initChildren(String name) {
-        super.initChildren(name);
-        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID));
-        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID));
+    protected final void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), senderFactory, receiverFactory);
+        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), senderFactory, receiverFactory);
         performStatusSender = senderFactory.create(logger, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
         performReceiver = receiverFactory.create(logger, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class);
         performReceiver.listen(new Receiver.Listener<PerformData>() {

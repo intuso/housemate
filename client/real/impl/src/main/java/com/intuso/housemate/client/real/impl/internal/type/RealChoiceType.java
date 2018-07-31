@@ -2,6 +2,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
@@ -35,9 +36,8 @@ public abstract class RealChoiceType<O>
                              @Assisted("description") String description,
                              @Assisted Iterable<RealOptionImpl> options,
                              ManagedCollectionFactory managedCollectionFactory,
-                             Sender.Factory senderFactory,
                              RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, new ChoiceData(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, new ChoiceData(id, name, description), managedCollectionFactory);
         this.options = optionsFactory.create(logger,
                 OPTIONS,
                 OPTIONS,
@@ -47,9 +47,9 @@ public abstract class RealChoiceType<O>
     }
 
     @Override
-    protected void initChildren(String name) {
-        super.initChildren(name);
-        options.init(ChildUtil.name(name, OPTIONS));
+    protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
+        super.initChildren(name, senderFactory, receiverFactory);
+        options.init(ChildUtil.name(name, OPTIONS), senderFactory, receiverFactory);
     }
 
     @Override
