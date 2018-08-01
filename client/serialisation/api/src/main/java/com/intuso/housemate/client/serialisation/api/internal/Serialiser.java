@@ -10,7 +10,6 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 public interface Serialiser<SERIALISED> {
-    String getType();
     SERIALISED serialise(Serializable object);
     <T extends Serializable> T deserialise(SERIALISED serialised, Class<T> tClass);
 }

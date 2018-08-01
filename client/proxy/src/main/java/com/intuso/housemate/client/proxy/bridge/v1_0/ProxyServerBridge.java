@@ -10,6 +10,7 @@ import com.intuso.housemate.client.api.internal.object.view.ServerView;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.housemate.client.v1_0.messaging.api.ioc.Messaging;
+import com.intuso.housemate.client.v1_0.messaging.jms.JMS;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyObject;
 import com.intuso.housemate.client.v1_0.serialisation.javabin.JavabinSerialiser;
 import com.intuso.housemate.client.v1_0.serialisation.json.JsonSerialiser;
@@ -191,18 +192,18 @@ public abstract class ProxyServerBridge
         protected Javabin(ServerMapper serverMapper,
                           ManagedCollectionFactory managedCollectionFactory,
                           com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
-                          @Messaging(transport = "jms", contentType = "application/javabin") Sender.Factory senderFactory,
+                          @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) Sender.Factory senderFactory,
                           Factory<ProxyCommandBridge> commandFactory,
                           Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
                           Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
                           Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
                           Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                           Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
-            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JavabinSerialiser.TYPE),
+            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JavabinSerialiser.TOPIC),
                   serverMapper,
                   managedCollectionFactory,
                   internalReceiverFactory,
-                  JavabinSerialiser.TYPE,
+                  JavabinSerialiser.TOPIC,
                   senderFactory,
                   commandFactory,
                   devicesFactory,
@@ -239,18 +240,18 @@ public abstract class ProxyServerBridge
         protected Json(ServerMapper serverMapper,
                        ManagedCollectionFactory managedCollectionFactory,
                        com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
-                       @Messaging(transport = "jms", contentType = "application/json") Sender.Factory senderFactory,
+                       @Messaging(transport = JMS.TYPE, contentType = JsonSerialiser.CONTENT_TYPE) Sender.Factory senderFactory,
                        Factory<ProxyCommandBridge> commandFactory,
                        Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory,
                        Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
                        Factory<ProxyListBridge<ProxyDeviceGroupBridge>> deviceGroupsFactory,
                        Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
-Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
-            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JsonSerialiser.TYPE),
+                       Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
+            super(ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, JsonSerialiser.TOPIC),
                   serverMapper,
                   managedCollectionFactory,
                   internalReceiverFactory,
-                  JsonSerialiser.TYPE,
+                  JsonSerialiser.TOPIC,
                   senderFactory,
                   commandFactory,
                   devicesFactory,

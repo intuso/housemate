@@ -17,6 +17,7 @@ import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
 import com.intuso.housemate.client.v1_0.messaging.api.ioc.Messaging;
+import com.intuso.housemate.client.v1_0.messaging.jms.JMS;
 import com.intuso.housemate.client.v1_0.serialisation.javabin.JavabinSerialiser;
 import com.intuso.housemate.client.v1_0.serialisation.json.JsonSerialiser;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -58,10 +59,10 @@ public final class RealNodeListImpl
                             @Assisted("name") String name,
                             @Assisted("description") String description,
                             ManagedCollectionFactory managedCollectionFactory,
-                            @Messaging(transport = "jms", contentType = "application/javabin") com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JavabinSenderFactory,
-                            @Messaging(transport = "jms", contentType = "application/javabin") com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JavabinReceiverFactory,
-                            @Messaging(transport = "jms", contentType = "application/json") com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JsonSenderFactory,
-                            @Messaging(transport = "jms", contentType = "application/json") com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JsonReceiverFactory,
+                            @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JavabinSenderFactory,
+                            @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JavabinReceiverFactory,
+                            @Messaging(transport = JMS.TYPE, contentType = JsonSerialiser.CONTENT_TYPE) com.intuso.housemate.client.v1_0.messaging.api.Sender.Factory v1_0JsonSenderFactory,
+                            @Messaging(transport = JMS.TYPE, contentType = JsonSerialiser.CONTENT_TYPE) com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0JsonReceiverFactory,
                             RealNodeBridge.Factory nodeV1_0Factory) {
         super(logger, new List.Data(id, name, description), managedCollectionFactory);
         this.v1_0JavabinSenderFactory = v1_0JavabinSenderFactory;
@@ -127,8 +128,8 @@ public final class RealNodeListImpl
     protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
         super.initChildren(name, senderFactory, receiverFactory);
         this.name = name;
-        final String nodesV1_0JavabinPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TYPE, Server.NODES_ID);
-        nodesV1_0JavabinReceiver = v1_0JavabinReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TYPE, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JavabinPath, "*"), Node.Data.class);
+        final String nodesV1_0JavabinPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TOPIC, Server.NODES_ID);
+        nodesV1_0JavabinReceiver = v1_0JavabinReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JavabinSerialiser.TOPIC, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JavabinPath, "*"), Node.Data.class);
         nodesV1_0JavabinReceiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean persistent) {
@@ -144,8 +145,8 @@ public final class RealNodeListImpl
                     }
                 }
         );
-        final String nodesV1_0JsonPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TYPE, Server.NODES_ID);
-        nodesV1_0JsonReceiver = v1_0JsonReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TYPE, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JsonPath, "*"), Node.Data.class);
+        final String nodesV1_0JsonPath = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TOPIC, Server.NODES_ID);
+        nodesV1_0JsonReceiver = v1_0JsonReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, JsonSerialiser.TOPIC, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesV1_0JsonPath, "*"), Node.Data.class);
         nodesV1_0JsonReceiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                    @Override
                    public void onMessage(Node.Data nodeData, boolean persistent) {

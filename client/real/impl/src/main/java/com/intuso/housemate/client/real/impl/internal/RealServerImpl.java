@@ -16,6 +16,8 @@ import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceGroupCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
+import com.intuso.housemate.client.v1_0.messaging.jms.JMS;
+import com.intuso.housemate.client.v1_0.serialisation.javabin.JavabinSerialiser;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -51,8 +53,8 @@ public class RealServerImpl
     public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
                           ProxyServer.Simple proxyServer,
-                          @Messaging(transport = "jms", contentType = "application/javabin") Sender.Factory senderFactory,
-                          @Messaging(transport = "jms", contentType = "application/javabin") Receiver.Factory receiverFactory,
+                          @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) Sender.Factory senderFactory,
+                          @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) Receiver.Factory receiverFactory,
                           RealReferenceImpl.Factory referenceFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,

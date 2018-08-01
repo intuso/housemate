@@ -39,14 +39,14 @@ public class JMSMessagingModule extends AbstractModule {
 
     @Provides
     @Singleton
-    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.TYPE)
+    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE)
     public Receiver.Factory getJavabinReceiver(MessageConverter.Javabin messageConverter, Connection connection) {
         return new JMS.Receiver.FactoryImpl(messageConverter, connection);
     }
 
     @Provides
     @Singleton
-    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.TYPE)
+    @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE)
     public Sender.Factory getJavabinSender(MessageConverter.Javabin messageConverter, Connection connection) {
         return new JMS.Sender.FactoryImpl(messageConverter, connection);
     }

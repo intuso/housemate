@@ -10,12 +10,8 @@ import java.io.*;
  */
 public class JavabinSerialiser implements Serialiser<byte[]> {
 
-    public static final String TYPE = "application/javabin";
-
-    @Override
-    public String getType() {
-        return TYPE;
-    }
+    public static final String CONTENT_TYPE = "application/javabin";
+    public static final String TOPIC = "javabin";
 
     public byte[] serialise(Serializable serializable) {
         try {

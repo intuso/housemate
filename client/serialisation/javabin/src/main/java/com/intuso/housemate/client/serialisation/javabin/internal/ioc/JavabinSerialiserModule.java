@@ -16,7 +16,7 @@ import com.intuso.housemate.client.serialisation.javabin.internal.JavabinSeriali
 public class JavabinSerialiserModule extends AbstractModule {
     @Override
     protected void configure() {
-        bind(Serialiser.class).annotatedWith(Names.named(JavabinSerialiser.TYPE)).to(JavabinSerialiser.class);
+        bind(Serialiser.class).annotatedWith(Names.named(JavabinSerialiser.CONTENT_TYPE)).to(JavabinSerialiser.class);
         bind(JavabinSerialiser.class).in(Scopes.SINGLETON);
     }
 }
