@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.ability.Ability;
 import com.intuso.housemate.client.api.internal.annotation.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.*;
@@ -68,13 +67,11 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     private void findAbilities(Logger logger, Class<?> clazz, Set<String> abilities) {
-        Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
-        if(interfaces.contains(Ability.class)) {
-            Id id = clazz.getAnnotation(Id.class);
-            if(id == null)
-                throw new HousemateException("No " + Id.class.getName() + " on ability class " + clazz.getName());
+        Id id = clazz.getAnnotation(Id.class);
+        if(id != null)
             abilities.add(id.value());
-        } else {
+        else {
+            Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
             if(clazz.getSuperclass() != null)
                 findAbilities(logger, clazz.getSuperclass(), abilities);
             for(Class<?> interfaceClass : interfaces)

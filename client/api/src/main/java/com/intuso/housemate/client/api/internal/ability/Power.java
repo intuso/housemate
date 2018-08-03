@@ -18,14 +18,14 @@ public interface Power extends Ability {
      * Turn on
      */
     @Command
-    @Id(value = "on", name = "Turn On", description = "Turn the device on")
+    @Id(value = "on", name = "Turn On", description = "Turn on")
     void turnOn();
 
     /**
      * Turn off
      */
     @Command
-    @Id(value = "off", name = "Turn Off", description = "Turn the device off")
+    @Id(value = "off", name = "Turn Off", description = "Turn off")
     void turnOff();
 
     /**
@@ -41,7 +41,43 @@ public interface Power extends Ability {
          * @param on true if the device is now on, null if unknown
          */
         @Value
-        @Id(value = "on", name = "On", description = "True if the device is now on")
+        @Id(value = "on", name = "On", description = "Whether the device is on")
         void on(Boolean on);
+    }
+
+    @Id(value = "power.variable", name = "Variable power", description = "Variable power")
+    interface Variable extends Power {
+
+        /**
+         * Set the power
+         */
+        @Command
+        @Id(value = "set", name = "Set", description = "Set Power")
+        void volume(@Id(value = "percent", name = "Percent", description = "Percent") int volume);
+
+        /**
+         * Increase power
+         */
+        @Command
+        @Id(value = "increase", name = "Increase", description = "Increase power")
+        void volumeUp();
+
+        /**
+         * Decrease power
+         */
+        @Command
+        @Id(value = "decrease", name = "Decrease", description = "Decrease power")
+        void volumeDown();
+
+        interface Listener {
+
+            /**
+             * Callback for when the device power has been changed
+             * @param percent the percent of power to the device, null if unknown
+             */
+            @Value
+            @Id(value = "percent", name = "Percent", description = "Percent")
+            void percent(Integer percent);
+        }
     }
 }

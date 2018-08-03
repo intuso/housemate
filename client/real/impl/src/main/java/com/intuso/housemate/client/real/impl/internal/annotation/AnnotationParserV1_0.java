@@ -8,7 +8,6 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.housemate.client.v1_0.api.ability.Ability;
 import com.intuso.housemate.client.v1_0.api.annotation.*;
 import org.slf4j.Logger;
 
@@ -68,13 +67,11 @@ public class AnnotationParserV1_0 implements AnnotationParser {
     }
 
     private void findAbilities(Logger logger, Class<?> clazz, Set<String> abilities) {
-        Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
-        if(interfaces.contains(Ability.class)) {
-            Id id = clazz.getAnnotation(Id.class);
-            if(id == null)
-                throw new HousemateException("No " + Id.class.getName() + " on ability class " + clazz.getName());
+        Id id = clazz.getAnnotation(Id.class);
+        if(id != null)
             abilities.add(id.value());
-        } else {
+        else {
+            Set<Class<?>> interfaces = Sets.newHashSet(clazz.getInterfaces());
             if(clazz.getSuperclass() != null)
                 findAbilities(logger, clazz.getSuperclass(), abilities);
             for(Class<?> interfaceClass : interfaces)
