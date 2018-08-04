@@ -260,10 +260,10 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
             if((value == null && other.value != null)
                     || !value.equals(other.value))
                 return false;
-            if(childValues.getChildren().size() != other.childValues.getChildren().size())
+            if(childValues.size() != other.childValues.size())
                 return false;
-            for(Map.Entry<String, Instances> entry : childValues.getChildren().entrySet())
-                if(!other.childValues.getChildren().containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.getChildren().get(entry.getKey())))
+            for(Map.Entry<String, Instances> entry : childValues.entrySet())
+                if(!other.childValues.containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.get(entry.getKey())))
                     return false;
             return true;
         }
@@ -272,25 +272,15 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
     /**
      * Collection of type instances, mapped by type id
      */
-    class InstanceMap implements Serializable {
+    class InstanceMap extends HashMap<String, Instances> implements Serializable {
 
         private static final long serialVersionUID = -1L;
 
-        private Map<String, Instances> children = new HashMap<>();
-
-        public Map<String, Instances> getChildren() {
-            return children;
-        }
-
-        public void setChildren(Map<String, Instances> children) {
-            this.children = children == null || children instanceof Serializable ? children : new HashMap<>(children);
-        }
-
         public void append(String indent, StringBuilder stringBuilder) {
             stringBuilder.append("{");
-            if(children != null && children.size() > 0) {
+            if(size() > 0) {
                 stringBuilder.append("\n").append(indent).append("\t");
-                for (Map.Entry<String, Instances> entry : children.entrySet()) {
+                for (Map.Entry<String, Instances> entry : entrySet()) {
                     stringBuilder.append("\"").append(entry.getKey()).append("\": ");
                     entry.getValue().append(indent + "\t", stringBuilder);
                     stringBuilder.append("\n").append(indent).append("\t");
@@ -305,23 +295,14 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
             append("", sb);
             return sb.toString();
         }
-
-        @Override
-        public boolean equals(java.lang.Object o) {
-            if(o == null || !(o instanceof InstanceMap))
-                return false;
-            return children.equals(((InstanceMap)o).children);
-        }
     }
 
     /**
      * Collection of type instances
      */
-    class Instances implements Serializable {
+    class Instances extends ArrayList<Instance> implements Serializable {
 
         private static final long serialVersionUID = -1L;
-
-        private java.util.List<Instance> elements = new ArrayList<>();
 
         public Instances() {}
 
@@ -330,25 +311,17 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
         }
 
         public Instances(java.util.List<Instance> elements) {
-            this.elements = elements;
-        }
-
-        public java.util.List<Instance> getElements() {
-            return elements;
-        }
-
-        public void setElements(java.util.List<Instance> elements) {
-            this.elements = elements == null || elements instanceof Serializable ? elements : new ArrayList<>(elements);
+            this.addAll(elements);
         }
 
         public String getFirstValue() {
-            return elements.size() > 0 && elements.get(0) != null ? elements.get(0).getValue() : null;
+            return size() > 0 && get(0) != null ? get(0).getValue() : null;
         }
 
         public void append(String indent, StringBuilder stringBuilder) {
             stringBuilder.append("[");
-            if(elements != null && elements.size() > 0) {
-                for (Instance element : elements) {
+            if(size() > 0) {
+                for (Instance element : this) {
                     if (element == null)
                         stringBuilder.append("null");
                     else
@@ -363,13 +336,6 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Data, Type.Liste
             StringBuilder sb = new StringBuilder();
             append("", sb);
             return sb.toString();
-        }
-
-        @Override
-        public boolean equals(java.lang.Object o) {
-            if(o == null || !(o instanceof Instances))
-                return false;
-            return elements.equals(((Instances) o).elements);
         }
     }
 }

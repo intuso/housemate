@@ -88,7 +88,7 @@ public class ObjectResourceImpl implements ObjectResource {
                 ProxyRenameable<ProxyCommand<?, ?, ?>> renameable = (ProxyRenameable<ProxyCommand<?, ?, ?>>) object;
                 renameable.loadRenameCommand(new CommandView(View.Mode.ANCESTORS));
                 Type.InstanceMap values = new Type.InstanceMap();
-                values.getChildren().put("name", new Type.Instances(new Type.Instance(newName)));
+                values.put("name", new Type.Instances(new Type.Instance(newName)));
                 renameable.getRenameCommand().performSync(values, 10000L);
             } catch (InterruptedException e) {
                 throw new BadRequestException("Failed to wait for rename command to complete", e);

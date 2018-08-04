@@ -52,7 +52,7 @@ public class RealPropertyImpl<O>
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap serialisedValues) {
-                        List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.getChildren().get(Value.VALUE_ID));
+                        List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.get(Value.VALUE_ID));
                         RealPropertyImpl.this.setValues(values);
                     }
                 },
@@ -121,7 +121,7 @@ public class RealPropertyImpl<O>
     public void set(final List<O> values, Command.PerformListener<? super RealCommandImpl> listener) {
         getSetCommand().perform(new Type.InstanceMap() {
             {
-                getChildren().put(Property.VALUE_ID, RealTypeImpl.serialiseAll(getType(), values));
+                put(Property.VALUE_ID, RealTypeImpl.serialiseAll(getType(), values));
             }
         }, listener);
     }

@@ -47,11 +47,11 @@ public class MethodCommandPerformer implements RealCommandImpl.Performer {
         public Object[] convert(Type.InstanceMap values) {
             Object[] result = new Object[parameters.size()];
             for(int i = 0; i < result.length; i++) {
-                Type.Instances typeInstances = values.getChildren().get(parameters.get(i).getId());
-                if(typeInstances == null || typeInstances.getElements().size() == 0)
+                Type.Instances typeInstances = values.get(parameters.get(i).getId());
+                if(typeInstances == null || typeInstances.size() == 0)
                     result[i] = null;
                 else
-                    result[i] = parameters.get(i).getType().deserialise(typeInstances.getElements().get(0));
+                    result[i] = parameters.get(i).getType().deserialise(typeInstances.get(0));
             }
             return result;
         }

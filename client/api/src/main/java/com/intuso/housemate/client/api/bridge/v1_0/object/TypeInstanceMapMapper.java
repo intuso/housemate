@@ -27,8 +27,8 @@ public interface TypeInstanceMapMapper {
             if(typeInstanceMap == null)
                 return null;
             com.intuso.housemate.client.api.internal.object.Type.InstanceMap result = new com.intuso.housemate.client.api.internal.object.Type.InstanceMap();
-            for(String key : typeInstanceMap.getChildren().keySet())
-                result.getChildren().put(key, typeInstancesMapper.map(typeInstanceMap.getChildren().get(key)));
+            for(String key : typeInstanceMap.keySet())
+                result.put(key, typeInstancesMapper.map(typeInstanceMap.get(key)));
             return result;
         }
 
@@ -37,8 +37,8 @@ public interface TypeInstanceMapMapper {
             if(typeInstanceMap == null)
                 return null;
             Type.InstanceMap result = new Type.InstanceMap();
-            for(String key : typeInstanceMap.getChildren().keySet())
-                result.getChildren().put(key, typeInstancesMapper.map(typeInstanceMap.getChildren().get(key)));
+            for(String key : typeInstanceMap.keySet())
+                result.put(key, typeInstancesMapper.map(typeInstanceMap.get(key)));
             return result;
         }
     }

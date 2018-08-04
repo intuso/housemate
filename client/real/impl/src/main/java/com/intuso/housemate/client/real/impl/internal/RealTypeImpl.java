@@ -60,7 +60,7 @@ public abstract class RealTypeImpl<O>
             return null;
         Instances result = new Instances();
         for(O typedValue : typedValues)
-            result.getElements().add(serialiser.serialise(typedValue));
+            result.add(serialiser.serialise(typedValue));
         return result;
     }
 
@@ -68,7 +68,7 @@ public abstract class RealTypeImpl<O>
         if(values == null)
             return null;
         List<O> result = Lists.newArrayList();
-        for(Instance value : values.getElements())
+        for(Instance value : values)
             result.add(serialiser.deserialise(value));
         return result;
     }

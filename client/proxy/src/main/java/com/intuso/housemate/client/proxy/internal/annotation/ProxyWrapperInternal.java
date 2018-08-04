@@ -293,7 +293,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 Type.InstanceMap values = new Type.InstanceMap();
                 if(args != null)
                     for(int i = 0; i < args.length; i++)
-                        values.getChildren().put(parameterSerialisers[i].getKey(), parameterSerialisers[i].serialise(args[i]));
+                        values.put(parameterSerialisers[i].getKey(), parameterSerialisers[i].serialise(args[i]));
                 command.perform(values, new com.intuso.housemate.client.api.internal.object.Command.PerformListener<ProxyCommand<?, ?, ?>>() {
                     @Override
                     public void commandStarted(ProxyCommand<?, ?, ?> command) {
@@ -359,7 +359,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     throw new RuntimeException("There are more elements in the list (" + values.size() + ") than the configured maxValues (" + minValues + ")");
                 Type.Instances result = new Type.Instances();
                 for(Object typedValue : values)
-                    result.getElements().add(serialiser.serialise(typedValue));
+                    result.add(serialiser.serialise(typedValue));
                 return result;
             }
         }
@@ -383,7 +383,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 if(property == null)
                     throw new HousemateException("Could not find property " + propertyId);
                 Type.InstanceMap values = new Type.InstanceMap();
-                values.getChildren().put("value", valueSerialiser.serialise(args[0]));
+                values.put("value", valueSerialiser.serialise(args[0]));
                 property.getSetCommand().perform(values, new com.intuso.housemate.client.api.internal.object.Command.PerformListener<ProxyCommand<?, ?, ?>>() {
                     @Override
                     public void commandStarted(ProxyCommand<?, ?, ?> command) {
@@ -441,7 +441,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     throw new RuntimeException("There are more elements in the list (" + values.size() + ") than the configured maxValues (" + minValues + ")");
                 Type.Instances result = new Type.Instances();
                 for(Object typedValue : values)
-                    result.getElements().add(serialiser.serialise(typedValue));
+                    result.add(serialiser.serialise(typedValue));
                 return result;
             }
         }
@@ -528,8 +528,8 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
             public Object deserialise(Type.Instances instances) {
                 List<Object> result = Lists.newArrayList();
-                if(instances != null && instances.getElements() != null)
-                    for(Type.Instance instance : instances.getElements())
+                if(instances != null && instances != null)
+                    for(Type.Instance instance : instances)
                         result.add(serialiser.deserialise(instance));
                 if(!isList) {
                     if(result.size() == 0)

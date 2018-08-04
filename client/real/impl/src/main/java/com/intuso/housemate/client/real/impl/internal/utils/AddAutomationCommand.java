@@ -93,10 +93,10 @@ public class AddAutomationCommand {
 
         @Override
         public void perform(Type.InstanceMap values) {
-            Type.Instances name = values.getChildren().get(NAME_PARAMETER_ID);
+            Type.Instances name = values.get(NAME_PARAMETER_ID);
             if(name == null || name.getFirstValue() == null)
                 throw new HousemateException("No name specified");
-            Type.Instances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
+            Type.Instances description = values.get(DESCRIPTION_PARAMETER_ID);
             if(description == null || description.getFirstValue() == null)
                 throw new HousemateException("No description specified");
             String id = UUID.randomUUID().toString();

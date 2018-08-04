@@ -130,7 +130,7 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     @Override
     public void set(final Type.Instances value, Command.PerformListener<? super COMMAND> listener) {
         Type.InstanceMap values = new Type.InstanceMap();
-        values.getChildren().put(VALUE_ID, value);
+        values.put(VALUE_ID, value);
         getSetCommand().perform(values, listener);
     }
 

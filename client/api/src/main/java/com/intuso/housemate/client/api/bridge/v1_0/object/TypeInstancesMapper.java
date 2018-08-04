@@ -27,14 +27,14 @@ public interface TypeInstancesMapper {
         public com.intuso.housemate.client.api.internal.object.Type.Instances map(Type.Instances typeInstances) {
             if(typeInstances == null)
                 return null;
-            return new com.intuso.housemate.client.api.internal.object.Type.Instances(Lists.newArrayList(Lists.transform(typeInstances.getElements(), typeInstanceMapper.getFromV1_0Function())));
+            return new com.intuso.housemate.client.api.internal.object.Type.Instances(Lists.newArrayList(Lists.transform(typeInstances, typeInstanceMapper.getFromV1_0Function())));
         }
 
         @Override
         public Type.Instances map(com.intuso.housemate.client.api.internal.object.Type.Instances typeInstances) {
             if(typeInstances == null)
                 return null;
-            return new Type.Instances(Lists.newArrayList(Lists.transform(typeInstances.getElements(), typeInstanceMapper.getToV1_0Function())));
+            return new Type.Instances(Lists.newArrayList(Lists.transform(typeInstances, typeInstanceMapper.getToV1_0Function())));
         }
     }
 }

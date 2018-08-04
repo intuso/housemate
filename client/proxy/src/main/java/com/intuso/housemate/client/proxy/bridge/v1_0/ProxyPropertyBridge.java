@@ -68,7 +68,7 @@ public class ProxyPropertyBridge
     @Override
     public void set(final Type.Instances value, Command.PerformListener<? super ProxyCommandBridge> listener) {
         Type.InstanceMap values = new Type.InstanceMap();
-        values.getChildren().put(Property.VALUE_ID, value);
+        values.put(Property.VALUE_ID, value);
         getSetCommand().perform(values, listener);
     }
 }

@@ -67,7 +67,7 @@ public class RealPropertyBridge
     @Override
     public void set(final Type.Instances value, Command.PerformListener<? super RealCommandBridge> listener) {
         Type.InstanceMap values = new Type.InstanceMap();
-        values.getChildren().put(Property.VALUE_ID, value);
+        values.put(Property.VALUE_ID, value);
         getSetCommand().perform(values, listener);
     }
 }

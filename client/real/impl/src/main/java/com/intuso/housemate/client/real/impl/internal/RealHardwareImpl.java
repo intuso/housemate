@@ -95,8 +95,8 @@ public final class RealHardwareImpl
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap values) {
-                        if (values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
-                            String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
+                        if (values != null && values.containsKey(Renameable.NAME_ID)) {
+                            String newName = values.get(Renameable.NAME_ID).getFirstValue();
                             if (newName != null && !RealHardwareImpl.this.getName().equals(newName))
                                 setName(newName);
                         }
