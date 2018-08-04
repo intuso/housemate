@@ -53,21 +53,21 @@ public interface Power extends Ability {
          */
         @Command
         @Id(value = "set", name = "Set", description = "Set Power")
-        void volume(@Id(value = "percent", name = "Percent", description = "Percent") int volume);
+        void percent(@Id(value = "percent", name = "Percent", description = "Percent") int volume);
 
         /**
          * Increase power
          */
         @Command
         @Id(value = "increase", name = "Increase", description = "Increase power")
-        void volumeUp();
+        void increase();
 
         /**
          * Decrease power
          */
         @Command
         @Id(value = "decrease", name = "Decrease", description = "Decrease power")
-        void volumeDown();
+        void decrease();
 
         interface Listener {
 
