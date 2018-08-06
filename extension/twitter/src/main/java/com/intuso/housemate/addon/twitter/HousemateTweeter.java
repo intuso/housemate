@@ -192,8 +192,8 @@ public class HousemateTweeter {
     private class DeviceGroupListener implements Device.Group.Listener<ProxyDeviceGroup.Simple> {
 
         @Override
-        public void renamed(ProxyDeviceGroup.Simple device, String oldName, String newName) {
-            tweet("\"" + oldName + "\" was renamed to \"" + newName + "\"");
+        public void renamed(ProxyDeviceGroup.Simple device, String oldName, String oldDescription, String newName, String newDescription) {
+            tweet(oldName + " (" + oldDescription + ") was renamed to " + newName + " (" + newDescription + ")");
         }
 
         @Override

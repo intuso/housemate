@@ -50,20 +50,30 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
                 new RealCommand.Performer() {
                     @Override
                     public void perform(Type.InstanceMap values) {
-                        if(values != null && values.containsKey(Renameable.NAME_ID)) {
-                            String newName = values.get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealDeviceImpl.this.getName().equals(newName))
-                                setName(newName);
+                        if(values != null) {
+                            String newName = values.containsKey(Renameable.NAME_ID) ? values.get(Renameable.NAME_ID).getFirstValue() : data.getName();
+                            String newDescription = values.containsKey(Renameable.DESCRIPTION_ID) ? values.get(Renameable.DESCRIPTION_ID).getFirstValue() : data.getDescription();
+                            if (!(data.getName().equals(newName) && data.getDescription().equals(newDescription)))
+                                rename(newName, newDescription);
                         }
                     }
                 },
-                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        Renameable.NAME_ID,
-                        Renameable.NAME_ID,
-                        "The new name",
-                        typeRepository.getType(new TypeSpec(String.class)),
-                        1,
-                        1)));
+                Lists.newArrayList(
+                        parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                                Renameable.NAME_ID,
+                                Renameable.NAME_ID,
+                                "The new name",
+                                typeRepository.getType(new TypeSpec(String.class)),
+                                1,
+                                1),
+                        parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.DESCRIPTION_ID),
+                                Renameable.DESCRIPTION_ID,
+                                Renameable.DESCRIPTION_ID,
+                                "The new description",
+                                typeRepository.getType(new TypeSpec(String.class)),
+                                1,
+                                1)
+                ));
         this.commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID),
                 COMMANDS_ID,
                 "Commands",
@@ -117,11 +127,12 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
         return result;
     }
 
-    private void setName(String newName) {
+    private void rename(String newName, String newDescription) {
         getData().setName(newName);
         for(Device.Listener<? super DEVICE> listener : listeners)
-            listener.renamed(getThis(), RealDeviceImpl.this.getName(), newName);
+            listener.renamed(getThis(), data.getName(), data.getDescription(), newName, newDescription);
         data.setName(newName);
+        data.setDescription(newDescription);
         dataUpdated();
     }
 

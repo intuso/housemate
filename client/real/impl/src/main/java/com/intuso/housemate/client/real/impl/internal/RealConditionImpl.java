@@ -89,20 +89,30 @@ public final class RealConditionImpl
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap values) {
-                        if(values != null && values.containsKey(Renameable.NAME_ID)) {
-                            String newName = values.get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealConditionImpl.this.getName().equals(newName))
-                                setName(newName);
+                        if(values != null) {
+                            String newName = values.containsKey(Renameable.NAME_ID) ? values.get(Renameable.NAME_ID).getFirstValue() : data.getName();
+                            String newDescription = values.containsKey(Renameable.DESCRIPTION_ID) ? values.get(Renameable.DESCRIPTION_ID).getFirstValue() : data.getDescription();
+                            if (!(data.getName().equals(newName) && data.getDescription().equals(newDescription)))
+                                rename(newName, newDescription);
                         }
                     }
                 },
-                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        Renameable.NAME_ID,
-                        Renameable.NAME_ID,
-                        "The new name",
-                        typeRepository.getType(new TypeSpec(String.class)),
-                        1,
-                        1)));
+                Lists.newArrayList(
+                        parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                                Renameable.NAME_ID,
+                                Renameable.NAME_ID,
+                                "The new name",
+                                typeRepository.getType(new TypeSpec(String.class)),
+                                1,
+                                1),
+                        parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.DESCRIPTION_ID),
+                                Renameable.DESCRIPTION_ID,
+                                Renameable.DESCRIPTION_ID,
+                                "The new description",
+                                typeRepository.getType(new TypeSpec(String.class)),
+                                1,
+                                1)
+                ));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
                 Removeable.REMOVE_ID,
                 Removeable.REMOVE_ID,
@@ -335,11 +345,12 @@ public final class RealConditionImpl
         addConditionCommand.uninit();
     }
 
-    private void setName(String newName) {
-        RealConditionImpl.this.getData().setName(newName);
+    private void rename(String newName, String newDescription) {
+        getData().setName(newName);
         for(Condition.Listener<? super RealConditionImpl> listener : listeners)
-            listener.renamed(RealConditionImpl.this, RealConditionImpl.this.getName(), newName);
+            listener.renamed(RealConditionImpl.this, data.getName(), data.getDescription(), newName, newDescription);
         data.setName(newName);
+        data.setDescription(newDescription);
         dataUpdated();
     }
 
@@ -496,7 +507,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public void renamed(RealConditionImpl renameable, String oldName, String newName) {
+    public void renamed(RealConditionImpl renameable, String oldName, String oldDescription, String newName, String newDescription) {
         // nothing to do, don't care if child is renamed
     }
 

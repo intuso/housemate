@@ -9,7 +9,7 @@ public interface Renameable<RENAME_COMMAND extends Command<?, ?, ?, ?>> {
 
     String RENAME_ID = "rename";
     String NAME_ID = "name";
-    String NEW_NAME = "new-name";
+    String DESCRIPTION_ID = "description";
 
     /**
      * Gets the rename command
@@ -28,6 +28,6 @@ public interface Renameable<RENAME_COMMAND extends Command<?, ?, ?, ?>> {
          * @param oldName the old name
          * @param newName the new name
          */
-        void renamed(RENAMEABLE renameable, String oldName, String newName);
+        void renamed(RENAMEABLE renameable, String oldName, String oldDescription, String newName, String newDescription);
     }
 }

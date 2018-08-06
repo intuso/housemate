@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
-import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.view.*;
@@ -44,7 +43,6 @@ public final class RealDeviceGroupImpl
     private final static String VOLUME_NAME = "Volume devices";
     private final static String VOLUME_DESCRIPTION = "The device's volume devices";
 
-    private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
     private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> playbackDevices;
@@ -81,27 +79,6 @@ public final class RealDeviceGroupImpl
         super(logger, new Group.Data(id, name, description), managedCollectionFactory, commandFactory,
                 parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.removeCallback = removeCallback;
-        this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
-                Renameable.RENAME_ID,
-                Renameable.RENAME_ID,
-                "Rename the device",
-                new RealCommandImpl.Performer() {
-                    @Override
-                    public void perform(Type.InstanceMap values) {
-                        if(values != null && values.containsKey(Renameable.NAME_ID)) {
-                            String newName = values.get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealDeviceGroupImpl.this.getName().equals(newName))
-                                setName(newName);
-                        }
-                    }
-                },
-                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        Renameable.NAME_ID,
-                        Renameable.NAME_ID,
-                        "The new name",
-                        typeRepository.getType(new TypeSpec(String.class)),
-                        1,
-                        1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
                 Removeable.REMOVE_ID,
                 Removeable.REMOVE_ID,
@@ -190,7 +167,6 @@ public final class RealDeviceGroupImpl
     @Override
     protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
         super.initChildren(name, senderFactory, receiverFactory);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), senderFactory, receiverFactory);
         removeCommand.init(ChildUtil.name(name, REMOVE_ID), senderFactory, receiverFactory);
         errorValue.init(ChildUtil.name(name, ERROR_ID), senderFactory, receiverFactory);
         playbackDevices.init(ChildUtil.name(name, PLAYBACK), senderFactory, receiverFactory);
@@ -208,7 +184,6 @@ public final class RealDeviceGroupImpl
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        renameCommand.uninit();
         removeCommand.uninit();
         errorValue.uninit();
         playbackDevices.uninit();
@@ -223,14 +198,6 @@ public final class RealDeviceGroupImpl
         addVolumeDeviceCommand.uninit();
     }
 
-    private void setName(String newName) {
-        RealDeviceGroupImpl.this.getData().setName(newName);
-        for(Group.Listener<? super RealDeviceGroupImpl> listener : listeners)
-            listener.renamed(RealDeviceGroupImpl.this, RealDeviceGroupImpl.this.getName(), newName);
-        data.setName(newName);
-        dataUpdated();
-    }
-
     @Override
     public Set<String> getClasses() {
         return getData().getClasses();
@@ -239,11 +206,6 @@ public final class RealDeviceGroupImpl
     @Override
     public Set<String> getAbilities() {
         return getData().getAbilities();
-    }
-
-    @Override
-    public RealCommandImpl getRenameCommand() {
-        return renameCommand;
     }
 
     @Override
