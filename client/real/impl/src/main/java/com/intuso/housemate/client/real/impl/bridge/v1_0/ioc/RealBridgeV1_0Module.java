@@ -17,9 +17,11 @@ public class RealBridgeV1_0Module extends AbstractModule {
     @Override
     protected void configure() {
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealCommandBridge>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealDeviceComponentBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealDeviceConnectedBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealHardwareBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealListBridge<RealCommandBridge>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealListBridge<RealDeviceComponentBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealListBridge<RealDeviceConnectedBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealListBridge<RealHardwareBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<RealObjectBridge.Factory<RealListBridge<RealOptionBridge>>>() {}));

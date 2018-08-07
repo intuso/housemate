@@ -263,7 +263,7 @@ public final class RealTaskImpl
             annotatedObject = ((TaskDriverBridge) driver).getTaskDriver();
         else
             annotatedObject = driver;
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, annotatedObject))
             properties.add(property);
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);

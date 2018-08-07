@@ -20,7 +20,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
         VALUES extends List<? extends Value<?, ?, ?>, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        DEVICES extends List<? extends Device.Connected<?, ?, ?, ?>, ?>,
+        DEVICES extends List<? extends Device.Connected<?, ?, ?>, ?>,
         HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>>
         extends
         Object<Hardware.Data, Hardware.Listener<? super HARDWARE>, HardwareView>,

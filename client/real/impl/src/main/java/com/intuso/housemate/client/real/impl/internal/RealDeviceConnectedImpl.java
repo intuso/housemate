@@ -11,13 +11,10 @@ import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 public final class RealDeviceConnectedImpl
         extends RealDeviceImpl<Device.Connected.Data, Device.Connected.Listener<? super RealDeviceConnectedImpl>, DeviceConnectedView, RealDeviceConnectedImpl>
         implements RealDeviceConnected<RealCommandImpl,
-        RealListGeneratedImpl<RealCommandImpl>,
-        RealListGeneratedImpl<RealValueImpl<?>>,
+        RealListGeneratedImpl<RealDeviceComponentImpl>,
         RealDeviceConnectedImpl> {
 
     private final AnnotationParser annotationParser;
@@ -31,11 +28,10 @@ public final class RealDeviceConnectedImpl
                                    AnnotationParser annotationParser,
                                    RealCommandImpl.Factory commandFactory,
                                    RealParameterImpl.Factory parameterFactory,
-                                   RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
-                                   RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
+                                   RealListGeneratedImpl.Factory<RealDeviceComponentImpl> componentsFactory,
                                    TypeRepository typeRepository) {
         super(logger, new Device.Connected.Data(id, name, description), managedCollectionFactory,
-                commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
+                commandFactory, parameterFactory, componentsFactory, typeRepository);
         this.annotationParser = annotationParser;
     }
 
@@ -44,26 +40,12 @@ public final class RealDeviceConnectedImpl
         return new DeviceConnectedView(mode);
     }
 
-    @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
-    }
-
     void wrap(java.lang.Object object) {
         clear();
         // find the device's abilities, and add the commands and values specified by the object
-        getData().setClasses(annotationParser.findClasses(logger, object));
-        getData().setAbilities(annotationParser.findAbilities(logger, object));
         dataUpdated();
-        for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
-            getCommands().add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
-            getValues().add(value);
+        for(RealDeviceComponentImpl deviceComponent : annotationParser.findDeviceComponents(ChildUtil.logger(logger, DEVICE_COMPONENTS_ID), object))
+            getDeviceComponents().add(deviceComponent);
     }
 
     public interface Factory {

@@ -2,6 +2,9 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.intuso.housemate.client.v1_0.api.ability.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.annotation.Component;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -19,7 +22,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
 
     private final String idFormat, nameFormat, descriptionFormat;
 
-    private final Map<Integer, TemperatureSensorImpl> sensors = Maps.newHashMap();
+    private final Map<Integer, Device> sensors = Maps.newHashMap();
 
     protected TemperatureSensorsHandler(ManagedCollectionFactory managedCollectionFactory,
                                         RFXtrx rfxtrx,
@@ -43,7 +46,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
 
     @Override
     public void newTemperature(int sensorId, double temperature) {
-        TemperatureSensorImpl sensor = getOrCreate(sensorId);
+        Device sensor = getOrCreate(sensorId);
         if(sensor != null)
             sensor.setTemperature(temperature);
     }
@@ -53,7 +56,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
         addSensor(Integer.parseInt(details));
     }
 
-    private TemperatureSensorImpl getOrCreate(int sensorId) {
+    private Device getOrCreate(int sensorId) {
         if(sensors.containsKey(sensorId))
             return sensors.get(sensorId);
         else if(autoCreate)
@@ -61,8 +64,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
         return null;
     }
 
-    public TemperatureSensorImpl addSensor(int sensorId) {
-        TemperatureSensorImpl sensor = new TemperatureSensorImpl(managedCollectionFactory);
+    public Device addSensor(int sensorId) {
+        Device sensor = new Device(managedCollectionFactory);
         sensors.put(sensorId, sensor);
         hardwareCallback.addDevice(
                 idFormat.replaceAll("\\$\\{sensorId\\}", Integer.toString(sensorId)),
@@ -133,6 +136,40 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
                     "${sensorId}",
                     "Temperature Sensor 5-${sensorId}",
                     "Temperature Sensor 5-${sensorId}");
+        }
+    }
+
+    public class Device {
+
+        @Component
+        @Id(value = "temperature", name = "Temperature", description = "Temperature")
+        private final TemperatureSensorImpl temperatureSensor;
+
+        public Device(ManagedCollectionFactory managedCollectionFactory) {
+            this.temperatureSensor = new TemperatureSensorImpl(managedCollectionFactory);
+        }
+
+        public void setTemperature(double temperature) {
+            temperatureSensor.setTemperature(temperature);
+        }
+
+        public class TemperatureSensorImpl implements TemperatureSensor {
+
+            private final ManagedCollection<Listener> listeners;
+
+            protected TemperatureSensorImpl(ManagedCollectionFactory managedCollectionFactory) {
+                this.listeners = managedCollectionFactory.createSet();
+            }
+
+            @Override
+            public ManagedCollection.Registration addListener(Listener listener) {
+                return listeners.add(listener);
+            }
+
+            public void setTemperature(double temperature) {
+                for (Listener listener : listeners)
+                    listener.temperature(temperature);
+            }
         }
     }
 }

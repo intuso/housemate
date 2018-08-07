@@ -338,11 +338,11 @@ public final class RealHardwareImpl
         if(driver != null)
             uninit();
         driver = driverFactory.create(logger, this);
-        for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
+        for(RealCommandImpl command : annotationParser.findCommands(logger, driver))
             commands.add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, driver))
             values.add(value);
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, driver))
             properties.add(property);
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);

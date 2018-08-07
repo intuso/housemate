@@ -14,7 +14,7 @@ public interface RealHardware<COMMAND extends RealCommand<?, ?, ?>,
         COMMANDS extends RealList<? extends RealCommand<?, ?, ?>, ?>,
         VALUES extends RealList<? extends RealValue<?, ?, ?>, ?>,
         PROPERTIES extends RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
-        DEVICES extends RealList<? extends RealDeviceConnected<?, ?, ?, ?>, ?>,
+        DEVICES extends RealList<? extends RealDeviceConnected<?, ?, ?>, ?>,
         HARDWARE extends RealHardware<COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>>
         extends Hardware<COMMAND,
         COMMAND,

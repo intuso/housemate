@@ -11,7 +11,7 @@ public class DeviceConnectedView extends DeviceView<DeviceConnectedView> {
         super(mode);
     }
 
-    public DeviceConnectedView(CommandView renameCommandView, ListView<CommandView> commandsView, ListView<ValueView> valuesView) {
-        super(renameCommandView, commandsView, valuesView);
+    public DeviceConnectedView(CommandView renameCommandView, ListView<DeviceComponentView> componentsView) {
+        super(renameCommandView, componentsView);
     }
 }

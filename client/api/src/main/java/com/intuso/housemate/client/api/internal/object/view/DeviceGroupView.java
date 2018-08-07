@@ -25,8 +25,7 @@ public class DeviceGroupView extends DeviceView<DeviceGroupView> {
     }
 
     public DeviceGroupView(CommandView renameCommandView,
-                           ListView<CommandView> commandsView,
-                           ListView<ValueView> valuesView,
+                           ListView<DeviceComponentView> componentsView,
                            ValueView errorValue,
                            CommandView removeCommand,
                            ListView<DeviceView<?>> playbackDevices,
@@ -39,7 +38,7 @@ public class DeviceGroupView extends DeviceView<DeviceGroupView> {
                            CommandView addTemperatureSensorDevice,
                            ListView<DeviceView<?>> volumeDevices,
                            CommandView addVolumeDevice) {
-        super(renameCommandView, commandsView, valuesView);
+        super(renameCommandView, componentsView);
         this.errorValue = errorValue;
         this.removeCommand = removeCommand;
         this.playbackDevices = playbackDevices;

@@ -26,7 +26,7 @@ public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>, ServerView>
         implements RealServer<RealCommandImpl,
         RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
-        RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
+        RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>,
         RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl>,
         RealListPersistedImpl<User.Data, RealUserImpl>,
         RealNodeListImpl,
@@ -42,7 +42,7 @@ public class RealServerImpl
 
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devices;
+    private final RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> devices;
     private final RealListPersistedImpl<Device.Group.Data, RealDeviceGroupImpl> deviceGroups;
     private final RealCommandImpl addDeviceGroupCommand;
     private final RealNodeListImpl nodes;
@@ -57,7 +57,7 @@ public class RealServerImpl
                           @Messaging(transport = JMS.TYPE, contentType = JavabinSerialiser.CONTENT_TYPE) Receiver.Factory receiverFactory,
                           RealReferenceImpl.Factory referenceFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
-                          RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,
+                          RealListGeneratedImpl.Factory<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> devicesFactory,
                           RealListPersistedImpl.Factory<Device.Group.Data, RealDeviceGroupImpl> deviceGroupsFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
@@ -232,7 +232,7 @@ public class RealServerImpl
     }
 
     @Override
-    public RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getDevices() {
+    public RealListGeneratedImpl<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getDevices() {
         return devices;
     }
 
@@ -319,7 +319,7 @@ public class RealServerImpl
         return (T) current;
     }
 
-    private void addDeviceList(String idPrefix, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list) {
+    private void addDeviceList(String idPrefix, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?> list) {
         list.addObjectListener(new DeviceListListener(idPrefix), true);
     }
 
@@ -358,7 +358,7 @@ public class RealServerImpl
         }
     }
 
-    private class DeviceListListener implements List.Listener<ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>> {
+    private class DeviceListListener implements List.Listener<ProxyDevice<?, ?, ?, ?, ?, ?>, ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?>> {
 
         private final String idPrefix;
 
@@ -367,7 +367,7 @@ public class RealServerImpl
         }
 
         @Override
-        public void elementAdded(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?, ?> device) {
+        public void elementAdded(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?> device) {
             devices.add(referenceFactory.create(
                     ChildUtil.logger(logger, DEVICES_ID, device.getId()),
                     idPrefix + device.getId(),
@@ -377,7 +377,7 @@ public class RealServerImpl
         }
 
         @Override
-        public void elementRemoved(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?, ?> device) {
+        public void elementRemoved(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?> list, ProxyDevice<?, ?, ?, ?, ?, ?> device) {
             devices.remove(idPrefix + device.getId());
         }
     }

@@ -7,46 +7,32 @@ import com.intuso.housemate.client.api.internal.object.view.DeviceConnectedView;
 import com.intuso.housemate.client.api.internal.object.view.DeviceGroupView;
 import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * @param <COMMANDS> the type of the commands list
- * @param <VALUES> the type of the values list
- * @param <DEVICE> the type of the feature
- */
 public interface Device<
         DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
         RENAME_COMMAND extends Command<?, ?, ?, ?>,
-        COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
-        VALUES extends List<? extends Value<?, ?, ?>, ?>,
+        DEVICE_COMPONENTS extends List<? extends DeviceComponent<?, ?, ?>, ?>,
         VIEW extends DeviceView<?>,
-        DEVICE extends Device<DATA, LISTENER, RENAME_COMMAND, COMMANDS, VALUES, VIEW, DEVICE>>
+        DEVICE extends Device<DATA, LISTENER, RENAME_COMMAND, DEVICE_COMPONENTS, VIEW, DEVICE>>
         extends
         Object<DATA, LISTENER, VIEW>,
         Renameable<RENAME_COMMAND>,
-        Command.Container<COMMANDS>,
-        Value.Container<VALUES> {
+        DeviceComponent.Container<DEVICE_COMPONENTS> {
 
-    String COMMANDS_ID = "commands";
-    String VALUES_ID = "values";
-
-    Set<String> getClasses();
-    Set<String> getAbilities();
+    String DEVICE_COMPONENTS_ID = "components";
 
     /**
      *
      * Listener interface for features
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?>> extends Object.Listener,
             Renameable.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of features
      */
-    interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?, ?>>> {
+    interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the features list
@@ -62,35 +48,10 @@ public interface Device<
 
         private static final long serialVersionUID = -1L;
 
-        private Set<String> classes = new HashSet<>();
-        private Set<String> abilities = new HashSet<>();
-
         public Data() {}
 
         public Data(String objectClass, String id, String name, String description) {
             super(objectClass, id, name, description);
-        }
-
-        public Data(String objectClass, String id, String name, String description, Set<String> classes, Set<String> abilities) {
-            super(objectClass, id, name, description);
-            this.classes = classes;
-            this.abilities = abilities;
-        }
-
-        public Set<String> getClasses() {
-            return classes;
-        }
-
-        public void setClasses(Set<String> classes) {
-            this.classes = classes;
-        }
-
-        public Set<String> getAbilities() {
-            return abilities;
-        }
-
-        public void setAbilities(Set<String> abilities) {
-            this.abilities = abilities;
         }
     }
 
@@ -99,23 +60,22 @@ public interface Device<
      */
     interface Connected<
             RENAME_COMMAND extends Command<?, ?, ?, ?>,
-            COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
-            VALUES extends List<? extends Value<?, ?, ?>, ?>,
-            DEVICE extends Connected<RENAME_COMMAND, COMMANDS, VALUES, DEVICE>>
+            DEVICE_COMPONENTS extends List<? extends DeviceComponent<?, ?, ?>, ?>,
+            DEVICE extends Connected<RENAME_COMMAND, DEVICE_COMPONENTS, DEVICE>>
             extends
-            Device<Connected.Data, Connected.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DeviceConnectedView, DEVICE>  {
+            Device<Connected.Data, Connected.Listener<? super DEVICE>, RENAME_COMMAND, DEVICE_COMPONENTS, DeviceConnectedView, DEVICE>  {
 
         /**
          *
          * Listener interface for devices
          */
-        interface Listener<DEVICE extends Connected<?, ?, ?, ?>> extends Device.Listener<DEVICE> {}
+        interface Listener<DEVICE extends Connected<?, ?, ?>> extends Device.Listener<DEVICE> {}
 
         /**
          *
          * Interface to show that the implementing object has a list of features
          */
-        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?, ?>>> {
+        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
             /**
              * Gets the features list
@@ -136,11 +96,7 @@ public interface Device<
             public Data() {}
 
             public Data(String id, String name, String description) {
-                this(id, name, description, new HashSet<String>(), new HashSet<String>());
-            }
-
-            public Data(String id, String name, String description, Set<String> classes, Set<String> abilities) {
-                super(OBJECT_CLASS, id, name, description, classes, abilities);
+                super(OBJECT_CLASS, id, name, description);
             }
         }
     }
@@ -154,12 +110,11 @@ public interface Device<
             REMOVE_COMMAND extends Command<?, ?, ?, ?>,
             ADD_COMMAND extends Command<?, ?, ?, ?>,
             ERROR_VALUE extends Value<?, ?, ?>,
-            COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
-            VALUES extends List<? extends Value<?, ?, ?>, ?>,
-            DEVICES extends List<? extends Reference<?, ? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
-            DEVICE extends Group<RENAME_COMMAND, REMOVE_COMMAND, ADD_COMMAND, ERROR_VALUE, COMMANDS, VALUES, DEVICES, DEVICE>>
+            DEVICE_COMPONENTS extends List<? extends DeviceComponent<?, ?, ?>, ?>,
+            DEVICES extends List<? extends Reference<?, ? extends Device<?, ?, ?, ?, ?, ?>, ?>, ?>,
+            DEVICE extends Group<RENAME_COMMAND, REMOVE_COMMAND, ADD_COMMAND, ERROR_VALUE, DEVICE_COMPONENTS, DEVICES, DEVICE>>
             extends
-            Device<Group.Data, Group.Listener<? super DEVICE>, RENAME_COMMAND, COMMANDS, VALUES, DeviceGroupView, DEVICE>,
+            Device<Group.Data, Group.Listener<? super DEVICE>, RENAME_COMMAND, DEVICE_COMPONENTS, DeviceGroupView, DEVICE>,
             Failable<ERROR_VALUE>,
             Removeable<REMOVE_COMMAND> {
 
@@ -189,7 +144,7 @@ public interface Device<
          *
          * Listener interface for devices
          */
-        interface Listener<DEVICE extends Group<?, ?, ?, ?, ?, ?, ?, ?>> extends Device.Listener<DEVICE>,
+        interface Listener<DEVICE extends Group<?, ?, ?, ?, ?, ?, ?>> extends Device.Listener<DEVICE>,
                 Failable.Listener<DEVICE>,
                 Renameable.Listener<DEVICE> {}
 
@@ -197,7 +152,7 @@ public interface Device<
          *
          * Interface to show that the implementing object has a list of features
          */
-        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?, ?>>> {
+        interface Container<DEVICES extends Iterable<? extends Device<?, ?, ?, ?, ?, ?>>> {
 
             /**
              * Gets the features list
@@ -218,11 +173,7 @@ public interface Device<
             public Data() {}
 
             public Data(String id, String name, String description) {
-                this(id, name, description, new HashSet<String>(), new HashSet<String>());
-            }
-
-            public Data(String id, String name, String description, Set<String> classes, Set<String> abilities) {
-                super(OBJECT_CLASS, id, name, description, classes, abilities);
+                super(OBJECT_CLASS, id, name, description);
             }
         }
     }

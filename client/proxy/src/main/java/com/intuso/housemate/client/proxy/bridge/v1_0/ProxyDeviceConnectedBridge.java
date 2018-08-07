@@ -9,8 +9,6 @@ import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 /**
  * Created by tomc on 28/11/16.
  */
@@ -21,8 +19,7 @@ public class ProxyDeviceConnectedBridge
         DeviceConnectedView,
         ProxyDeviceConnectedBridge>
         implements Device.Connected<ProxyCommandBridge,
-        ProxyListBridge<ProxyCommandBridge>,
-        ProxyListBridge<ProxyValueBridge>,
+        ProxyListBridge<ProxyDeviceComponentBridge>,
         ProxyDeviceConnectedBridge> {
 
     @Inject
@@ -32,18 +29,7 @@ public class ProxyDeviceConnectedBridge
                                          com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
                                          Sender.Factory v1_0SenderFactory,
                                          Factory<ProxyCommandBridge> commandFactory,
-                                         Factory<ProxyListBridge<ProxyCommandBridge>> commandsFactory,
-                                         Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory) {
-        super(logger, Device.Connected.Data.class, dataMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, commandsFactory, valuesFactory);
-    }
-
-    @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
+                                         Factory<ProxyListBridge<ProxyDeviceComponentBridge>> componentsFactory) {
+        super(logger, Device.Connected.Data.class, dataMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, componentsFactory);
     }
 }

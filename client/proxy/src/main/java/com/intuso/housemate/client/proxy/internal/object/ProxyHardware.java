@@ -24,7 +24,7 @@ public abstract class ProxyHardware<
         VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         PROPERTY extends ProxyProperty<?, ?, ?>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-        DEVICES extends ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyDeviceConnected<?, ?, ?>, ?>,
         HARDWARE extends ProxyHardware<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICES, HARDWARE>>
         extends ProxyObject<Hardware.Data, Hardware.Listener<? super HARDWARE>, HardwareView>
         implements Hardware<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>,

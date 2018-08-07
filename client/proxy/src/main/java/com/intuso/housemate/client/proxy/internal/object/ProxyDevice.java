@@ -24,20 +24,17 @@ public abstract class ProxyDevice<
         LISTENER extends Device.Listener<? super DEVICE>,
         VIEW extends DeviceView<?>,
         COMMAND extends ProxyCommand<?, ?, ?>,
-        COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
-        VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
-        DEVICE extends ProxyDevice<DATA, LISTENER, VIEW, COMMAND, COMMANDS, VALUES, DEVICE>>
+        DEVICE_COMPONENTS extends ProxyList<? extends ProxyDeviceComponent<?, ?, ?>, ?>,
+        DEVICE extends ProxyDevice<DATA, LISTENER, VIEW, COMMAND, DEVICE_COMPONENTS, DEVICE>>
         extends ProxyObject<DATA, LISTENER, VIEW>
-        implements Device<DATA, LISTENER, COMMAND, COMMANDS, VALUES, VIEW, DEVICE>,
+        implements Device<DATA, LISTENER, COMMAND, DEVICE_COMPONENTS, VIEW, DEVICE>,
         ProxyRenameable<COMMAND> {
 
     private final ProxyObject.Factory<COMMAND> commandFactory;
-    private final ProxyObject.Factory<COMMANDS> commandsFactory;
-    private final ProxyObject.Factory<VALUES> valuesFactory;
+    private final ProxyObject.Factory<DEVICE_COMPONENTS> componentsFactory;
 
     private COMMAND renameCommand;
-    private COMMANDS commands;
-    private VALUES values;
+    private DEVICE_COMPONENTS components;
 
     /**
      * @param logger {@inheritDoc}
@@ -49,12 +46,10 @@ public abstract class ProxyDevice<
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        Factory<COMMAND> commandFactory,
-                       Factory<COMMANDS> commandsFactory,
-                       Factory<VALUES> valuesFactory) {
+                       Factory<DEVICE_COMPONENTS> componentsFactory) {
         super(logger, path, name, dataClass, managedCollectionFactory, receiverFactory);
         this.commandFactory = commandFactory;
-        this.commandsFactory = commandsFactory;
-        this.valuesFactory = valuesFactory;
+        this.componentsFactory = componentsFactory;
     }
 
     @Override
@@ -76,24 +71,20 @@ public abstract class ProxyDevice<
                 // get recursively
                 case ANCESTORS:
                     result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
-                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(view.getComponents(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
                         result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
-                    if(view.getCommands() != null)
-                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
-                    if(view.getValues() != null)
-                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getComponents() != null)
+                        result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(view.getComponents(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
         }
@@ -115,18 +106,14 @@ public abstract class ProxyDevice<
             case CHILDREN:
                 if(renameCommand == null)
                     renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-                if(commands == null)
-                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
-                if(values == null)
-                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
+                if(components == null)
+                    components = componentsFactory.create(ChildUtil.logger(logger, DEVICE_COMPONENTS_ID), ChildUtil.path(path, DEVICE_COMPONENTS_ID), ChildUtil.name(name, DEVICE_COMPONENTS_ID));
                 break;
             case SELECTION:
                 if(renameCommand == null && view.getRenameCommand() != null)
                     renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
-                if(commands == null && view.getCommands() != null)
-                    commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
-                if(values == null && view.getValues() != null)
-                    values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
+                if(components == null && view.getComponents() != null)
+                    components = componentsFactory.create(ChildUtil.logger(logger, DEVICE_COMPONENTS_ID), ChildUtil.path(path, DEVICE_COMPONENTS_ID), ChildUtil.name(name, DEVICE_COMPONENTS_ID));
                 break;
         }
 
@@ -134,17 +121,14 @@ public abstract class ProxyDevice<
         switch (view.getMode()) {
             case ANCESTORS:
                 renameCommand.load(new CommandView(View.Mode.ANCESTORS));
-                commands.load(new ListView(View.Mode.ANCESTORS));
-                values.load(new ListView(View.Mode.ANCESTORS));
+                components.load(new ListView(View.Mode.ANCESTORS));
                 break;
             case CHILDREN:
             case SELECTION:
                 if(view.getRenameCommand() != null)
                     renameCommand.load(view.getRenameCommand());
-                if(view.getCommands() != null)
-                    commands.load(view.getCommands());
-                if(view.getValues() != null)
-                    values.load(view.getValues());
+                if(view.getComponents() != null)
+                    components.load(view.getComponents());
                 break;
         }
     }
@@ -161,10 +145,8 @@ public abstract class ProxyDevice<
         super.uninitChildren();
         if(renameCommand != null)
             renameCommand.uninit();
-        if(commands != null)
-            commands.uninit();
-        if(values != null)
-            values.uninit();
+        if(components != null)
+            components.uninit();
     }
 
     @Override
@@ -173,13 +155,8 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public final COMMANDS getCommands() {
-        return commands;
-    }
-
-    @Override
-    public final VALUES getValues() {
-        return values;
+    public final DEVICE_COMPONENTS getDeviceComponents() {
+        return components;
     }
 
     @Override
@@ -188,14 +165,10 @@ public abstract class ProxyDevice<
             if(renameCommand == null)
                 renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID), ChildUtil.path(path, RENAME_ID), ChildUtil.name(name, RENAME_ID));
             return renameCommand;
-        } else if(COMMANDS_ID.equals(id)) {
-            if(commands == null)
-                commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID), ChildUtil.path(path, COMMANDS_ID), ChildUtil.name(name, COMMANDS_ID));
-            return commands;
-        } else if(VALUES_ID.equals(id)) {
-            if(values == null)
-                values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID), ChildUtil.path(path, VALUES_ID), ChildUtil.name(name, VALUES_ID));
-            return values;
+        } else if(DEVICE_COMPONENTS_ID.equals(id)) {
+            if(components == null)
+                components = componentsFactory.create(ChildUtil.logger(logger, DEVICE_COMPONENTS_ID), ChildUtil.path(path, DEVICE_COMPONENTS_ID), ChildUtil.name(name, DEVICE_COMPONENTS_ID));
+            return components;
         }
         return null;
     }

@@ -9,18 +9,15 @@ import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 /**
  * Base interface for all proxy features
  * @param <DEVICE> the feature type
  */
 public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>,
-        COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
-        VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
-        DEVICE extends ProxyDeviceConnected<COMMAND, COMMANDS, VALUES, DEVICE>>
-        extends ProxyDevice<Device.Connected.Data, Device.Connected.Listener<? super DEVICE>, DeviceConnectedView, COMMAND, COMMANDS, VALUES, DEVICE>
-        implements Device.Connected<COMMAND, COMMANDS, VALUES, DEVICE> {
+        DEVICE_COMPONENTS extends ProxyList<? extends ProxyDeviceComponent<?, ?, ?>, ?>,
+        DEVICE extends ProxyDeviceConnected<COMMAND, DEVICE_COMPONENTS, DEVICE>>
+        extends ProxyDevice<Device.Connected.Data, Device.Connected.Listener<? super DEVICE>, DeviceConnectedView, COMMAND, DEVICE_COMPONENTS, DEVICE>
+        implements Device.Connected<COMMAND, DEVICE_COMPONENTS, DEVICE> {
 
     /**
      * @param logger {@inheritDoc}
@@ -31,24 +28,13 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
                                 ManagedCollectionFactory managedCollectionFactory,
                                 Receiver.Factory receiverFactory,
                                 Factory<COMMAND> commandFactory,
-                                Factory<COMMANDS> commandsFactory,
-                                Factory<VALUES> valuesFactory) {
-        super(logger, path, name, Device.Connected.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+                                Factory<DEVICE_COMPONENTS> componentsFactory) {
+        super(logger, path, name, Device.Connected.Data.class, managedCollectionFactory, receiverFactory, commandFactory, componentsFactory);
     }
 
     @Override
     public DeviceConnectedView createView(View.Mode mode) {
         return new DeviceConnectedView(mode);
-    }
-
-    @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
     }
 
     /**
@@ -59,8 +45,7 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
      * To change this template use File | Settings | File Templates.
      */
     public static final class Simple extends ProxyDeviceConnected<ProxyCommand.Simple,
-            ProxyList.Simple<ProxyCommand.Simple>,
-            ProxyList.Simple<ProxyValue.Simple>,
+            ProxyList.Simple<ProxyDeviceComponent.Simple>,
             Simple> {
 
         @Inject
@@ -70,10 +55,8 @@ public abstract class ProxyDeviceConnected<COMMAND extends ProxyCommand<?, ?, ?>
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
-                      Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
-                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
-                      Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory) {
-            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+                      Factory<ProxyList.Simple<ProxyDeviceComponent.Simple>> componentsFactory) {
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, componentsFactory);
         }
     }
 }

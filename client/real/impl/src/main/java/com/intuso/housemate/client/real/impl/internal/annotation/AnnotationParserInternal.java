@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.housemate.client.api.internal.object.DeviceComponent;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
@@ -26,6 +27,7 @@ import java.util.Set;
 public class AnnotationParserInternal implements AnnotationParser {
 
     private final TypeRepository types;
+    private final RealDeviceComponentImpl.Factory deviceComponentFactory;
     private final RealCommandImpl.Factory commandFactory;
     private final RealParameterImpl.Factory parameterFactory;
     private final RealPropertyImpl.Factory propertyFactory;
@@ -33,18 +35,22 @@ public class AnnotationParserInternal implements AnnotationParser {
 
     @Inject
     public AnnotationParserInternal(TypeRepository types,
-                                RealCommandImpl.Factory commandFactory, RealParameterImpl.Factory parameterFactory, RealPropertyImpl.Factory propertyFactory, RealValueImpl.Factory valueFactory) {
+                                    RealDeviceComponentImpl.Factory deviceComponentFactory,
+                                    RealCommandImpl.Factory commandFactory,
+                                    RealParameterImpl.Factory parameterFactory,
+                                    RealPropertyImpl.Factory propertyFactory,
+                                    RealValueImpl.Factory valueFactory) {
         this.types = types;
+        this.deviceComponentFactory = deviceComponentFactory;
         this.commandFactory = commandFactory;
         this.parameterFactory = parameterFactory;
         this.propertyFactory = propertyFactory;
         this.valueFactory = valueFactory;
     }
 
-    @Override
-    public Set<String> findClasses(Logger logger, Object object) {
+    public Set<String> findClasses(Logger logger, Class<?> clazz) {
         Set<String> result = Sets.newHashSet();
-        findClasses(logger, object.getClass(), result);
+        findClasses(logger, clazz, result);
         return result;
     }
 
@@ -59,10 +65,9 @@ public class AnnotationParserInternal implements AnnotationParser {
             findClasses(logger, interfaceClass, classes);
     }
 
-    @Override
-    public Set<String> findAbilities(Logger logger, Object object) {
+    public Set<String> findAbilities(Logger logger, Class<?> clazz) {
         Set<String> result = Sets.newHashSet();
-        findAbilities(logger, object.getClass(), result);
+        findAbilities(logger, clazz, result);
         return result;
     }
 
@@ -80,19 +85,50 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     @Override
-    public Iterable<RealCommandImpl> findCommands(Logger logger, String idPrefix, Object object) {
-        return findCommands(logger, idPrefix, object, object.getClass());
+    public Iterable<RealDeviceComponentImpl> findDeviceComponents(Logger logger, Object object) {
+        return findDeviceComponents(logger, object, object.getClass());
     }
 
-    private Iterable<RealCommandImpl> findCommands(Logger logger, String idPrefix, Object object, Class<?> clazz) {
+    private Iterable<RealDeviceComponentImpl> findDeviceComponents(Logger logger, Object object, Class<?> clazz) {
+        List<RealDeviceComponentImpl> components = Lists.newArrayList();
+        for(Map.Entry<Field, Component> deviceComponentField : getAnnotatedFields(clazz, Component.class).entrySet()) {
+            Id id = deviceComponentField.getKey().getAnnotation(Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on device component field " + deviceComponentField.getKey().getName() + " of class " + clazz);
+            RealDeviceComponentImpl deviceComponent = deviceComponentFactory.create(ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description());
+            try {
+                Object fieldObj = deviceComponentField.getKey().get(object);
+                deviceComponent.getData().setClasses(findClasses(logger, fieldObj.getClass()));
+                deviceComponent.getData().setAbilities(findAbilities(logger, fieldObj.getClass()));
+                for(RealCommandImpl command : findCommands(ChildUtil.logger(logger, DeviceComponent.COMMANDS_ID), fieldObj))
+                    deviceComponent.getCommands().add(command);
+                for(RealValueImpl<?> value : findValues(ChildUtil.logger(logger, DeviceComponent.VALUES_ID), fieldObj))
+                    deviceComponent.getValues().add(value);
+            } catch(Throwable t) {
+                logger.error("Failed to get {} of {} to look for commands and values for device component", deviceComponentField.getKey().getName(), object.getClass().getName(), t);
+            }
+            components.add(deviceComponent);
+        }
+        return components;
+    }
+
+    @Override
+    public Iterable<RealCommandImpl> findCommands(Logger logger, Object object) {
+        return findCommands(logger, object, object.getClass());
+    }
+
+    private Iterable<RealCommandImpl> findCommands(Logger logger, Object object, Class<?> clazz) {
         List<RealCommandImpl> commands = Lists.newArrayList();
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(clazz, Command.class).entrySet()) {
             Id id = commandMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on command method " + commandMethod.getKey().getName() + " of class " + clazz);
             List<RealParameterImpl<?>> parameters = parseParameters(logger, clazz, commandMethod.getKey());
-            commands.add(commandFactory.create(ChildUtil.logger(logger, idPrefix + id.value()),
-                    idPrefix + id.value(),
+            commands.add(commandFactory.create(ChildUtil.logger(logger, id.value()),
+                    id.value(),
                     id.name(),
                     id.description(),
                     new MethodCommandPerformer(commandMethod.getKey(), object, parameters),
@@ -124,18 +160,18 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     @Override
-    public Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object) {
-        return findValues(logger, idPrefix, object, object.getClass());
+    public Iterable<RealValueImpl<?>> findValues(Logger logger, Object object) {
+        return findValues(logger, object, object.getClass());
     }
 
-    public Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object, Class<?> clazz) {
+    public Iterable<RealValueImpl<?>> findValues(Logger logger, Object object, Class<?> clazz) {
         List<RealValueImpl<?>> values = Lists.newArrayList();
         for(Method addListenerMethod : getAnnotatedMethods(clazz, AddListener.class).keySet())
-            findAddListenerMethodValues(logger, idPrefix, object, clazz, addListenerMethod, values);
+            findAddListenerMethodValues(logger, object, clazz, addListenerMethod, values);
         return values;
     }
 
-    private void findAddListenerMethodValues(Logger logger, String idPrefix, Object object, Class<?> clazz, Method addListenerMethod, List<RealValueImpl<?>> values) {
+    private void findAddListenerMethodValues(Logger logger, Object object, Class<?> clazz, Method addListenerMethod, List<RealValueImpl<?>> values) {
         if(addListenerMethod.getGenericParameterTypes().length != 1) {
             logger.warn("{} annotated method {} on {} should have a single parameter", AddListener.class.getName(), addListenerMethod.getName(), clazz.getName());
             return;
@@ -146,8 +182,8 @@ public class AnnotationParserInternal implements AnnotationParser {
             if(valueMethod.getKey().getGenericParameterTypes().length != 1)
                 throw new HousemateException(clazz.getName() + " value method should have a single argument");
             RealValueImpl<?> value = valueFactory.create(
-                    ChildUtil.logger(logger, idPrefix + id.value()),
-                    idPrefix + id.value(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
                     id.name(),
                     id.description(),
                     types.getType(new TypeSpec(valueMethod.getKey().getGenericParameterTypes()[0], valueMethod.getValue().restriction())),
@@ -166,11 +202,11 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     @Override
-    public Iterable<RealPropertyImpl<?>> findProperties(Logger logger, String idPrefix, Object object) {
-        return findProperties(logger, idPrefix, object, object.getClass());
+    public Iterable<RealPropertyImpl<?>> findProperties(Logger logger, Object object) {
+        return findProperties(logger, object, object.getClass());
     }
 
-    private Iterable<RealPropertyImpl<?>> findProperties(Logger logger, String idPrefix, Object object, Class<?> clazz) {
+    private Iterable<RealPropertyImpl<?>> findProperties(Logger logger, Object object, Class<?> clazz) {
         List<RealPropertyImpl<?>> properties = Lists.newArrayList();
         for(Map.Entry<Field, Property> propertyField : getAnnotatedFields(clazz, Property.class).entrySet()) {
             Object value = null;
@@ -183,15 +219,15 @@ public class AnnotationParserInternal implements AnnotationParser {
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyField.getKey().getName() + " of class " + clazz);
             RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
-                    ChildUtil.logger(logger, idPrefix + id.value()),
-                    idPrefix + id.value(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
                     id.name(),
                     id.description(),
                     types.getType(new TypeSpec(propertyField.getKey().getType(), propertyField.getValue().restriction())),
                     propertyField.getValue().minValues(),
                     propertyField.getValue().maxValues(),
                     Lists.newArrayList(value));
-            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, idPrefix + id.value()), propertyField.getKey(), object));
+            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, id.value()), propertyField.getKey(), object));
             properties.add(property);
         }
         for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(clazz, Property.class).entrySet()) {
@@ -202,15 +238,15 @@ public class AnnotationParserInternal implements AnnotationParser {
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
             List<Object> initialValues = getInitialValues(logger, object, clazz, propertyMethod.getKey().getName());
             RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
-                    ChildUtil.logger(logger, idPrefix + id.value()),
-                    idPrefix + id.value(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
                     id.name(),
                     id.description(),
                     types.getType(new TypeSpec(propertyMethod.getKey().getGenericParameterTypes()[0], propertyMethod.getValue().restriction())),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
                     initialValues);
-            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, idPrefix + id.value()), propertyMethod.getKey(), object));
+            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, id.value()), propertyMethod.getKey(), object));
             properties.add(property);
         }
         return properties;

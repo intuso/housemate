@@ -15,7 +15,6 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @param <COMMAND> the type of the commands
@@ -23,13 +22,12 @@ import java.util.Set;
  */
 public abstract class ProxyDeviceGroup<
         COMMAND extends ProxyCommand<?, ?, ?>,
-        COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
         VALUE extends ProxyValue<?, ?>,
-        VALUES extends ProxyList<VALUE, ?>,
-        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
-        DEVICE_GROUP extends ProxyDeviceGroup<COMMAND, COMMANDS, VALUE, VALUES, DEVICES, DEVICE_GROUP>>
-        extends ProxyDevice<Device.Group.Data, Device.Group.Listener<? super DEVICE_GROUP>, DeviceGroupView, COMMAND, COMMANDS, VALUES, DEVICE_GROUP>
-        implements Device.Group<COMMAND, COMMAND, COMMAND, VALUE, COMMANDS, VALUES, DEVICES, DEVICE_GROUP>,
+        DEVICE_COMPONENTS extends ProxyList<? extends ProxyDeviceComponent<?, ?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?>, ?>,
+        DEVICE_GROUP extends ProxyDeviceGroup<COMMAND, VALUE, DEVICE_COMPONENTS, DEVICES, DEVICE_GROUP>>
+        extends ProxyDevice<Device.Group.Data, Device.Group.Listener<? super DEVICE_GROUP>, DeviceGroupView, COMMAND, DEVICE_COMPONENTS, DEVICE_GROUP>
+        implements Device.Group<COMMAND, COMMAND, COMMAND, VALUE, DEVICE_COMPONENTS, DEVICES, DEVICE_GROUP>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND> {
 
@@ -59,11 +57,10 @@ public abstract class ProxyDeviceGroup<
                             ManagedCollectionFactory managedCollectionFactory,
                             Receiver.Factory receiverFactory,
                             Factory<COMMAND> commandFactory,
-                            Factory<COMMANDS> commandsFactory,
                             Factory<VALUE> valueFactory,
-                            Factory<VALUES> valuesFactory,
+                            Factory<DEVICE_COMPONENTS> componentsFactory,
                             Factory<DEVICES> devicesFactory) {
-        super(logger, path, name, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
+        super(logger, path, name, Group.Data.class, managedCollectionFactory, receiverFactory, commandFactory, componentsFactory);
         this.commandFactory = commandFactory;
         this.valueFactory = valueFactory;
         this.devicesFactory = devicesFactory;
@@ -299,16 +296,6 @@ public abstract class ProxyDeviceGroup<
     }
 
     @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
-    }
-
-    @Override
     public COMMAND getRemoveCommand() {
         return removeCommand;
     }
@@ -438,10 +425,9 @@ public abstract class ProxyDeviceGroup<
      */
     public static final class Simple extends ProxyDeviceGroup<
             ProxyCommand.Simple,
-            ProxyList.Simple<ProxyCommand.Simple>,
             ProxyValue.Simple,
-            ProxyList.Simple<ProxyValue.Simple>,
-            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
+            ProxyList.Simple<ProxyDeviceComponent.Simple>,
+            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>,
             Simple> {
 
         @Inject
@@ -451,11 +437,10 @@ public abstract class ProxyDeviceGroup<
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
-                      Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyValue.Simple> valueFactory,
-                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
-                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>> devicesFactory) {
-            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, devicesFactory);
+                      Factory<ProxyList.Simple<ProxyDeviceComponent.Simple>> componentsFactory,
+                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>> devicesFactory) {
+            super(logger, path, name, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, componentsFactory, devicesFactory);
         }
     }
 }

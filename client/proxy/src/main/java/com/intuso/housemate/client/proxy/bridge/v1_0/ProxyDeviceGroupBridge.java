@@ -11,8 +11,6 @@ import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 /**
  * Created by tomc on 28/11/16.
  */
@@ -27,8 +25,7 @@ public class ProxyDeviceGroupBridge
         ProxyCommandBridge,
         ProxyCommandBridge,
         ProxyValueBridge,
-        ProxyListBridge<ProxyCommandBridge>,
-        ProxyListBridge<ProxyValueBridge>,
+        ProxyListBridge<ProxyDeviceComponentBridge>,
         ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>,
         ProxyDeviceGroupBridge> {
 
@@ -54,10 +51,9 @@ public class ProxyDeviceGroupBridge
                                      Sender.Factory v1_0SenderFactory,
                                      Factory<ProxyCommandBridge> commandFactory,
                                      Factory<ProxyValueBridge> valueFactory,
-                                     Factory<ProxyListBridge<ProxyCommandBridge>> commandsFactory,
-                                     Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
+                                     Factory<ProxyListBridge<ProxyDeviceComponentBridge>> componentsFactory,
                                      Factory<ProxyListBridge<ProxyReferenceBridge<DeviceView<?>, ProxyDeviceBridge<?, ?, ?, DeviceView<?>, ?>>>> devicesFactory) {
-        super(logger, Group.Data.class, deviceGroupMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, commandsFactory, valuesFactory);
+        super(logger, Group.Data.class, deviceGroupMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory, commandFactory, componentsFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
@@ -146,16 +142,6 @@ public class ProxyDeviceGroupBridge
         addTemperatureSensorDeviceCommand.uninit();
         volumeDevices.uninit();
         addVolumeDeviceCommand.uninit();
-    }
-
-    @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
     }
 
     @Override

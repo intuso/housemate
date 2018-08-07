@@ -170,7 +170,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return new Problem(clazz.getName() + " device method " + method.toString() + " has no " + Id.class.getName() + " annotation for parameter " + p);
             }
             return new FromListGetter(
-                    ((Device.Connected.Container<? extends ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?>>) object).getDeviceConnecteds(),
+                    ((Device.Connected.Container<? extends ProxyList<? extends ProxyDeviceConnected<?, ?, ?>, ?>>) object).getDeviceConnecteds(),
                     argIds,
                     classCreator.create(fromList.value()),
                     method.getReturnType());
@@ -470,12 +470,12 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
         private class FromListGetter implements MethodInvocationHandler {
 
-            private final ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?> devices;
+            private final ProxyList<? extends ProxyDeviceConnected<?, ?, ?>, ?> devices;
             private final String[] idArgs;
             private final IdFormatter idFormatter;
             private final Class<?> returnType;
 
-            private FromListGetter(ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?> devices, String[] idArgs, IdFormatter idFormatter, Class<?> returnType) {
+            private FromListGetter(ProxyList<? extends ProxyDeviceConnected<?, ?, ?>, ?> devices, String[] idArgs, IdFormatter idFormatter, Class<?> returnType) {
                 this.devices = devices;
                 this.idArgs = idArgs;
                 this.idFormatter = idFormatter;
@@ -490,7 +490,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 for(int i = 0; i < idArgs.length; i++)
                     argMap.put(idArgs[i], args[i]);
                 String id = idFormatter.format(argMap);
-                ProxyDeviceConnected<?, ?, ?, ?> device = devices.get(id);
+                ProxyDeviceConnected<?, ?, ?> device = devices.get(id);
                 if(device == null)
                     throw new HousemateException("Could not find device " + id);
                 if(ProxyDeviceConnected.class.isAssignableFrom(returnType))

@@ -5,8 +5,8 @@ import com.intuso.housemate.client.api.internal.object.view.ServerView;
 public interface Server<
         COMMAND extends Command<?, ?, ?, ?>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        DEVICES extends List<? extends Reference<?, ? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
-        DEVICE_GROUPS extends List<? extends Device.Group<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        DEVICES extends List<? extends Reference<?, ? extends Device<?, ?, ?, ?, ?, ?>, ?>, ?>,
+        DEVICE_GROUPS extends List<? extends Device.Group<?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
         NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
         SERVER extends Server<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER>>

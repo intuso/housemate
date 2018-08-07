@@ -79,7 +79,7 @@ public final class RealReferenceImpl<OBJECT_VIEW extends View, OBJECT extends Pr
                                  @Assisted("path") String path);
     }
 
-    public static class LoadPersistedDeviceReference implements RealListPersistedImpl.ElementFactory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> {
+    public static class LoadPersistedDeviceReference implements RealListPersistedImpl.ElementFactory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> {
 
         private final RealReferenceImpl.Factory factory;
 
@@ -89,8 +89,8 @@ public final class RealReferenceImpl<OBJECT_VIEW extends View, OBJECT extends Pr
         }
 
         @Override
-        public RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> create(Logger logger, Reference.Data data, RealListPersistedImpl.RemoveCallback<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> removeCallback) {
-            return (RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>)
+        public RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>> create(Logger logger, Reference.Data data, RealListPersistedImpl.RemoveCallback<RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> removeCallback) {
+            return (RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>)
                     factory.create(logger,
                             data.getId(),
                             data.getName(),

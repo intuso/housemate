@@ -1,6 +1,7 @@
 package com.intuso.housemate.webserver.api.server.v1_0;
 
 import com.google.common.collect.Lists;
+import com.intuso.housemate.client.v1_0.api.ability.Power;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Device;
 import com.intuso.housemate.client.v1_0.api.object.Object;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 public class PowerResourceImpl implements PowerResource {
 
     private final static Logger logger = LoggerFactory.getLogger(PowerResourceImpl.class);
+
+    // todo this class is still assuming that devices have abilities rather than their components.
 
     private final Command.PerformListener<Command<?, ?, ?, ?>> loggerListener = new Command.PerformListener<Command<?, ?, ?, ?>>() {
         @Override
@@ -77,46 +80,46 @@ public class PowerResourceImpl implements PowerResource {
     @Override
     public boolean isOn(String id) {
         logger.debug("Is on {}", id);
-        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(deviceReference == null || deviceReference.get() == null)
             throw new NotFoundException();
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
-        return BooleanPrimitiveSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValues().get(0));
+        ProxyDevice<?, ?, DeviceView<?>, ?, ? extends ProxyList<? extends ProxyDeviceComponent<?, ?, ?>, ?>, ?> device = deviceReference.get();
+        device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setValues(new ListView<>(new ValueView(), "on")))));
+        for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents())
+            if(component.getAbilities().contains(Power.ID))
+                return BooleanPrimitiveSerialiser.INSTANCE.deserialise(component.getValues().get("on").getValues().get(0));
+        return false;
     }
 
     @Override
     public void turnOn(String id) {
         logger.debug("Turning on {}", id);
-        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(deviceReference == null || deviceReference.get() == null)
             throw new NotFoundException();
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
-        if(device instanceof ProxyDeviceConnected) {
-            ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
-            deviceConnected.load(new DeviceConnectedView().setCommands(new ListView<>(new CommandView(),"on")));
-            deviceConnected.getCommands().get("on").perform(loggerListener);
-        } else if(device instanceof ProxyDeviceGroup) {
-            ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
-            deviceConnected.load(new DeviceGroupView().setCommands(new ListView<>(new CommandView(),"on")));
-            deviceConnected.getCommands().get("on").perform(loggerListener);
+        ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?> device = deviceReference.get();
+        device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setCommands(new ListView<>(new CommandView(), "on")))));
+        for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents()) {
+            if (component.getAbilities().contains(Power.ID)) {
+                component.getCommands().get("on").perform(loggerListener);
+                return;
+            }
         }
     }
 
     @Override
     public void turnOff(String id) {
         logger.debug("Turning off {}", id);
-        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
+        ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>> deviceReference = SessionUtils.getServer(request.getSession(false)).getDevices().get(id);
         if(deviceReference == null || deviceReference.get() == null)
             throw new NotFoundException();
-        ProxyDevice<?, ?, ?, ?, ?, ?, ?> device = deviceReference.get();
-        if(device instanceof ProxyDeviceConnected) {
-            ProxyDeviceConnected<?, ?, ?, ?> deviceConnected = (ProxyDeviceConnected<?, ?, ?, ?>) device;
-            deviceConnected.load(new DeviceConnectedView().setCommands(new ListView<>(new CommandView(),"off")));
-            deviceConnected.getCommands().get("off").perform(loggerListener);
-        } else if(device instanceof ProxyDeviceGroup) {
-            ProxyDeviceGroup<?, ?, ?, ?, ?, ?> deviceConnected = (ProxyDeviceGroup<?, ?, ?, ?, ?, ?>) device;
-            deviceConnected.load(new DeviceGroupView().setCommands(new ListView<>(new CommandView(),"off")));
-            deviceConnected.getCommands().get("off").perform(loggerListener);
+        ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?> device = deviceReference.get();
+        device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setCommands(new ListView<>(new CommandView(), "off")))));
+        for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents()) {
+            if (component.getAbilities().contains(Power.ID)) {
+                component.getCommands().get("off").perform(loggerListener);
+                return;
+            }
         }
     }
 
@@ -126,7 +129,7 @@ public class PowerResourceImpl implements PowerResource {
             return new Device.Group.Data(groupData.getId(), groupData.getName(), groupData.getDescription());
         } else if(data instanceof Device.Connected.Data) {
             Device.Connected.Data connectedData = (Device.Connected.Data) data;
-            return new Device.Connected.Data(connectedData.getId(), connectedData.getName(), connectedData.getDescription(), connectedData.getClasses(), connectedData.getAbilities());
+            return new Device.Connected.Data(connectedData.getId(), connectedData.getName(), connectedData.getDescription());
         } else
             return null;
     }

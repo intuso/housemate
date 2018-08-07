@@ -31,8 +31,8 @@ import java.util.Map;
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
-        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
-        DEVICE_GROUPS extends ProxyList<? extends ProxyDeviceGroup<?, ?, ?, ?, ?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?>, ?>,
+        DEVICE_GROUPS extends ProxyList<? extends ProxyDeviceGroup<?, ?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
         SERVER extends ProxyServer<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER>>
@@ -401,7 +401,7 @@ public abstract class ProxyServer<
                         throw new HousemateException("Could not find " + pathElements[i] + " for server");
                     else {
                         String[] subPath = new String[i];
-                        System.arraycopy(path, 0, subPath, 0, i);
+                        System.arraycopy(pathElements, 0, subPath, 0, i);
                         throw new HousemateException("Could not find " + pathElements[i] + " at " + Joiner.on(".").join(subPath));
                     }
                 } else
@@ -476,7 +476,7 @@ public abstract class ProxyServer<
     public static final class Simple extends ProxyServer<
             ProxyCommand.Simple,
             ProxyList.Simple<ProxyAutomation.Simple>,
-            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
+            ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>,
             ProxyList.Simple<ProxyDeviceGroup.Simple>,
             ProxyList.Simple<ProxyUser.Simple>,
             ProxyList.Simple<ProxyNode.Simple>,
@@ -488,7 +488,7 @@ public abstract class ProxyServer<
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyAutomation.Simple>> automationsFactory,
-                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>> devicesFactory,
+                      Factory<ProxyList.Simple<ProxyReference.Simple<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>> devicesFactory,
                       Factory<ProxyList.Simple<ProxyDeviceGroup.Simple>> deviceGroupsFactory,
                       Factory<ProxyList.Simple<ProxyUser.Simple>> usersFactory,
                       Factory<ProxyList.Simple<ProxyNode.Simple>> nodesFactory) {

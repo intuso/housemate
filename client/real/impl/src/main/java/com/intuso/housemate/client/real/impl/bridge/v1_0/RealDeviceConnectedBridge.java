@@ -20,25 +20,21 @@ import java.util.Set;
 public class RealDeviceConnectedBridge
         extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Device.Connected.Data, Device.Connected.Data, Device.Connected.Listener<? super RealDeviceConnectedBridge>, DeviceConnectedView>
         implements Device.Connected<RealCommandBridge,
-                RealListBridge<RealCommandBridge>,
-                RealListBridge<RealValueBridge>,
+                RealListBridge<RealDeviceComponentBridge>,
         RealDeviceConnectedBridge> {
 
     private final RealCommandBridge renameCommand;
-    private final RealListBridge<RealCommandBridge> commands;
-    private final RealListBridge<RealValueBridge> values;
+    private final RealListBridge<RealDeviceComponentBridge> components;
 
     @Inject
     protected RealDeviceConnectedBridge(@Assisted Logger logger,
                                         DeviceConnectedMapper deviceConnectedMapper,
                                         ManagedCollectionFactory managedCollectionFactory,
                                         Factory<RealCommandBridge> commandFactory,
-                                        Factory<RealListBridge<RealCommandBridge>> commandsFactory,
-                                        Factory<RealListBridge<RealValueBridge>> valuesFactory) {
+                                        Factory<RealListBridge<RealDeviceComponentBridge>> componentsFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Device.Connected.Data.class, deviceConnectedMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        commands = commandsFactory.create(ChildUtil.logger(logger, Device.COMMANDS_ID));
-        values = valuesFactory.create(ChildUtil.logger(logger, Device.VALUES_ID));
+        components = componentsFactory.create(ChildUtil.logger(logger, Device.DEVICE_COMPONENTS_ID));
     }
 
     @Override
@@ -48,13 +44,9 @@ public class RealDeviceConnectedBridge
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
                 ChildUtil.name(internalName, Renameable.RENAME_ID),
                 internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
-        commands.init(
-                com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.COMMANDS_ID),
-                ChildUtil.name(internalName, Device.COMMANDS_ID),
-                internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
-        values.init(
-                com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.VALUES_ID),
-                ChildUtil.name(internalName, Device.VALUES_ID),
+        components.init(
+                com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.DEVICE_COMPONENTS_ID),
+                ChildUtil.name(internalName, Device.DEVICE_COMPONENTS_ID),
                 internalSenderFactory, internalReceiverFactory, v1_0SenderFactory, v1_0ReceiverFactory);
     }
 
@@ -62,18 +54,7 @@ public class RealDeviceConnectedBridge
     protected void uninitChildren() {
         super.uninitChildren();
         renameCommand.uninit();
-        commands.uninit();
-        values.uninit();
-    }
-
-    @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
+        components.uninit();
     }
 
     @Override
@@ -82,23 +63,16 @@ public class RealDeviceConnectedBridge
     }
 
     @Override
-    public RealListBridge<RealCommandBridge> getCommands() {
-        return commands;
-    }
-
-    @Override
-    public RealListBridge<RealValueBridge> getValues() {
-        return values;
+    public RealListBridge<RealDeviceComponentBridge> getDeviceComponents() {
+        return components;
     }
 
     @Override
     public RealObjectBridge<?, ?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
-        else if(COMMANDS_ID.equals(id))
-            return commands;
-        else if(VALUES_ID.equals(id))
-            return values;
+        else if(DEVICE_COMPONENTS_ID.equals(id))
+            return components;
         return null;
     }
 }

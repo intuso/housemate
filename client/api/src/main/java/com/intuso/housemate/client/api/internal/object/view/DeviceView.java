@@ -6,8 +6,7 @@ package com.intuso.housemate.client.api.internal.object.view;
 public class DeviceView<VIEW extends DeviceView<?>> extends View {
 
     private CommandView renameCommand;
-    private ListView<CommandView> commands;
-    private ListView<ValueView> values;
+    private ListView<DeviceComponentView> components;
 
     public DeviceView() {}
 
@@ -15,11 +14,10 @@ public class DeviceView<VIEW extends DeviceView<?>> extends View {
         super(mode);
     }
 
-    public DeviceView(CommandView renameCommand, ListView<CommandView> commands, ListView<ValueView> values) {
+    public DeviceView(CommandView renameCommand, ListView<DeviceComponentView> components) {
         super(Mode.SELECTION);
         this.renameCommand = renameCommand;
-        this.commands = commands;
-        this.values = values;
+        this.components = components;
     }
 
     public CommandView getRenameCommand() {
@@ -31,21 +29,12 @@ public class DeviceView<VIEW extends DeviceView<?>> extends View {
         return this;
     }
 
-    public ListView<CommandView> getCommands() {
-        return commands;
+    public ListView<DeviceComponentView> getComponents() {
+        return components;
     }
 
-    public VIEW setCommands(ListView<CommandView> commands) {
-        this.commands = commands;
-        return (VIEW) this;
-    }
-
-    public ListView<ValueView> getValues() {
-        return values;
-    }
-
-    public VIEW setValues(ListView<ValueView> values) {
-        this.values = values;
+    public VIEW setComponents(ListView<DeviceComponentView> components) {
+        this.components = components;
         return (VIEW) this;
     }
 }

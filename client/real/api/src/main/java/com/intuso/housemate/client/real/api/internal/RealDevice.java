@@ -9,8 +9,7 @@ import com.intuso.housemate.client.api.internal.object.view.DeviceView;
 public interface RealDevice<DATA extends Device.Data,
         LISTENER extends Device.Listener<? super DEVICE>,
         COMMAND extends RealCommand<?, ?, ?>,
-        COMMANDS extends RealList<? extends RealCommand<?, ?, ?>, ?>,
-        VALUES extends RealList<? extends RealValue<?, ?, ?>, ?>,
+        DEVICE_COMPONENTS extends RealList<? extends RealDeviceComponent<?, ?, ?>, ?>,
         VIEW extends DeviceView<?>,
-        DEVICE extends RealDevice<DATA, LISTENER, COMMAND, COMMANDS, VALUES, VIEW, DEVICE>>
-        extends Device<DATA, LISTENER, COMMAND, COMMANDS, VALUES, VIEW, DEVICE> {}
+        DEVICE extends RealDevice<DATA, LISTENER, COMMAND, DEVICE_COMPONENTS, VIEW, DEVICE>>
+        extends Device<DATA, LISTENER, COMMAND, DEVICE_COMPONENTS, VIEW, DEVICE> {}

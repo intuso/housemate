@@ -27,11 +27,10 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
         VIEW extends DeviceView<?>,
         DEVICE extends RealDeviceImpl<DATA, LISTENER, VIEW, DEVICE>>
         extends RealObject<DATA, LISTENER, VIEW>
-        implements RealDevice<DATA, LISTENER, RealCommandImpl, RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, VIEW, DEVICE> {
+        implements RealDevice<DATA, LISTENER, RealCommandImpl, RealListGeneratedImpl<RealDeviceComponentImpl>, VIEW, DEVICE> {
 
     private final RealCommandImpl renameCommand;
-    private final RealListGeneratedImpl<RealCommandImpl> commands;
-    private final RealListGeneratedImpl<RealValueImpl<?>> values;
+    private final RealListGeneratedImpl<RealDeviceComponentImpl> components;
 
     @Inject
     public RealDeviceImpl(@Assisted final Logger logger,
@@ -39,8 +38,7 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
                           ManagedCollectionFactory managedCollectionFactory,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
-                          RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
-                          RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
+                          RealListGeneratedImpl.Factory<RealDeviceComponentImpl> componentsFactory,
                           TypeRepository typeRepository) {
         super(logger, data, managedCollectionFactory);
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -74,16 +72,11 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
                                 1,
                                 1)
                 ));
-        this.commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID),
-                COMMANDS_ID,
+        this.components = componentsFactory.create(ChildUtil.logger(logger, DEVICE_COMPONENTS_ID),
+                DEVICE_COMPONENTS_ID,
                 "Commands",
                 "The commands of this feature",
-                Lists.<RealCommandImpl>newArrayList());
-        this.values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID),
-                VALUES_ID,
-                "Values",
-                "The values of this feature",
-                Lists.<RealValueImpl<?>>newArrayList());
+                Lists.<RealDeviceComponentImpl>newArrayList());
     }
 
     @Override
@@ -102,24 +95,20 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
                 // get recursively
                 case ANCESTORS:
                     result.getChildren().put(RENAME_ID, renameCommand.getTree(new CommandView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(new ListView(View.Mode.ANCESTORS), referenceHandler, listener, listenerRegistrations));
                     break;
 
-                    // get all children using inner view. NB all children non-null because of load(). Can give children null views
+                // get all children using inner view. NB all children non-null because of load(). Can give children null views
                 case CHILDREN:
                     result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
-                    result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
+                    result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(view.getComponents(), referenceHandler, listener, listenerRegistrations));
                     break;
 
                 case SELECTION:
                     if(view.getRenameCommand() != null)
                         result.getChildren().put(RENAME_ID, renameCommand.getTree(view.getRenameCommand(), referenceHandler, listener, listenerRegistrations));
-                    if(view.getCommands() != null)
-                        result.getChildren().put(COMMANDS_ID, commands.getTree(view.getCommands(), referenceHandler, listener, listenerRegistrations));
-                    if(view.getValues() != null)
-                        result.getChildren().put(VALUES_ID, values.getTree(view.getValues(), referenceHandler, listener, listenerRegistrations));
+                    if(view.getComponents() != null)
+                        result.getChildren().put(DEVICE_COMPONENTS_ID, components.getTree(view.getComponents(), referenceHandler, listener, listenerRegistrations));
                     break;
             }
         }
@@ -140,16 +129,14 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
     protected void initChildren(String name, Sender.Factory senderFactory, Receiver.Factory receiverFactory) {
         super.initChildren(name, senderFactory, receiverFactory);
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), senderFactory, receiverFactory);
-        commands.init(ChildUtil.name(name, COMMANDS_ID), senderFactory, receiverFactory);
-        values.init(ChildUtil.name(name, VALUES_ID), senderFactory, receiverFactory);
+        components.init(ChildUtil.name(name, DEVICE_COMPONENTS_ID), senderFactory, receiverFactory);
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         renameCommand.uninit();
-        commands.uninit();
-        values.uninit();
+        components.uninit();
     }
 
     @Override
@@ -158,30 +145,21 @@ public abstract class RealDeviceImpl<DATA extends Device.Data,
     }
 
     @Override
-    public final RealListGeneratedImpl<RealCommandImpl> getCommands() {
-        return commands;
-    }
-
-    @Override
-    public RealListGeneratedImpl<RealValueImpl<?>> getValues() {
-        return values;
+    public final RealListGeneratedImpl<RealDeviceComponentImpl> getDeviceComponents() {
+        return components;
     }
 
     void clear() {
-        for(RealCommandImpl command : Lists.newArrayList(commands))
-            commands.remove(command.getId());
-        for(RealValueImpl<?> value : Lists.newArrayList(values))
-            values.remove(value.getId());
+        for(RealDeviceComponentImpl deviceComponent : Lists.newArrayList(components))
+            components.remove(deviceComponent.getId());
     }
 
     @Override
     public Object<?, ?, ?> getChild(String id) {
         if(RENAME_ID.equals(id))
             return renameCommand;
-        else if(COMMANDS_ID.equals(id))
-            return commands;
-        else if(VALUES_ID.equals(id))
-            return values;
+        else if(DEVICE_COMPONENTS_ID.equals(id))
+            return components;
         return null;
     }
 

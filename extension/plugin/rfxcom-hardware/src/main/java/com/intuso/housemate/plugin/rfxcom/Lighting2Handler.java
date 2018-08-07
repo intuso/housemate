@@ -4,6 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.api.annotation.Classes;
+import com.intuso.housemate.client.v1_0.api.annotation.Component;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -22,7 +24,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     
     private final String idFormat, nameFormat, descriptionFormat;
     
-    private final Map<Integer, Map<Byte, PowerImpl>> devices = Maps.newHashMap();
+    private final Map<Integer, Map<Byte, Device>> devices = Maps.newHashMap();
 
     protected Lighting2Handler(ManagedCollectionFactory managedCollectionFactory,
                                RFXtrx rfxtrx,
@@ -46,7 +48,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
 
     @Override
     public void turnedOn(int houseId, byte unitCode) {
-        PowerImpl device = getOrCreate(houseId, unitCode);
+        Device device = getOrCreate(houseId, unitCode);
         if(device != null)
             device.setOn(true);
     }
@@ -54,13 +56,13 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     @Override
     public void turnedOnAll(int houseId) {
         if(devices.containsKey(houseId))
-            for(PowerImpl device : devices.get(houseId).values())
+            for(Device device : devices.get(houseId).values())
                 device.setOn(true);
     }
 
     @Override
     public void turnedOff(int houseId, byte unitCode) {
-        PowerImpl device = getOrCreate(houseId, unitCode);
+        Device device = getOrCreate(houseId, unitCode);
         if(device != null)
             device.setOn(false);
     }
@@ -68,7 +70,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     @Override
     public void turnedOffAll(int houseId) {
         if(devices.containsKey(houseId))
-            for(PowerImpl device : devices.get(houseId).values())
+            for(Device device : devices.get(houseId).values())
                 device.setOn(false);
     }
 
@@ -87,7 +89,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
         addDevice(Integer.parseInt(details.split("-")[0]), Byte.parseByte(details.split("-")[1]));
     }
 
-    private PowerImpl getOrCreate(int houseId, byte unitCode) {
+    private Device getOrCreate(int houseId, byte unitCode) {
         if(devices.containsKey(houseId) && devices.get(houseId).containsKey(unitCode))
             return devices.get(houseId).get(unitCode);
         else if(autoCreate)
@@ -95,10 +97,10 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
         return null;
     }
 
-    public PowerImpl addDevice(int houseId, byte unitCode) {
-        PowerImpl device = new PowerImpl(managedCollectionFactory, houseId, unitCode);
+    public Device addDevice(int houseId, byte unitCode) {
+        Device device = new Device(managedCollectionFactory, houseId, unitCode);
         if(!devices.containsKey(houseId))
-            devices.put(houseId, Maps.<Byte, PowerImpl>newHashMap());
+            devices.put(houseId, Maps.<Byte, Device>newHashMap());
         devices.get(houseId).put(unitCode, device);
         hardwareCallback.addDevice(
                 idFormat.replaceAll("\\$\\{houseId\\}", Integer.toString(houseId)).replaceAll("\\$\\{unitCode\\}", Byte.toString(unitCode)),
@@ -110,42 +112,65 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
 
     public void removeDevice(int houseId, byte unitCode) {
         if(devices.containsKey(houseId) && devices.get(houseId).containsKey(unitCode)) {
-            PowerImpl device = devices.get(houseId).remove(unitCode);
+            Device device = devices.get(houseId).remove(unitCode);
             if(devices.get(houseId).size() == 0)
                 devices.remove(houseId);
             hardwareCallback.removeDevice(device);
         }
     }
 
-    @Classes(Classes.LIGHT)
-    public class PowerImpl extends PowerBase {
+    public class Device {
 
-        private final int houseId;
-        private final byte unitCode;
+        @Component
+        @Id(value = "power", name = "Power", description = "Power")
+        private final PowerImpl powerImpl;
 
-        public PowerImpl(ManagedCollectionFactory managedCollectionFactory, int houseId, byte unitCode) {
-            super(managedCollectionFactory);
-            this.houseId = houseId;
-            this.unitCode = unitCode;
+        public Device(ManagedCollectionFactory managedCollectionFactory, int houseId, byte unitCode) {
+            this.powerImpl = new PowerImpl(managedCollectionFactory, houseId, unitCode);
         }
 
-        @Override
         public void turnOn() {
-            try {
-                lighting2.turnOn(houseId, unitCode);
-                setOn(true);
-            } catch (IOException e) {
-                throw new HousemateException("Failed to turn device on");
-            }
+            powerImpl.turnOn();
         }
 
-        @Override
         public void turnOff() {
-            try {
-                lighting2.turnOff(houseId, unitCode);
-                setOn(false);
-            } catch (IOException e) {
-                throw new HousemateException("Failed to turn device off");
+            powerImpl.turnOff();
+        }
+
+        public void setOn(boolean on) {
+            powerImpl.setOn(on);
+        }
+
+        @Classes(Classes.LIGHT)
+        public class PowerImpl extends PowerBase {
+
+            private final int houseId;
+            private final byte unitCode;
+
+            public PowerImpl(ManagedCollectionFactory managedCollectionFactory, int houseId, byte unitCode) {
+                super(managedCollectionFactory);
+                this.houseId = houseId;
+                this.unitCode = unitCode;
+            }
+
+            @Override
+            public void turnOn() {
+                try {
+                    lighting2.turnOn(houseId, unitCode);
+                    setOn(true);
+                } catch (IOException e) {
+                    throw new HousemateException("Failed to turn device on");
+                }
+            }
+
+            @Override
+            public void turnOff() {
+                try {
+                    lighting2.turnOff(houseId, unitCode);
+                    setOn(false);
+                } catch (IOException e) {
+                    throw new HousemateException("Failed to turn device off");
+                }
             }
         }
     }

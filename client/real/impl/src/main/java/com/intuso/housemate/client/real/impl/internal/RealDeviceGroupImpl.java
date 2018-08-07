@@ -19,7 +19,6 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Base class for all device
@@ -27,9 +26,8 @@ import java.util.Set;
 public final class RealDeviceGroupImpl
         extends RealDeviceImpl<Device.Group.Data, Device.Group.Listener<? super RealDeviceGroupImpl>, DeviceGroupView, RealDeviceGroupImpl>
         implements RealDeviceGroup<RealCommandImpl, RealCommandImpl, RealCommandImpl, RealValueImpl<String>,
-                RealListGeneratedImpl<RealCommandImpl>,
-                RealListGeneratedImpl<RealValueImpl<?>>,
-                RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>>,
+                RealListGeneratedImpl<RealDeviceComponentImpl>,
+                RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>>,
                 RealDeviceGroupImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
@@ -45,15 +43,15 @@ public final class RealDeviceGroupImpl
 
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> playbackDevices;
+    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> playbackDevices;
     private final RealCommandImpl addPlaybackDeviceCommand;
-    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> powerDevices;
+    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> powerDevices;
     private final RealCommandImpl addPowerDeviceCommand;
-    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> runDevices;
+    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> runDevices;
     private final RealCommandImpl addRunDeviceCommand;
-    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> temperatureSensorDevices;
+    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> temperatureSensorDevices;
     private final RealCommandImpl addTemperatureSensorDeviceCommand;
-    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> volumeDevices;
+    private final RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
     private final RealListPersistedImpl.RemoveCallback<RealDeviceGroupImpl> removeCallback;
@@ -71,13 +69,13 @@ public final class RealDeviceGroupImpl
                                ManagedCollectionFactory managedCollectionFactory,
                                RealCommandImpl.Factory commandFactory,
                                RealParameterImpl.Factory parameterFactory,
-                               RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
+                               RealListGeneratedImpl.Factory<RealDeviceComponentImpl> componentsFactory,
                                RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                                RealValueImpl.Factory valueFactory,
-                               RealListPersistedImpl.Factory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> devicesFactory,
+                               RealListPersistedImpl.Factory<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> devicesFactory,
                                final TypeRepository typeRepository) {
         super(logger, new Group.Data(id, name, description), managedCollectionFactory, commandFactory,
-                parameterFactory, commandsFactory, valuesFactory, typeRepository);
+                parameterFactory, componentsFactory, typeRepository);
         this.removeCallback = removeCallback;
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
                 Removeable.REMOVE_ID,
@@ -199,16 +197,6 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public Set<String> getClasses() {
-        return getData().getClasses();
-    }
-
-    @Override
-    public Set<String> getAbilities() {
-        return getData().getAbilities();
-    }
-
-    @Override
     public RealCommandImpl getRemoveCommand() {
         return removeCommand;
     }
@@ -223,7 +211,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getPlaybackDevices() {
+    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -233,7 +221,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getPowerDevices() {
+    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getPowerDevices() {
         return powerDevices;
     }
 
@@ -243,7 +231,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getRunDevices() {
+    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getRunDevices() {
         return runDevices;
     }
 
@@ -253,7 +241,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getTemperatureSensorDevices() {
+    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -263,7 +251,7 @@ public final class RealDeviceGroupImpl
     }
 
     @Override
-    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?, ?>>> getVolumeDevices() {
+    public RealListPersistedImpl<Reference.Data, RealReferenceImpl<DeviceView<?>, ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?>>> getVolumeDevices() {
         return volumeDevices;
     }
 

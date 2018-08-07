@@ -7,8 +7,8 @@ import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 
 public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         AUTOMATIONS extends RealList<? extends RealAutomation<?, ?, ?, ?, ?, ?>, ?>,
-        DEVICES extends RealList<? extends RealReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?, ?>, ?>, ?>,
-        DEVICE_GROUPS extends RealList<? extends RealDeviceGroup<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        DEVICES extends RealList<? extends RealReference<DeviceView<?>, ? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?>, ?>,
+        DEVICE_GROUPS extends RealList<? extends RealDeviceGroup<?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends RealList<? extends RealUser<?, ?, ?>, ?>,
         NODES extends RealList<? extends Node<?, ?, ?, ?>, ?>,
         SERVER extends RealServer<COMMAND, AUTOMATIONS, DEVICES, DEVICE_GROUPS, USERS, NODES, SERVER>>
