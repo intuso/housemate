@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.v1_0.api.ability.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.ability.Temperature;
 import com.intuso.housemate.client.v1_0.api.annotation.Component;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -153,20 +153,24 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
             temperatureSensor.setTemperature(temperature);
         }
 
-        public class TemperatureSensorImpl implements TemperatureSensor {
+        public class TemperatureSensorImpl implements Temperature.State {
 
             private final ManagedCollection<Listener> listeners;
+
+            private Double temperature;
 
             protected TemperatureSensorImpl(ManagedCollectionFactory managedCollectionFactory) {
                 this.listeners = managedCollectionFactory.createSet();
             }
 
             @Override
-            public ManagedCollection.Registration addListener(Listener listener) {
+            public synchronized ManagedCollection.Registration addListener(Listener listener) {
+                listener.temperature(temperature);
                 return listeners.add(listener);
             }
 
-            public void setTemperature(double temperature) {
+            public synchronized void setTemperature(double temperature) {
+                this.temperature = temperature;
                 for (Listener listener : listeners)
                     listener.temperature(temperature);
             }

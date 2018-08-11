@@ -154,7 +154,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
             }
 
             @Override
-            public void turnOn() {
+            public synchronized void turnOn() {
                 try {
                     lighting2.turnOn(houseId, unitCode);
                     setOn(true);
@@ -164,7 +164,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
             }
 
             @Override
-            public void turnOff() {
+            public synchronized void turnOff() {
                 try {
                     lighting2.turnOff(houseId, unitCode);
                     setOn(false);

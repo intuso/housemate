@@ -86,7 +86,7 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, DeviceView<?>, ?, ? extends ProxyList<? extends ProxyDeviceComponent<?, ?, ?>, ?>, ?> device = deviceReference.get();
         device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setValues(new ListView<>(new ValueView(), "on")))));
         for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents())
-            if(component.getAbilities().contains(Power.ID))
+            if(component.getAbilities().contains(Power.State.ID))
                 return BooleanPrimitiveSerialiser.INSTANCE.deserialise(component.getValues().get("on").getValues().get(0));
         return false;
     }
@@ -100,7 +100,7 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?> device = deviceReference.get();
         device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setCommands(new ListView<>(new CommandView(), "on")))));
         for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents()) {
-            if (component.getAbilities().contains(Power.ID)) {
+            if (component.getAbilities().contains(Power.Control.ID)) {
                 component.getCommands().get("on").perform(loggerListener);
                 return;
             }
@@ -116,7 +116,7 @@ public class PowerResourceImpl implements PowerResource {
         ProxyDevice<?, ?, DeviceView<?>, ?, ?, ?> device = deviceReference.get();
         device.load(new DeviceView().setComponents(new ListView<>(new DeviceComponentView().setCommands(new ListView<>(new CommandView(), "off")))));
         for(ProxyDeviceComponent<?, ?, ?> component : device.getDeviceComponents()) {
-            if (component.getAbilities().contains(Power.ID)) {
+            if (component.getAbilities().contains(Power.Control.ID)) {
                 component.getCommands().get("off").perform(loggerListener);
                 return;
             }

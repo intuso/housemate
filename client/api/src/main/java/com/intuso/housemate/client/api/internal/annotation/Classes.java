@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 public @interface Classes {
 
+    String FAN = "fan";
     String LIGHT = "light";
     String TV = "tv";
 

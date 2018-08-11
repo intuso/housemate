@@ -1,8 +1,9 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.v1_0.api.ability.Temperature;
+import com.intuso.housemate.client.v1_0.api.annotation.Component;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.ability.TemperatureSensor;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -14,13 +15,12 @@ import org.slf4j.Logger;
 import java.io.*;
 
 /**
+ *
  */
-
 @Id(value = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
-public class ArduinoTemperatureSensor implements TemperatureSensor {
+public class ArduinoTemperatureSensor {
 
     private final Logger logger;
-    private final ManagedCollection<Listener> listeners;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
 
@@ -29,12 +29,14 @@ public class ArduinoTemperatureSensor implements TemperatureSensor {
     private final BufferedReader in;
     private final LineReader lineReader;
 
-    private Double temperature = null;
+    @Component
+    @Id(value = "temperature", name = "Temperature", description = "Temperature")
+    public final TemperatureComponent temperatureComponent;
 
     @Inject
     protected ArduinoTemperatureSensor(Logger logger, ManagedCollectionFactory managedCollectionFactory, SerialPortWrapper serialPort) {
         this.logger = logger;
-        this.listeners = managedCollectionFactory.createSet();
+        this.temperatureComponent = new TemperatureComponent(managedCollectionFactory);
         this.serialPort = serialPort;
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
@@ -64,10 +66,27 @@ public class ArduinoTemperatureSensor implements TemperatureSensor {
         }
     }
 
-    @Override
-    public ManagedCollection.Registration addListener(Listener listener) {
-        listener.temperature(temperature);
-        return listeners.add(listener);
+    private class TemperatureComponent implements Temperature.State {
+
+        private final ManagedCollection<Listener> listeners;
+
+        private Double temperature = null;
+
+        public TemperatureComponent(ManagedCollectionFactory managedCollectionFactory) {
+            this.listeners = managedCollectionFactory.createSet();
+        }
+
+        public synchronized void setTemperature(double temperature) {
+            this.temperature = temperature;
+            for(Listener listener : listeners)
+                listener.temperature(temperature);
+        }
+
+        @Override
+        public synchronized ManagedCollection.Registration addListener(Listener listener) {
+            listener.temperature(temperature);
+            return listeners.add(listener);
+        }
     }
 
     private class EventListener implements SerialPortEventListener {
@@ -92,10 +111,7 @@ public class ArduinoTemperatureSensor implements TemperatureSensor {
                     logger.debug("Read line");
                     try {
                         // assign to temp value in case it changes again very quickly
-                        double t = Double.parseDouble(line);
-                        temperature = t;
-                        for(Listener listener : listeners)
-                            listener.temperature(t);
+                        temperatureComponent.setTemperature(Double.parseDouble(line));
                         logger.debug("Set temperature");
                     } catch(NumberFormatException e) {
                         logger.warn("Could not parse temperature value \"" + line + "\"");

@@ -7,20 +7,24 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 /**
  * Created by tomc on 02/02/17.
  */
-public abstract class PowerBase implements Power {
+public abstract class PowerBase implements Power.Control, Power.State {
 
     private final ManagedCollection<Listener> listeners;
+
+    private Boolean on;
 
     protected PowerBase(ManagedCollectionFactory managedCollectionFactory) {
         this.listeners = managedCollectionFactory.createSet();
     }
 
     @Override
-    public ManagedCollection.Registration addListener(Listener listener) {
+    public synchronized ManagedCollection.Registration addListener(Listener listener) {
+        listener.on(on);
         return listeners.add(listener);
     }
 
-    public void setOn(boolean on) {
+    public synchronized void setOn(boolean on) {
+        this.on = on;
         for(Listener listener : listeners)
             listener.on(on);
     }

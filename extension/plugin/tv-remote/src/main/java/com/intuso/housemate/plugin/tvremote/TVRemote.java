@@ -1,119 +1,112 @@
 package com.intuso.housemate.plugin.tvremote;
 
-import com.intuso.housemate.client.v1_0.api.annotation.Classes;
-import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.ability.Playback;
 import com.intuso.housemate.client.v1_0.api.ability.Power;
 import com.intuso.housemate.client.v1_0.api.ability.Volume;
+import com.intuso.housemate.client.v1_0.api.annotation.Classes;
+import com.intuso.housemate.client.v1_0.api.annotation.Component;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
-import com.intuso.utilities.collection.ManagedCollection;
-import com.intuso.utilities.collection.ManagedCollectionFactory;
 
 import java.io.IOException;
 
 @Id(value = "tv-remote", name = "TV Remote", description = "TV Remote")
-@Classes(Classes.TV)
-public class TVRemote implements Power, Playback, Volume {
+public class TVRemote {
 
-    private final ManagedCollection<Power.Listener> powerListeners;
-    private final ManagedCollection<Playback.Listener> playbackListeners;
-    private final ManagedCollection<Volume.Listener> volumeListeners;
+    @Component
+    @Id(value = "playback", name = "Playback", description = "Playback")
+    public final PlaybackComponent playbackComponent = new PlaybackComponent();
 
-    public TVRemote(ManagedCollectionFactory managedCollectionFactory) {
-        this.powerListeners = managedCollectionFactory.createSet();
-        this.playbackListeners = managedCollectionFactory.createSet();
-        this.volumeListeners = managedCollectionFactory.createSet();
-    }
+    @Component
+    @Id(value = "power", name = "Power", description = "Power")
+    public final PowerComponent powerComponent = new PowerComponent();
+
+    @Component
+    @Id(value = "volume", name = "Volume", description = "Volume")
+    public final VolumeComponent volumeComponent = new VolumeComponent();
 
     @Property
     @Id(value = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")
     public String remoteName;
-
-    @Override
-    public ManagedCollection.Registration addListener(Power.Listener listener) {
-        listener.on(null);
-        return powerListeners.add(listener);
-    }
-
-    @Override
-    public ManagedCollection.Registration addListener(Playback.Listener listener) {
-        listener.speed(null);
-        return playbackListeners.add(listener);
-    }
-
-    @Override
-    public ManagedCollection.Registration addListener(Volume.Listener listener) {
-        listener.muted(null);
-        listener.volume(null);
-        return volumeListeners.add(listener);
-    }
-
-    @Override
-    public void turnOn() {
-        irSend("KEY_POWER");
-    }
-
-    @Override
-    public void turnOff() {
-        irSend("KEY_POWER");
-    }
-
-    @Override
-    public void play() {
-        irSend("KEY_PLAY");
-    }
-
-    @Override
-    public void pause() {
-        irSend("KEY_PAUSE");
-    }
-
-    @Override
-    public void stopPlayback() {
-        irSend("KEY_STOP");
-    }
-
-    @Override
-    public void rewind() {
-        irSend("KEY_REWIND");
-    }
-
-    @Override
-    public void forward() {
-        irSend("KEY_FORWARD");
-    }
-
-    @Override
-    public void mute() {
-        irSend("KEY_MUTE");
-    }
-
-    @Override
-    public void unmute() {
-        irSend("KEY_MUTE");
-    }
-
-    @Override
-    public void volume(int volume) {
-        throw new UnsupportedOperationException("Infra-red remote cannot support setting the volume. Use volume up/down instead");
-    }
-
-    @Override
-    public void volumeUp() {
-        irSend("KEY_VOLUMEUP");
-    }
-
-    @Override
-    public void volumeDown() {
-        irSend("KEY_VOLUMEDOWN");
-    }
 
     private void irSend(String buttonName) {
         try {
             Runtime.getRuntime().exec("irsend SEND_ONCE " + remoteName + " " + buttonName);
         } catch(IOException e) {
             throw new HardwareDriver.HardwareException("Failed to perform TV remote command", e);
+        }
+    }
+
+    @Classes(Classes.TV)
+    private final class PlaybackComponent implements Playback.Control {
+
+        @Override
+        public synchronized void play() {
+            irSend("KEY_PLAY");
+        }
+
+        @Override
+        public synchronized void pause() {
+            irSend("KEY_PAUSE");
+        }
+
+        @Override
+        public synchronized void stopPlayback() {
+            irSend("KEY_STOP");
+        }
+
+        @Override
+        public synchronized void rewind() {
+            irSend("KEY_REWIND");
+        }
+
+        @Override
+        public synchronized void forward() {
+            irSend("KEY_FORWARD");
+        }
+    }
+
+    @Classes(Classes.TV)
+    private final class PowerComponent implements Power.Control {
+
+        @Override
+        public synchronized void turnOn() {
+            irSend("KEY_POWER");
+        }
+
+        @Override
+        public synchronized void turnOff() {
+            irSend("KEY_POWER");
+        }
+    }
+
+    @Classes(Classes.TV)
+    private final class VolumeComponent implements Volume.Control {
+
+        @Override
+        public synchronized void mute() {
+            irSend("KEY_MUTE");
+        }
+
+        @Override
+        public synchronized void unmute() {
+            irSend("KEY_MUTE");
+        }
+
+        @Override
+        public synchronized void volume(int volume) {
+            throw new UnsupportedOperationException("Infra-red remote cannot support setting the volume. Use volume up/down instead");
+        }
+
+        @Override
+        public synchronized void volumeUp() {
+            irSend("KEY_VOLUMEUP");
+        }
+
+        @Override
+        public synchronized void volumeDown() {
+            irSend("KEY_VOLUMEDOWN");
         }
     }
 }

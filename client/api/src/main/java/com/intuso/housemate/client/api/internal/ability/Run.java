@@ -6,39 +6,49 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for running something
  */
-@Id(value = "run", name = "Run", description = "Run")
-public interface Run extends Ability {
+public interface Run {
 
-    String ID = Run.class.getAnnotation(Id.class).value();
+    @Id(value = "run-control", name = "Run Control", description = "Run control")
+    interface Control extends Ability {
 
-    /**
-     * Start
-     */
-    @Command
-    @Id(value = "start", name = "Start", description = "Start")
-    void start();
-
-    /**
-     * Stop
-     */
-    @Command
-    @Id(value = "stop", name = "Stop", description = "Stop")
-    void stop();
-
-    /**
-     * Add a listener
-     */
-    @AddListener
-    ManagedCollection.Registration addListener(Listener listener);
-
-    interface Listener {
+        String ID = Control.class.getAnnotation(Id.class).value();
 
         /**
-         * Callback when running starts or stops
-         * @param running true if the device is now running
+         * Start
          */
-        @Value
-        @Id(value = "running", name = "Running", description = "True if the device is currently running, null if unknown")
-        void running(Boolean running);
+        @Command
+        @Id(value = "start", name = "Start", description = "Start")
+        void start();
+
+        /**
+         * Stop
+         */
+        @Command
+        @Id(value = "stop", name = "Stop", description = "Stop")
+        void stop();
+    }
+
+    @Id(value = "run-state", name = "Run State", description = "Run state")
+    interface State extends Ability {
+
+        String ID = State.class.getAnnotation(Id.class).value();
+
+        /**
+         * Add a listener
+         */
+        @AddListener
+        ManagedCollection.Registration addListener(Listener listener);
+
+        interface Listener {
+
+            /**
+             * Callback when running starts or stops
+             *
+             * @param running true if the device is now running
+             */
+            @Value
+            @Id(value = "running", name = "Running", description = "True if the device is currently running, null if unknown")
+            void running(Boolean running);
+        }
     }
 }
